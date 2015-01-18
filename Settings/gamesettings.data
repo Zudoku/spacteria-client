@@ -1,0 +1,6 @@
+{
+  "fullScreen": false,
+  "resolution": "RES_640_480",
+  "frameCap": 60,
+  "vSync": true
+}
