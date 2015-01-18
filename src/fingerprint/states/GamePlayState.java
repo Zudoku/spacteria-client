@@ -1,4 +1,4 @@
-package dungadventure.states;
+package fingerprint.states;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -31,7 +31,7 @@ public class GamePlayState extends BasicGameState{
 
     @Override
     public int getID() {
-        return 0;
+        return State_IDs.GAME_PLAY_ID;
     }
 
 }
