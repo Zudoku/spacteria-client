@@ -11,6 +11,11 @@ public class GameSettings {
     public int frameCap;
     public boolean vSync;
     
+    /**
+     * INPUT
+     */
+    public boolean useController;
+    
     
     public GameSettings() {
         
@@ -20,6 +25,7 @@ public class GameSettings {
         resolution = RenderingResolutions.RES_1280_1024;
         frameCap = 60;
         vSync = true;
+        useController = false;
     }
     
 }
