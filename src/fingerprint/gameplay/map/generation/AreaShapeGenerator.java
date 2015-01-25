@@ -160,7 +160,7 @@ public class AreaShapeGenerator {
      */
     public double getNoiseValue(int x, int y, int width,int height, int freq, double noiseSmoothness){
 
-        return SimplexNoise.noise( (noiseSmoothness * x / width), (noiseSmoothness * y / height),freq);
+        return PerlinNoise.noise( (noiseSmoothness * x / width), (noiseSmoothness * y / height),freq);
     }
     
     public float[][] intArrayToFloatArray(int[][] original,int width,int height){
