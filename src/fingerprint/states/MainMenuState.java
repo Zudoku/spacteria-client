@@ -33,9 +33,11 @@ public class MainMenuState extends BasicGameState{
     @Override
     public void init(GameContainer arg0, StateBasedGame arg1)
             throws SlickException {
+        //TESTING
         AreaShapeGenerator g = new AreaShapeGenerator();
         int size = 256;
-        BufferedImage image =g.imageDataFromFloatArray(g.maskGeneration(size),size);
+        BufferedImage image =g.imageDataFromFloatArray(g.intArrayToFloatArray(g.maskGeneration(size,size,AreaShapeGenerator.GENERIC_AREA_SMOOTHNESS,
+                AreaShapeGenerator.GENERIC_MASK_CUTOFF),size,size),size,size);
         
         try {
             File outputfile = new File(System.getProperty("java.io.tmpdir")+"noise.png");
