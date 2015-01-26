@@ -22,7 +22,29 @@ public class AreaShapeGenerator {
     public AreaShapeGenerator() {
         
     }
-
+    /**
+     * Tries to remove all the black blobs inside the mask
+     * @param original
+     * @param width
+     * @param height
+     * @param stepSize
+     * @return
+     */
+    public int[][] applyPostProcessing(int[][] original, int width, int height, int stepSize){
+        int[][] result = original;
+        for (int x = 2*stepSize; x < width -2*stepSize; x++) {
+            for (int y = 2*stepSize; y < height - 2*stepSize; y++) {
+                if(result[x][y] == 0){
+                    if(result[x+stepSize][y] == 1 && result[x][y+stepSize] == 1 && result[x-stepSize][y] == 1 && result[x][y-stepSize] == 1 ||
+                            result[x+2*stepSize][y] == 1 && result[x][y+2*stepSize] == 1 && result[x-2*stepSize][y] == 1 && result[x][y-2*stepSize] == 1 ){
+                        result[x][y] =1;
+                        logger.log(Level.INFO,"x = {0} y = {1} turned to 1", new Object[] {x,y});
+                    }
+                }
+            }
+        }
+        return result;
+    }
     public float[][] createGradient(int GRADIENT_SIZE) {
         float[][] valueArray = new float[GRADIENT_SIZE][GRADIENT_SIZE];
         int centerX = GRADIENT_SIZE/2 -1;
@@ -114,6 +136,11 @@ public class AreaShapeGenerator {
                 }
             }
         }
+        
+        applyPostProcessing(result, width, height,8);
+        applyPostProcessing(result, width, height,4);
+        applyPostProcessing(result, width, height,3);
+        
         
         return result;
     }
