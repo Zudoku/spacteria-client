@@ -2,11 +2,16 @@ package fingerprint.gameplay.map.blocks;
 
 public class Block {
     private final boolean blocking;
-    private final int ID;
     private String sprite;
     
-    public Block(int ID,boolean blocking) {
-        this.ID = ID;
+    public Block(boolean blocking,String sprite) {
         this.blocking = blocking;
+        this.sprite = sprite;
+    }
+    public boolean isBlocking() {
+        return blocking;
+    }
+    public String getSprite() {
+        return sprite;
     }
 }

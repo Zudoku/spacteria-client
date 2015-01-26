@@ -24,16 +24,21 @@ import org.newdawn.slick.state.StateBasedGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import fingerprint.gameplay.map.GameArea;
+import fingerprint.gameplay.map.generation.AreaGenerator;
 import fingerprint.gameplay.map.generation.AreaShapeGenerator;
+import fingerprint.rendering.RenderingManager;
 
 public class MainMenuState extends BasicGameState{
 
     private static final Logger logger = Logger.getLogger(MainMenuState.class.getName());
-    
+    private GameArea currentArea;
+    private RenderingManager renderingManager;
     @Override
     public void init(GameContainer arg0, StateBasedGame arg1)
             throws SlickException {
-        //TESTING
+        //TESTING 
+        /**
         AreaShapeGenerator g = new AreaShapeGenerator();
         int size = 256;
         BufferedImage image =g.imageDataFromFloatArray(g.intArrayToFloatArray(g.maskGeneration(size,size,AreaShapeGenerator.GENERIC_AREA_SMOOTHNESS,
@@ -46,13 +51,18 @@ public class MainMenuState extends BasicGameState{
             logger.log(Level.WARNING, "Couldn't save RoadImage.");
             return;
         }
-        
+        AreaGenerator r = new AreaGenerator();
+        r.generateAreas();
+        **/
+        AreaGenerator r = new AreaGenerator();
+        currentArea = r.generateAreas().get(0);
+        renderingManager = new RenderingManager();
     }
 
     @Override
     public void render(GameContainer arg0, StateBasedGame arg1, Graphics graphics)
             throws SlickException {
-        
+        renderingManager.draw(graphics, currentArea.getTileLayers());
     }
 
     @Override

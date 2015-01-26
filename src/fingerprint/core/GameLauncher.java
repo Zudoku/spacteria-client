@@ -19,7 +19,7 @@ public class GameLauncher extends StateBasedGame {
 
     private static final Logger logger = Logger.getLogger(GameLauncher.class.getName());
     
-    private static GameSettings gameSettings;
+    public static GameSettings gameSettings;
     
     private static final String GAME_VERSION = "1";
     

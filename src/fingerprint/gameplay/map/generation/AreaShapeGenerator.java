@@ -38,7 +38,7 @@ public class AreaShapeGenerator {
                     if(result[x+stepSize][y] == 1 && result[x][y+stepSize] == 1 && result[x-stepSize][y] == 1 && result[x][y-stepSize] == 1 ||
                             result[x+2*stepSize][y] == 1 && result[x][y+2*stepSize] == 1 && result[x-2*stepSize][y] == 1 && result[x][y-2*stepSize] == 1 ){
                         result[x][y] =1;
-                        logger.log(Level.INFO,"x = {0} y = {1} turned to 1", new Object[] {x,y});
+                        //logger.log(Level.INFO,"x = {0} y = {1} turned to 1", new Object[] {x,y});
                     }
                 }
             }
@@ -152,7 +152,7 @@ public class AreaShapeGenerator {
         return factor;
     }
 
-    public int getDistanceToEdge( int x, int y, int width, int height ) {
+    public static int getDistanceToEdge( int x, int y, int width, int height ) {
         int[] distances = new int[]{ y, x, ( width - x ), ( height - y ) };
         int min = distances[ 0 ];
         for(int val: distances) {
