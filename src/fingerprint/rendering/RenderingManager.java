@@ -29,8 +29,7 @@ public class RenderingManager {
     }
     public void draw(Graphics graphics,List<int[][]>tileLayers){
         graphics.setBackground(Color.yellow);
-        graphics.scale((float)((double)currentResolution.getHeight()/(double)unScaledScreenHeight),(float) ((double)currentResolution.getWidth()/(double)unScaledScreenWidth));
-        logger.log(Level.FINE,"scale: {0}x{1}",new Object[]{(float)((double)currentResolution.getHeight()/(double)unScaledScreenHeight),(float)((double)currentResolution.getWidth()/(double)unScaledScreenWidth)});
+        graphics.scale((float) ((double)currentResolution.getWidth()/(double)unScaledScreenWidth),(float)((double)currentResolution.getHeight()/(double)unScaledScreenHeight));
         //LIGHTING
         //MAP
         tileMapRenderer.draw(screenStartX, screenStartY,tileLayers);

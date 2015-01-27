@@ -22,8 +22,8 @@ public class TilemapRenderer {
     private double screenStartX;
     private double screenStartY;
     
-    private int tilesDrawnHorizontal = 26;
-    private int tilesDrawnVertical = 16;
+    private int tilesDrawnHorizontal = 26 +1;
+    private int tilesDrawnVertical = 16 +1;
     private int tileSize = 64;
     
     public TilemapRenderer() {
@@ -38,7 +38,6 @@ public class TilemapRenderer {
             Image[][] tiles = getDrawableTilesFromLayer(tileLayer);
             double startMapRenderingX = getTilesDrawingOffsetX();
             double startMapRenderingY = getTilesDrawingOffsetY();
-            logger.log(Level.INFO,"start {0}",startMapRenderingX);
             for(int horizontal = 0; horizontal < tilesDrawnHorizontal; horizontal++){
                 for(int vertical = 0;vertical < tilesDrawnVertical; vertical ++){
                     Image tile = tiles[horizontal][vertical];

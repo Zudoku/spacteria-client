@@ -1,6 +1,6 @@
 {
   "fullScreen": false,
-  "resolution": "RES_1680_1050",
+  "resolution": "RES_1600_900",
   "frameCap": 60,
   "vSync": true
 }

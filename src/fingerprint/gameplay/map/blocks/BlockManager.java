@@ -24,7 +24,7 @@ public class BlockManager {
         boolean NON_COLLIDEABLE = false;
         boolean COLLIDEABLE = true;
         blocks.put(ErrorBlock, new Block(NON_COLLIDEABLE,"resources/empty.png"));
-        blocks.put(VoidBlock, new Block(NON_COLLIDEABLE,"resources/void.png"));
+        blocks.put(VoidBlock, new Block(NON_COLLIDEABLE,"resources/count.png"));
         blocks.put(60, new Block(NON_COLLIDEABLE,"resources/60.png"));
         blocks.put(61, new Block(NON_COLLIDEABLE,"resources/61.png"));
         blocks.put(62, new Block(NON_COLLIDEABLE,"resources/62.png"));
