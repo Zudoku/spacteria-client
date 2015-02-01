@@ -17,17 +17,17 @@ import fingerprint.gameplay.map.blocks.BlockManager;
 public class TilemapRenderer {
     private static final Logger logger = Logger.getLogger(TilemapRenderer.class.getName());
     
-    @Inject private BlockManager blockManager;
+    private BlockManager blockManager;
     
     private double screenStartX;
     private double screenStartY;
     
-    private int tilesDrawnHorizontal = 26 +1;
-    private int tilesDrawnVertical = 16 +1;
-    private int tileSize = 64;
+    public static int tilesDrawnHorizontal = 26 +1;
+    public static int tilesDrawnVertical = 16 +1;
+    public static int tileSize = 64;
     
-    public TilemapRenderer() {
-        
+    public TilemapRenderer(BlockManager blockManager) {
+        this.blockManager = blockManager;
     }
     public void draw(double screenX, double screenY,List<int[][]> tileLayers){
         this.screenStartX = screenX;
