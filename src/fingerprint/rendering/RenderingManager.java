@@ -5,10 +5,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
+import org.newdawn.slick.gui.TextField;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -20,42 +22,47 @@ import fingerprint.gameplay.objects.GameObject;
 import fingerprint.mainmenus.GameWorldInfoContainer;
 import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.states.MainMenuState;
+import fingerprint.states.menu.enums.GameDifficulty;
+import fingerprint.states.menu.enums.MainMenuSelection;
 
 @Singleton
 public class RenderingManager {
     private static final Logger logger = Logger.getLogger(RenderingManager.class.getName());
     private TilemapRenderer tileMapRenderer;
+    private MainMenuRenderer mainMenuRenderer;
     
     @Inject private EntityManager entityManager;
     
     public static RenderingResolutions currentResolution;
     public static int unScaledScreenWidth = 26*TilemapRenderer.tileSize;  //64 = 1664
     public static int unScaledScreenHeight = 16*TilemapRenderer.tileSize; //64 = 1024
+    public static Color FONT_BASE_COLOR = Color.red;
     
     private double screenStartX = 0;
     private double screenStartY = 0;
     
     
+    
     public RenderingManager() {
         currentResolution = GameLauncher.gameSettings.resolution;
-        
+        mainMenuRenderer = new MainMenuRenderer();
     }
     public void configure(EntityManager entityManager,BlockManager blockManager){
         this.entityManager = entityManager;
         tileMapRenderer = new TilemapRenderer(blockManager);
     }
-    public void drawMainMenu(Graphics graphics){
+    public void drawWorldCreation(Graphics graphics,GameContainer container,GameDifficulty difficulty,int row,int col,TextField filename,boolean drawBadFileName){
         initDraw(graphics);
-        graphics.setColor(Color.red);
-        String mainmenuText = GameLauncher.PROGRAM_NAME;
-        graphics.drawString(mainmenuText, calculateWorldTitleLocationX(graphics, mainmenuText), 100);
-        String pressText = "Press SPACE to play!";
-        graphics.drawString(pressText, calculateWorldTitleLocationX(graphics, pressText), 924);
+        mainMenuRenderer.drawWorldCreation(graphics,container,difficulty,row,col,filename,drawBadFileName);
+    }
+    public void drawMainMenu(Graphics graphics,MainMenuSelection selection){
+        initDraw(graphics);
+        mainMenuRenderer.drawMainMenu(graphics, selection);
     }
     public void drawWorldSelection(Graphics graphics,GameWorldInfoContainer gwic){
         initDraw(graphics);
-        graphics.setColor(Color.red);
-        graphics.drawString(gwic.worldTitle, calculateWorldTitleLocationX(graphics, gwic.worldTitle), 100);
+        graphics.setColor(FONT_BASE_COLOR);
+        graphics.drawString(gwic.worldTitle,  calculateTextAllignCenterX(graphics, gwic.worldTitle), 100);
         
         if(gwic.moreLeft){
             
@@ -123,14 +130,14 @@ public class RenderingManager {
         graphics.scale((float) ((double)currentResolution.getWidth()/(double)unScaledScreenWidth),(float)((double)currentResolution.getHeight()/(double)unScaledScreenHeight));
         graphics.setBackground(Color.black);
     }
-    private int calculateWorldTitleLocationX(Graphics graphics,String title){
+    public static int calculateTextAllignCenterX(Graphics graphics,String title){
         int titleLenght = graphics.getFont().getWidth(title);
         int place = RenderingManager.unScaledScreenWidth/2 - titleLenght/2;
         return place;
     }
     public void drawCharacterCreation(Graphics graphics) {
         initDraw(graphics);
-        graphics.setColor(Color.red);
-        graphics.drawString("CHARACTER CREATION SCREEN", calculateWorldTitleLocationX(graphics,"CHARACTER CREATION SCREEN" ), 100);
+        graphics.setColor(FONT_BASE_COLOR);
+        graphics.drawString("CHARACTER CREATION SCREEN",  calculateTextAllignCenterX(graphics,"CHARACTER CREATION SCREEN" ), 100);
     }
 }

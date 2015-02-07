@@ -15,6 +15,7 @@ import com.google.inject.Inject;
 
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.PlayerOutlookEvent;
 
 public class CharacterCreationState extends BasicGameState{
     private static final Logger logger = Logger.getLogger(CharacterCreationState.class.getName());
@@ -43,6 +44,7 @@ public class CharacterCreationState extends BasicGameState{
             throws SlickException {
         Input input = gc.getInput();
         if(input.isKeyPressed(Keyboard.KEY_SPACE)){
+            eventBus.post(new PlayerOutlookEvent(false));
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
         }
     }

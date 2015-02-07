@@ -17,12 +17,17 @@ import com.google.inject.Inject;
 
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.CloseProgramEvent;
+import fingerprint.states.menu.enums.MainMenuSelection;
 
 public class MainMenuState extends BasicGameState{
     private static final Logger logger = Logger.getLogger(MainMenuState.class.getName());
     
     @Inject private RenderingManager renderingManager;
     @Inject private EventBus eventBus;
+    
+    private MainMenuSelection selection;
+    
     public MainMenuState() {
         
         
@@ -31,13 +36,13 @@ public class MainMenuState extends BasicGameState{
     @Override
     public void init(GameContainer arg0, StateBasedGame arg1)
             throws SlickException {
-        
+        selection = MainMenuSelection.PLAY;
     }
 
     @Override
     public void render(GameContainer arg0, StateBasedGame arg1, Graphics graphics)
             throws SlickException {
-        renderingManager.drawMainMenu(graphics);
+        renderingManager.drawMainMenu(graphics,selection);
         
     }
 
@@ -46,7 +51,52 @@ public class MainMenuState extends BasicGameState{
             throws SlickException {
         Input input = arg0.getInput();
         if(input.isKeyPressed(Keyboard.KEY_SPACE)){
+            menuPressed();
+        }
+        if(input.isKeyPressed(Keyboard.KEY_UP)){
+            if(selection.getIndex() > 0){
+                selection = MainMenuSelection.values()[selection.getIndex()-1];
+            }else{
+                selection = MainMenuSelection.values()[MainMenuSelection.values().length-1];
+            }
+        }
+        if(input.isKeyPressed(Keyboard.KEY_DOWN)){
+            if(selection.getIndex() < MainMenuSelection.values().length-1){
+                selection = MainMenuSelection.values()[selection.getIndex()+1];
+            }else{
+                selection = MainMenuSelection.values()[0];
+            }
+        }
+        if(input.isKeyPressed(Keyboard.KEY_ESCAPE)){
+            eventBus.post(new CloseProgramEvent(false, true));
+        }
+        
+    }
+    private void menuPressed(){
+        switch(selection){
+        case PLAY:
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.WORLD_SELECTION_ID));
+            break;
+            
+        case OPTIONS:
+            
+            break;
+            
+        case TUTORIAL:
+            
+            break;
+            
+        case TROPHIES:
+            
+            break;
+            
+        case CHARACTER_CREATION:
+            
+            break;
+            
+        case EXIT:
+            eventBus.post(new CloseProgramEvent(false, true));
+            break;
         }
     }
 

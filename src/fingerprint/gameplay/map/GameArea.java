@@ -20,4 +20,13 @@ public class GameArea {
     public int getAreaID() {
         return areaID;
     }
+    public void setAreaID(int areaID) {
+        this.areaID = areaID;
+    }
+    public void setAreaType(GameAreaType areaType) {
+        this.areaType = areaType;
+    }
+    public void setTileLayers(List<int[][]> tileLayers) {
+        this.tileLayers = tileLayers;
+    }
 }

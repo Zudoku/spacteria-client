@@ -11,6 +11,8 @@ import org.newdawn.slick.state.StateBasedGame;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
+import fingerprint.gameplay.map.gameworld.GameWorld;
+import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.rendering.RenderingManager;
 
 public class GamePlayState extends BasicGameState{
@@ -19,6 +21,8 @@ public class GamePlayState extends BasicGameState{
     
     @Inject private RenderingManager renderingManager;
     @Inject private EventBus eventBus;
+    
+    private GameWorldContainer worldContainer;
     
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
@@ -39,6 +43,9 @@ public class GamePlayState extends BasicGameState{
             throws SlickException {
         
         
+    }
+    public void setGameWorld(GameWorld world){
+        worldContainer.setWorld(world);
     }
 
     @Override

@@ -17,24 +17,30 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
+import fingerprint.gameplay.loader.PreGamePlayStateLoader;
 import fingerprint.inout.GameSettings;
 import fingerprint.inout.GameSettingsProvider;
 import fingerprint.states.CharacterCreationState;
 import fingerprint.states.GamePlayState;
 import fingerprint.states.MainMenuState;
+import fingerprint.states.State_IDs;
+import fingerprint.states.WorldCreationState;
 import fingerprint.states.WorldSelectionState;
 import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.CloseProgramEvent;
 
 public class GameLauncher extends StateBasedGame {
     private static final Logger logger = Logger.getLogger(GameLauncher.class.getName());
-    public static final String GAME_VERSION = "2";
-    public static final String PROGRAM_NAME = "Project Fingerprint Version "+GAME_VERSION;
+    public static final int GAME_VERSION = 2;
+    public static final String PROGRAM_STATE = "DEV";
+    public static final String PROGRAM_NAME = "Project Fingerprint Version "+GAME_VERSION + " " + PROGRAM_STATE;
     
     public static GameSettings gameSettings;
     public static Injector injector;
     @Inject private EventBus eventBus;
     
     private List<BasicGameState> gameStates = new ArrayList<>();
+    private PreGamePlayStateLoader gamePlayStateLoader = new PreGamePlayStateLoader();
     
     
     public GameLauncher(String title) {
@@ -42,6 +48,7 @@ public class GameLauncher extends StateBasedGame {
         injector = Guice.createInjector(new GameModule());
         injector.injectMembers(this);
         eventBus.register(this);
+        eventBus.register(gamePlayStateLoader);
     }
     public static void main(String[] arguments) {
         
@@ -51,7 +58,7 @@ public class GameLauncher extends StateBasedGame {
             logger.log(Level.SEVERE, "Couldn't load gamesettings. Exiting.");
             return;
         }
-        
+        //System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
         try {
             AppGameContainer app = new AppGameContainer(new GameLauncher(PROGRAM_NAME));
             applyGameSettings(app, gameSettings);
@@ -70,28 +77,54 @@ public class GameLauncher extends StateBasedGame {
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
         MainMenuState mainMenu = new MainMenuState();
-        injector.injectMembers(mainMenu);
-        gameStates.add(mainMenu);
-        addState(mainMenu);
+        initState(mainMenu);
 
         WorldSelectionState worldSelection = new WorldSelectionState();
-        injector.injectMembers(worldSelection);
-        gameStates.add(worldSelection);
-        addState(worldSelection);
+        initState(worldSelection);
         
         CharacterCreationState characterCreation = new CharacterCreationState();
-        injector.injectMembers(characterCreation);
-        gameStates.add(characterCreation);
-        addState(characterCreation);
+        initState(characterCreation);
         
-        GamePlayState gamePlayState = new GamePlayState();
-        injector.injectMembers(gamePlayState);
-        gameStates.add(gamePlayState);
-        addState(gamePlayState);
+        GamePlayState gamePlay = new GamePlayState();
+        initState(gamePlay);
+        
+        WorldCreationState worldCreation = new WorldCreationState();
+        initState(worldCreation);
+    }
+    private void initState(BasicGameState state){
+        injector.injectMembers(state);
+        gameStates.add(state);
+        addState(state);
     }
     @Subscribe
     public void listenToChangeStateEvent(ChangeStateEvent event){
+        if (gamePlayStateLoader.isOn()) {
+            if (event.getToState() == State_IDs.GAME_PLAY_ID) {
+                if (gamePlayStateLoader.getWorld() == null) {
+                    gamePlayStateLoader.reset();
+                    logger.log(Level.SEVERE,"Couldn't change to gameplaymode, because world was null. Reseting.");
+                    enterState(State_IDs.WORLD_SELECTION_ID);
+                    return;
+                }
+                if(!gamePlayStateLoader.isCharacterDone()){
+                    logger.log(Level.INFO,"Character isn't done. Going to character creation screen.");
+                    enterState(State_IDs.CHARACTER_SCREEN_ID);
+                    return;
+                }
+                logger.log(Level.INFO,"Switching into gameplaySta");
+                GamePlayState gpState = (GamePlayState)gameStates.get(3);
+                gpState.setGameWorld(gamePlayStateLoader.getWorld());
+                enterState(State_IDs.GAME_PLAY_ID);
+                gamePlayStateLoader.reset();
+                gamePlayStateLoader.setOn(false);
+                return;
+            }
+        }
         enterState(event.getToState());
+    }
+    @Subscribe
+    public void listenToCloseDownGameEvent(CloseProgramEvent event){
+        System.exit(0);
     }
     
 

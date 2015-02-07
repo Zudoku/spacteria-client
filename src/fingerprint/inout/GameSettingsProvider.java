@@ -44,17 +44,17 @@ public class GameSettingsProvider {
     }
     public GameSettings loadGameSettings(){
         GameSettings settings = null;
-        logger.log(Level.FINEST,"Loading Controls...");
+        logger.log(Level.FINEST,"Loading gamesettings...");
         try{
             Gson gson = new GsonBuilder().create();
             settings = gson.fromJson(new FileReader(GAMESETTINGS_PATH), GameSettings.class);
-            logger.log(Level.FINEST,"Found existing keybinds!");
+            logger.log(Level.FINEST,"Found existing gamesettings!");
         }catch (FileNotFoundException ex){
             settings = new GameSettings();
             settings.resetDefaultSettings();
-            logger.log(Level.FINER,"Couldn't find existing keybinds. Default controls assigned! This is probably your first time playing this game!");
+            logger.log(Level.FINER,"Couldn't find existing gamesettings. Default settings assigned! This is probably your first time playing this game!");
             saveGameSettings(settings);
-            logger.log(Level.FINER,"Saved keybinds!");
+            logger.log(Level.FINER,"Saved gamesettings!");
         }
         return settings;
     }
