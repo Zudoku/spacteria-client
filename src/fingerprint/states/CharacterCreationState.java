@@ -13,6 +13,8 @@ import org.newdawn.slick.state.StateBasedGame;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
+import fingerprint.controls.InputManager;
+import fingerprint.controls.KeyBindAction;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.PlayerOutlookEvent;
@@ -22,6 +24,8 @@ public class CharacterCreationState extends BasicGameState{
     
     @Inject private RenderingManager renderingManager;
     @Inject private EventBus eventBus;
+    @Inject private InputManager inputManager;
+    
     public CharacterCreationState() {
         
     }
@@ -29,7 +33,6 @@ public class CharacterCreationState extends BasicGameState{
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
             throws SlickException {
-        
     }
 
     @Override
@@ -42,8 +45,9 @@ public class CharacterCreationState extends BasicGameState{
     @Override
     public void update(GameContainer gc, StateBasedGame caller, int delta)
             throws SlickException {
-        Input input = gc.getInput();
-        if(input.isKeyPressed(Keyboard.KEY_SPACE)){
+        inputManager.setInput(gc.getInput());
+        inputManager.update();
+        if(inputManager.isKeyBindDown(KeyBindAction.D,true)){
             eventBus.post(new PlayerOutlookEvent(false));
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
         }

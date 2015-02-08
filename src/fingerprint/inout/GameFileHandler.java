@@ -93,7 +93,6 @@ public class GameFileHandler {
         if(!validateFileName(worldToSave.getMetaData().filename)){
             logger.log(Level.SEVERE,"Couldn't save a worldFile because of bad filename.");
             return false;
-
         }
         //INIT SAVE
         initWorldGameFileSave(worldToSave);

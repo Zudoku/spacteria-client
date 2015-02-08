@@ -31,14 +31,14 @@ public class WorldSelectionController {
         if(getMoreLeft()){
             selection--;
         }else{
-            selection = filesAmount;
+            //selection = filesAmount;
         }
     }
     public void right(){
         if(getMoreRight()){
             selection++;
         }else{
-            selection = 0;
+            //selection = 0;
         }
     }
 }

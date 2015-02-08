@@ -12,6 +12,8 @@ public enum RenderingResolutions {
     RES_1600_900(1600,900),
     RES_1680_1050(1680,1050),
     RES_1920_1080(1920,1080),
+    RES_1920_1200(1920,1200),
+    IDENTIFY_SCREEN(0,0)
     ;
     
     private int width;

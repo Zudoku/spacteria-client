@@ -1,6 +1,33 @@
 {
   "fullScreen": false,
-  "resolution": "RES_1600_900",
+  "borderless": true,
+  "resolution": "RES_800_600",
   "frameCap": 60,
-  "vSync": true
+  "vSync": true,
+  "keyboardKeyBinds": {
+    "LEFT": 203,
+    "DOWN": 208,
+    "UP": 200,
+    "A": 44,
+    "B": 45,
+    "EXIT": 1,
+    "C": 46,
+    "RIGHT": 205,
+    "D": 57,
+    "MENU": 28
+  },
+  "controllerKeyBinds": {
+    "LEFT": 3,
+    "DOWN": 2,
+    "UP": 1,
+    "A": 5,
+    "B": 6,
+    "EXIT": 10,
+    "C": 7,
+    "RIGHT": 4,
+    "D": 8,
+    "MENU": 9
+  },
+  "keyboardActive": true,
+  "CURRENT_CONTROLLER": 0
 }

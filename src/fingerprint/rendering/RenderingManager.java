@@ -1,9 +1,13 @@
 package fingerprint.rendering;
 
+import java.awt.Dimension;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -41,11 +45,20 @@ public class RenderingManager {
     private double screenStartX = 0;
     private double screenStartY = 0;
     
-    
+    private int virtualResolutionHeight;
+    private int virtualResolutionWidth;
     
     public RenderingManager() {
         currentResolution = GameLauncher.gameSettings.resolution;
         mainMenuRenderer = new MainMenuRenderer();
+        if(currentResolution == RenderingResolutions.IDENTIFY_SCREEN){
+            Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            virtualResolutionHeight = (int)dimension.getHeight();
+            virtualResolutionWidth = (int)dimension.getWidth();
+        }else{
+            virtualResolutionHeight = currentResolution.getHeight();
+            virtualResolutionWidth = currentResolution.getWidth();
+        }
     }
     public void configure(EntityManager entityManager,BlockManager blockManager){
         this.entityManager = entityManager;
@@ -127,7 +140,7 @@ public class RenderingManager {
         //TODO:
     }
     private void initDraw(Graphics graphics){
-        graphics.scale((float) ((double)currentResolution.getWidth()/(double)unScaledScreenWidth),(float)((double)currentResolution.getHeight()/(double)unScaledScreenHeight));
+        graphics.scale((float) ((double)virtualResolutionWidth/(double)unScaledScreenWidth),(float)((double)virtualResolutionHeight/(double)unScaledScreenHeight));
         graphics.setBackground(Color.black);
     }
     public static int calculateTextAllignCenterX(Graphics graphics,String title){
@@ -139,5 +152,17 @@ public class RenderingManager {
         initDraw(graphics);
         graphics.setColor(FONT_BASE_COLOR);
         graphics.drawString("CHARACTER CREATION SCREEN",  calculateTextAllignCenterX(graphics,"CHARACTER CREATION SCREEN" ), 100);
+    }
+    public void setScreenStartX(double screenStartX) {
+        this.screenStartX = screenStartX;
+    }
+    public void setScreenStartY(double screenStartY) {
+        this.screenStartY = screenStartY;
+    }
+    public double getScreenStartX() {
+        return screenStartX;
+    }
+    public double getScreenStartY() {
+        return screenStartY;
     }
 }

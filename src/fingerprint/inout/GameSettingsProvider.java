@@ -20,7 +20,7 @@ public class GameSettingsProvider {
     private static String GAMESETTINGS_PATH = "Settings/gamesettings.data";
     
     public void saveGameSettings(GameSettings settings){
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         //gson.toJson(settings);
         
         BufferedWriter writer = null;

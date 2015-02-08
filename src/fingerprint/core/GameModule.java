@@ -6,8 +6,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
+import fingerprint.controls.InputManager;
 import fingerprint.gameplay.map.blocks.BlockManager;
 import fingerprint.gameplay.objects.EntityManager;
+import fingerprint.inout.GameSettings;
 import fingerprint.rendering.RenderingManager;
 
 
@@ -17,12 +19,14 @@ public class GameModule extends AbstractModule{
     private EntityManager entityManager;
     private RenderingManager renderingManager;
     private EventBus eventBus;
+    private InputManager inputManager;
     
     public GameModule() {
         blockManager = new BlockManager();
         entityManager = new EntityManager();
         renderingManager = new RenderingManager();
-        eventBus  = new EventBus("GameEventBus");
+        eventBus = new EventBus("GameEventBus");
+        inputManager = new InputManager();
     }
     
     @Override
@@ -30,10 +34,12 @@ public class GameModule extends AbstractModule{
         renderingManager.configure(entityManager, blockManager);
         
     }
+    
     @Provides
     public BlockManager giveBlockManager(){
         return blockManager;
     }
+    
     @Provides
     public EntityManager giveEntityManager(){
         return entityManager;
@@ -45,6 +51,13 @@ public class GameModule extends AbstractModule{
     @Provides
     public EventBus giveEventBus(){
         return eventBus;
+    }
+    @Provides
+    public InputManager giveInputManager(){
+        return inputManager;
+    }
+    public void setGameSettings(GameSettings gamesettings){
+        inputManager.loadKeyBinds(gamesettings);
     }
 
 }

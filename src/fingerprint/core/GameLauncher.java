@@ -1,10 +1,14 @@
 package fingerprint.core;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
@@ -20,6 +24,7 @@ import com.google.inject.Injector;
 import fingerprint.gameplay.loader.PreGamePlayStateLoader;
 import fingerprint.inout.GameSettings;
 import fingerprint.inout.GameSettingsProvider;
+import fingerprint.rendering.RenderingResolutions;
 import fingerprint.states.CharacterCreationState;
 import fingerprint.states.GamePlayState;
 import fingerprint.states.MainMenuState;
@@ -41,11 +46,12 @@ public class GameLauncher extends StateBasedGame {
     
     private List<BasicGameState> gameStates = new ArrayList<>();
     private PreGamePlayStateLoader gamePlayStateLoader = new PreGamePlayStateLoader();
-    
+    private static GameModule gamemodule;
+    private static AppGameContainer application;
     
     public GameLauncher(String title) {
         super(title);
-        injector = Guice.createInjector(new GameModule());
+        injector = Guice.createInjector(gamemodule);
         injector.injectMembers(this);
         eventBus.register(this);
         eventBus.register(gamePlayStateLoader);
@@ -58,17 +64,30 @@ public class GameLauncher extends StateBasedGame {
             logger.log(Level.SEVERE, "Couldn't load gamesettings. Exiting.");
             return;
         }
-        //System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
+        //Set inputManager keybinds
+        gamemodule = new GameModule();
+        gamemodule.setGameSettings(gameSettings);
         try {
-            AppGameContainer app = new AppGameContainer(new GameLauncher(PROGRAM_NAME));
-            applyGameSettings(app, gameSettings);
-            app.start();  //Start the application
+            AppGameContainer application = new AppGameContainer(new GameLauncher(PROGRAM_NAME));
+            applyGameSettings(application, gameSettings);
+            application.start();  //Start the application
         } catch (SlickException e) {
             e.printStackTrace();
         }
     }
     public static void applyGameSettings(AppGameContainer app, GameSettings appliedSettings) throws SlickException{
-        app.setDisplayMode(appliedSettings.resolution.getWidth(), appliedSettings.resolution.getHeight(), appliedSettings.fullScreen);
+        int screenWidth = appliedSettings.resolution.getWidth();
+        int screenHeight = appliedSettings.resolution.getHeight();
+        if (appliedSettings.resolution == RenderingResolutions.IDENTIFY_SCREEN) {
+            Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            screenHeight = (int) dimension.getHeight();
+            screenWidth = (int) dimension.getWidth();
+            logger.log(Level.INFO,"Identified your screen resolution to be {0}x{1}",new Object[] { screenWidth, screenHeight });
+        }
+        if(appliedSettings.borderless && !appliedSettings.fullScreen){
+            System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
+        }
+        app.setDisplayMode(screenWidth, screenHeight, appliedSettings.fullScreen);
         app.setAlwaysRender(true);
         app.setTargetFrameRate(appliedSettings.frameCap);
         app.setVSync(appliedSettings.vSync);
@@ -111,7 +130,7 @@ public class GameLauncher extends StateBasedGame {
                     enterState(State_IDs.CHARACTER_SCREEN_ID);
                     return;
                 }
-                logger.log(Level.INFO,"Switching into gameplaySta");
+                logger.log(Level.INFO,"Switching into gameplayState");
                 GamePlayState gpState = (GamePlayState)gameStates.get(3);
                 gpState.setGameWorld(gamePlayStateLoader.getWorld());
                 enterState(State_IDs.GAME_PLAY_ID);
@@ -124,7 +143,10 @@ public class GameLauncher extends StateBasedGame {
     }
     @Subscribe
     public void listenToCloseDownGameEvent(CloseProgramEvent event){
-        System.exit(0);
+        if(event.forceClose){
+            
+        }
+        System.exit(0); // dirty exit! TODO: rework
     }
     
 

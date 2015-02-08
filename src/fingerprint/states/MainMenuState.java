@@ -15,6 +15,8 @@ import org.newdawn.slick.state.StateBasedGame;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
+import fingerprint.controls.InputManager;
+import fingerprint.controls.KeyBindAction;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
@@ -25,6 +27,7 @@ public class MainMenuState extends BasicGameState{
     
     @Inject private RenderingManager renderingManager;
     @Inject private EventBus eventBus;
+    @Inject private InputManager inputManager;
     
     private MainMenuSelection selection;
     
@@ -47,27 +50,28 @@ public class MainMenuState extends BasicGameState{
     }
 
     @Override
-    public void update(GameContainer arg0, StateBasedGame arg1, int arg2)
+    public void update(GameContainer gc, StateBasedGame caller, int delta)
             throws SlickException {
-        Input input = arg0.getInput();
-        if(input.isKeyPressed(Keyboard.KEY_SPACE)){
+        inputManager.setInput(gc.getInput());
+        inputManager.update();
+        if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
             menuPressed();
         }
-        if(input.isKeyPressed(Keyboard.KEY_UP)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.UP,true)){
             if(selection.getIndex() > 0){
                 selection = MainMenuSelection.values()[selection.getIndex()-1];
             }else{
                 selection = MainMenuSelection.values()[MainMenuSelection.values().length-1];
             }
         }
-        if(input.isKeyPressed(Keyboard.KEY_DOWN)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.DOWN,true)){
             if(selection.getIndex() < MainMenuSelection.values().length-1){
                 selection = MainMenuSelection.values()[selection.getIndex()+1];
             }else{
                 selection = MainMenuSelection.values()[0];
             }
         }
-        if(input.isKeyPressed(Keyboard.KEY_ESCAPE)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
             eventBus.post(new CloseProgramEvent(false, true));
         }
         

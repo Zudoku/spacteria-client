@@ -24,13 +24,16 @@ public class GameWorldDeserializer implements JsonDeserializer<GameWorld>{
         logger.log(Level.FINEST,"Beginning to deserialize gameworld!");
         final JsonObject jo = je.getAsJsonObject();
         //META DATA
-        logger.log(Level.FINER,"Deserializing META-DATA...");
+        logger.log(Level.FINEST,"Deserializing META-DATA...");
         GameWorldMetaData metaData=jdc.deserialize(jo.get("metaData"),GameWorldMetaData.class);
         gameWorld.setMetaData(metaData);
         //GAME AREAS
+        logger.log(Level.FINEST,"Deserializing gameareas...");
         List<GameArea> gameAreas = jdc.deserialize(jo.get("areas"),new TypeToken<List<GameArea>>(){}.getType());
         gameWorld.setAreas(gameAreas);
         
+        
+        logger.log(Level.FINEST,"GameWorld deserialized!");
         return gameWorld;
     }
 

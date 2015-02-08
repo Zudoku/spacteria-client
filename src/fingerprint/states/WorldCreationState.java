@@ -18,6 +18,8 @@ import org.newdawn.slick.state.StateBasedGame;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
+import fingerprint.controls.InputManager;
+import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.map.gameworld.GameWorld;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.WorldCreationController;
@@ -32,6 +34,7 @@ public class WorldCreationState extends BasicGameState{
     @Inject private RenderingManager renderingManager;
     @Inject private EventBus eventBus;
     @Inject private GameFileHandler fileHandler;
+    @Inject private InputManager inputManager;
     private WorldCreationController controller;
     
     private TextField saveName ;
@@ -67,26 +70,28 @@ public class WorldCreationState extends BasicGameState{
     @Override
     public void update(GameContainer gc, StateBasedGame caller, int delta)
             throws SlickException {
+        inputManager.setInput(gc.getInput());
+        inputManager.update();
         //TODO: redo everything
         
         //TEMPFIX
         Input input = gc.getInput();
-        if(input.isKeyPressed(Keyboard.KEY_SPACE)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
             menuPressed();
         }
-        if(input.isKeyPressed(Keyboard.KEY_UP)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.UP,true)){
             controller.up();
         }
-        if(input.isKeyPressed(Keyboard.KEY_DOWN)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.DOWN,true)){
             controller.down();
         }
-        if(input.isKeyPressed(Keyboard.KEY_RIGHT)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.RIGHT,true)){
             controller.right();
         }
-        if(input.isKeyPressed(Keyboard.KEY_LEFT)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.LEFT,true)){
             controller.left();
         }
-        if(input.isKeyPressed(Keyboard.KEY_ESCAPE)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.WORLD_SELECTION_ID));
         }
         checkIfFileInputClose();
@@ -107,9 +112,10 @@ public class WorldCreationState extends BasicGameState{
                         logger.log(Level.WARNING,"World load failed.");
                         return;
                     }
+                    logger.log(Level.FINEST,"World Loaded!");
                     eventBus.post(new SelectPlayableWorldEvent(createdWorld));
-                    
-                    eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SCREEN_ID));
+                    logger.log(Level.FINEST,"Going into character creationscreen");
+                    eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
                 }else{
                     //World creation failed
                     logger.log(Level.WARNING,"World creation failed.");
