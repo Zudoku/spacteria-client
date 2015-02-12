@@ -1,11 +1,15 @@
 package fingerprint.gameplay.loader;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Singleton;
 
 import fingerprint.gameplay.map.gameworld.GameWorld;
+import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.PlayerBuilder;
 import fingerprint.states.events.PlayerOutlookEvent;
 import fingerprint.states.events.SelectPlayableWorldEvent;
 
+@Singleton
 public class PreGamePlayStateLoader {
     private GameWorld world;
     private boolean characterDone = false;
@@ -45,8 +49,9 @@ public class PreGamePlayStateLoader {
         if(event.isOnWorld()){
             characterDone = true;
         }else{
-            //TODO: scrape data here
+            world.setPlayer(PlayerBuilder.spawnGenericPlayer());
             characterDone = true;
         }
     }
+    
 }

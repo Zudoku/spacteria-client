@@ -1,6 +1,7 @@
 package fingerprint.rendering;
 
 import java.awt.Dimension;
+import java.io.ObjectInputStream.GetField;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +17,8 @@ import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
 import org.newdawn.slick.gui.TextField;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -23,6 +26,7 @@ import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.map.blocks.BlockManager;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
+import fingerprint.gameplay.objects.player.Player;
 import fingerprint.mainmenus.GameWorldInfoContainer;
 import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.states.MainMenuState;
@@ -42,8 +46,8 @@ public class RenderingManager {
     public static int unScaledScreenHeight = 16*TilemapRenderer.tileSize; //64 = 1024
     public static Color FONT_BASE_COLOR = Color.red;
     
-    private double screenStartX = 0;
-    private double screenStartY = 0;
+    private static double screenStartX = 0;
+    private static double screenStartY = 0;
     
     private int virtualResolutionHeight;
     private int virtualResolutionWidth;
@@ -60,9 +64,10 @@ public class RenderingManager {
             virtualResolutionWidth = currentResolution.getWidth();
         }
     }
-    public void configure(EntityManager entityManager,BlockManager blockManager){
+    public void configure(EntityManager entityManager,BlockManager blockManager,EventBus eventBus){
         this.entityManager = entityManager;
         tileMapRenderer = new TilemapRenderer(blockManager);
+        eventBus.register(this);
     }
     public void drawWorldCreation(Graphics graphics,GameContainer container,GameDifficulty difficulty,int row,int col,TextField filename,boolean drawBadFileName){
         initDraw(graphics);
@@ -129,11 +134,24 @@ public class RenderingManager {
         tileMapRenderer.draw(screenStartX, screenStartY,tileLayers);
         //OBJECTS
         for(GameObject drawableObject : entityManager.get(GameObject.class)){
-            drawableObject.draw();
+            if(drawableObject instanceof Player){
+                continue;
+            }
+            if(needToDraw(drawableObject)){
+                drawableObject.draw(graphics);
+            }
         }
         //PLAYER
+        for(Player drawableObject : entityManager.get(Player.class)){
+            drawableObject.draw(graphics);
+        }
         //EFFECTS
         //UI
+    }
+    private boolean needToDraw(GameObject object){
+        Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)virtualResolutionWidth,(float) virtualResolutionHeight);
+        Rectangle drawing = new Rectangle((float)object.getX(),(float)object.getY(),200f, 200f);
+        return screen.intersects(drawing);
     }
     public void drawDebugGamePlay(Graphics graphics,List<int[][]>tileLayers){
         initDraw(graphics);
@@ -146,6 +164,7 @@ public class RenderingManager {
     public static int calculateTextAllignCenterX(Graphics graphics,String title){
         int titleLenght = graphics.getFont().getWidth(title);
         int place = RenderingManager.unScaledScreenWidth/2 - titleLenght/2;
+        
         return place;
     }
     public void drawCharacterCreation(Graphics graphics) {
@@ -153,16 +172,21 @@ public class RenderingManager {
         graphics.setColor(FONT_BASE_COLOR);
         graphics.drawString("CHARACTER CREATION SCREEN",  calculateTextAllignCenterX(graphics,"CHARACTER CREATION SCREEN" ), 100);
     }
-    public void setScreenStartX(double screenStartX) {
-        this.screenStartX = screenStartX;
+    public void setScreenStartX(double screenX) {
+        screenStartX = screenX;
     }
-    public void setScreenStartY(double screenStartY) {
-        this.screenStartY = screenStartY;
+    public void setScreenStartY(double screenY) {
+        screenStartY = screenY;
     }
-    public double getScreenStartX() {
+    public static double getScreenStartX() {
         return screenStartX;
     }
-    public double getScreenStartY() {
+    public static double getScreenStartY() {
         return screenStartY;
+    }
+    @Subscribe
+    public void listenSetScreenStartCoordinates(SetScreenStartCoordinatesEvent event){
+        screenStartX = event.newX;
+        screenStartY = event.newY;
     }
 }

@@ -1,6 +1,6 @@
 {
   "fullScreen": false,
-  "borderless": true,
+  "borderless": false,
   "resolution": "RES_800_600",
   "frameCap": 60,
   "vSync": true,

@@ -3,17 +3,25 @@ package fingerprint.gameplay.map.gameworld;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jws.Oneway;
+
 import fingerprint.gameplay.map.GameArea;
 import fingerprint.gameplay.map.village.Village;
 import fingerprint.gameplay.objects.GameObject;
+import fingerprint.gameplay.objects.player.Player;
 import fingerprint.gameplay.time.Clock;
 
 public class GameWorld {
     private List<GameArea> areas = new ArrayList<GameArea>();
     private Village village;
-    private List<GameObject> objects;
+    private List<GameObject> objects; //not including player
     private GameWorldMetaData metaData;
     private Clock worldClock;
+    private Player player;
+    
+    public GameWorld() {
+        objects = new ArrayList<>();
+    }
     
     public List<GameArea> getAreas() {
         return areas;
@@ -44,5 +52,11 @@ public class GameWorld {
     }
     public void setWorldClock(Clock worldClock) {
         this.worldClock = worldClock;
+    }
+    public Player getPlayer() {
+        return player;
+    }
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 }

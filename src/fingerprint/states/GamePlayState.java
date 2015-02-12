@@ -15,8 +15,11 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
+import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.map.gameworld.GameWorld;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
+import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.PlayerContainer;
 import fingerprint.rendering.RenderingManager;
 
 public class GamePlayState extends BasicGameState{
@@ -27,12 +30,13 @@ public class GamePlayState extends BasicGameState{
     @Inject private EventBus eventBus;
     @Inject private InputManager inputManager;
     
-    private GameWorldContainer worldContainer;
+    @Inject private GameWorldContainer worldContainer;
     
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
             throws SlickException {
-       worldContainer = new GameWorldContainer();
+        //worldContainer = new GameWorldContainer();
+        //GameLauncher.injector.injectMembers(worldContainer); //dirty trick
         
     }
 
@@ -48,13 +52,14 @@ public class GamePlayState extends BasicGameState{
             throws SlickException {
         inputManager.setInput(gc.getInput());
         inputManager.update();
-        if(inputManager.isKeyBindDown(KeyBindAction.DOWN,true)){
-            renderingManager.setScreenStartY(renderingManager.getScreenStartY() + 1);
-        }
+        worldContainer.updateWorld(inputManager,delta);
         
     }
     public void setGameWorld(GameWorld world){
         worldContainer.setWorld(world);
+    }
+    public void setPlayer(Player player){
+        worldContainer.setPlayer(player);
     }
 
     @Override

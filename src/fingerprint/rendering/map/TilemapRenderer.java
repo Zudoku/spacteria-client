@@ -42,7 +42,7 @@ public class TilemapRenderer {
                 for(int vertical = 0;vertical < tilesDrawnVertical; vertical ++){
                     Image tile = tiles[horizontal][vertical];
                     if(tile == null){
-                        logger.log(Level.INFO,"Image null, cant draw on layer {0}",layer);
+                        //logger.log(Level.INFO,"Image null, cant draw on layer {0}",layer);
                         continue;
                     }
                     tile.draw((float)(startMapRenderingX + horizontal * tileSize), (float)(startMapRenderingY + vertical * tileSize));
@@ -57,7 +57,13 @@ public class TilemapRenderer {
         int startTileX = (int)Math.floor(screenStartX/tileSize);
         int startTileY = (int)Math.floor(screenStartY/tileSize);
         for(int x = startTileX; x < (startTileX+tilesDrawnHorizontal) ; x++){
+            if( x < 0){
+                continue;
+            }
             for(int y = startTileY; y < (startTileY+tilesDrawnVertical) ; y++){
+                if( y < 0){
+                    continue;
+                }
                 Block currentBlock = blockManager.getBlock(tileLayer[x][y]);
                 
                 try {

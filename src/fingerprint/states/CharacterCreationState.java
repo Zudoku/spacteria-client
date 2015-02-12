@@ -47,9 +47,12 @@ public class CharacterCreationState extends BasicGameState{
             throws SlickException {
         inputManager.setInput(gc.getInput());
         inputManager.update();
-        if(inputManager.isKeyBindDown(KeyBindAction.D,true)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
             eventBus.post(new PlayerOutlookEvent(false));
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
+        }
+        if(inputManager.isKeyBindPressed(KeyBindAction.EXIT, true)){
+            eventBus.post(new ChangeStateEvent(getID(),State_IDs.WORLD_SELECTION_ID));
         }
     }
 
