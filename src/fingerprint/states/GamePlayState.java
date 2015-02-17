@@ -11,16 +11,20 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.core.GameLauncher;
+import fingerprint.gameplay.map.ChangeGameAreaEvent;
+import fingerprint.gameplay.map.GameArea;
 import fingerprint.gameplay.map.gameworld.GameWorld;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.player.Player;
 import fingerprint.gameplay.objects.player.PlayerContainer;
 import fingerprint.rendering.RenderingManager;
+import fingerprint.rendering.map.MapTMXFile;
 
 public class GamePlayState extends BasicGameState{
 
@@ -37,13 +41,13 @@ public class GamePlayState extends BasicGameState{
             throws SlickException {
         //worldContainer = new GameWorldContainer();
         //GameLauncher.injector.injectMembers(worldContainer); //dirty trick
-        
+        eventBus.register(this);
     }
 
     @Override
     public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
             throws SlickException {
-        renderingManager.drawGamePlay(graphics, worldContainer.getTileMapToDraw());
+        renderingManager.drawGamePlay(graphics, worldContainer.getRenderableTileMap());
         
     }
 
@@ -57,14 +61,24 @@ public class GamePlayState extends BasicGameState{
     }
     public void setGameWorld(GameWorld world){
         worldContainer.setWorld(world);
+        
     }
     public void setPlayer(Player player){
         worldContainer.setPlayer(player);
+        eventBus.post(new ChangeGameAreaEvent(player.getAreaID()));
     }
 
     @Override
     public int getID() {
         return State_IDs.GAME_PLAY_ID;
+    }
+    
+    @Subscribe
+    public void listenToChangeGameAreaEvent(ChangeGameAreaEvent event){
+        worldContainer.setCurrentAreaID(event.getChangeToID());
+        GameArea area = worldContainer.getAreaByID(event.getChangeToID());
+        MapTMXFile renderTileMap = new MapTMXFile(area.getTileLayers().get(0), area.getWidth() , area.getHeight());
+        worldContainer.reloadTileMap();
     }
 
 }

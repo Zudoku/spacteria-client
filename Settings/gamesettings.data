@@ -1,7 +1,7 @@
 {
   "fullScreen": false,
   "borderless": false,
-  "resolution": "RES_800_600",
+  "resolution": "RES_1664_1024",
   "frameCap": 60,
   "vSync": true,
   "keyboardKeyBinds": {

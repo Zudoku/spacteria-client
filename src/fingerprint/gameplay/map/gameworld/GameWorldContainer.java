@@ -4,9 +4,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.tiled.TiledMapPlus;
+
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
+import fingerprint.gameplay.map.GameArea;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
@@ -20,7 +24,7 @@ public class GameWorldContainer {
     @Inject private CollisionManager collisionManager;
     private GameWorld world;
     @Inject private PlayerContainer playerContainer;
-    
+    private TiledMapPlus renderableTileMap;
     private int currentAreaID = 0;
     
     public GameWorldContainer() {
@@ -32,20 +36,39 @@ public class GameWorldContainer {
         for(GameObject object : (Collection<GameObject>)entityManager.getIdMap().values()){
             object.move(delta, collisionManager);
         }
+        playerContainer.updateCamera();
     }
     public void setWorld(GameWorld world) {
         this.world = world;
         for(GameObject object: this.world.getObjects()){
             entityManager.addNewObject(object);
         }
-        setPlayer(this.world.getPlayer());
+        //setPlayer(this.world.getPlayer());
+    }
+    public void reloadTileMap(){
+        try {
+            renderableTileMap = new TiledMapPlus("resources/rendermap.tmx");
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
     }
     public void setPlayer(Player player){
         playerContainer.setCurrentPlayer(player);
         entityManager.addNewObject(player);
     }
-    public List<int[][]> getTileMapToDraw(){
-        return world.getAreas().get(currentAreaID).getTileLayers();
+    public TiledMapPlus getRenderableTileMap() {
+        return renderableTileMap;
+    }
+    public GameArea getAreaByID(int id){
+        for(GameArea area :world.getAreas() ){
+            if(area.getAreaID() == id){
+                return area;
+            }
+        }
+        return null;
+    }
+    public void setCurrentAreaID(int id){
+        this.currentAreaID = id;
     }
     
 }

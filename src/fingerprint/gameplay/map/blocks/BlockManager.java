@@ -23,13 +23,13 @@ public class BlockManager {
     private void initializeBlocks(){
         boolean NON_COLLIDEABLE = false;
         boolean COLLIDEABLE = true;
-        blocks.put(ErrorBlock, new Block(NON_COLLIDEABLE,"resources/empty.png"));
-        blocks.put(VoidBlock, new Block(NON_COLLIDEABLE,"resources/count.png"));
-        blocks.put(60, new Block(NON_COLLIDEABLE,"resources/60.png"));
-        blocks.put(61, new Block(NON_COLLIDEABLE,"resources/61.png"));
-        blocks.put(62, new Block(NON_COLLIDEABLE,"resources/62.png"));
-        blocks.put(70, new Block(NON_COLLIDEABLE,"resources/70.png"));
-        blocks.put(50, new Block(NON_COLLIDEABLE,"resources/50.png"));
+        blocks.put(ErrorBlock, new Block(NON_COLLIDEABLE));
+        blocks.put(VoidBlock, new Block(NON_COLLIDEABLE));
+        blocks.put(60, new Block(NON_COLLIDEABLE));
+        blocks.put(61, new Block(NON_COLLIDEABLE));
+        blocks.put(62, new Block(NON_COLLIDEABLE));
+        blocks.put(70, new Block(NON_COLLIDEABLE));
+        blocks.put(50, new Block(NON_COLLIDEABLE));
         
     }
     public Block getBlock(int ID){

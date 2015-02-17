@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.tiled.TiledMapPlus;
 
 import com.google.inject.Inject;
 
@@ -29,64 +30,28 @@ public class TilemapRenderer {
     public TilemapRenderer(BlockManager blockManager) {
         this.blockManager = blockManager;
     }
-    public void draw(double screenX, double screenY,List<int[][]> tileLayers){
+    public void draw(double screenX, double screenY,TiledMapPlus tilemap){
         this.screenStartX = screenX;
         this.screenStartY = screenY;
-        
-        int layer = 0;
-        for(int[][] tileLayer : tileLayers){
-            Image[][] tiles = getDrawableTilesFromLayer(tileLayer);
-            double startMapRenderingX = getTilesDrawingOffsetX();
-            double startMapRenderingY = getTilesDrawingOffsetY();
-            for(int horizontal = 0; horizontal < tilesDrawnHorizontal; horizontal++){
-                for(int vertical = 0;vertical < tilesDrawnVertical; vertical ++){
-                    Image tile = tiles[horizontal][vertical];
-                    if(tile == null){
-                        //logger.log(Level.INFO,"Image null, cant draw on layer {0}",layer);
-                        continue;
-                    }
-                    tile.draw((float)(startMapRenderingX + horizontal * tileSize), (float)(startMapRenderingY + vertical * tileSize));
-                }
-            }
-            layer++;
+        int startMapRenderingX = -getTilesDrawingOffsetX();
+        int startMapRenderingY = -getTilesDrawingOffsetY();
+        int startTileX = (int)(screenStartX/tileSize);
+        int startTileY = (int)(screenStartY/tileSize);
+        if(startMapRenderingY == 0){
+            //startMapRenderingY = 1; // I have no idea what is causing this, but when startMapRenderingY == 0, 
+            //white grid comes visible ?? probably a rounding error somewhere
         }
-    }
-    private Image[][]getDrawableTilesFromLayer(int[][] tileLayer){
-        Image[][] tilesToDraw = new Image[tilesDrawnHorizontal][tilesDrawnVertical];
-        
-        int startTileX = (int)Math.floor(screenStartX/tileSize);
-        int startTileY = (int)Math.floor(screenStartY/tileSize);
-        for(int x = startTileX; x < (startTileX+tilesDrawnHorizontal) ; x++){
-            if( x < 0){
-                continue;
-            }
-            for(int y = startTileY; y < (startTileY+tilesDrawnVertical) ; y++){
-                if( y < 0){
-                    continue;
-                }
-                Block currentBlock = blockManager.getBlock(tileLayer[x][y]);
-                
-                try {
-                    Image tileImage;
-                    if(currentBlock == null){
-                        tileImage = new Image(blockManager.getBlock(BlockManager.ErrorBlock).getSprite());
-                    }else{
-                        tileImage = new Image(currentBlock.getSprite());
-                    }
-                    
-                    tilesToDraw[x-startTileX][y-startTileY] = tileImage;
-                } catch (SlickException e) {
-                    logger.log(Level.WARNING,"ERROR:{0}",e.getMessage());
-                }
-                
-            }
+        if(startMapRenderingX == 0){
+            //startMapRenderingX = 1;
         }
-        return tilesToDraw;
+        tilemap.render(startMapRenderingX,startMapRenderingY,startTileX, startTileY, tilesDrawnHorizontal , tilesDrawnVertical);
+        logger.log(Level.INFO, "{0} {1} {2} ", new Object[]{startMapRenderingX,startTileX, screenStartX});
     }
-    private double getTilesDrawingOffsetX(){
-        return -(screenStartX % tileSize);
+
+    private int getTilesDrawingOffsetX(){
+        return (int)((double)((int)screenStartX % tileSize));
     }
-    private double getTilesDrawingOffsetY(){
-        return -(screenStartY % tileSize);
+    private int getTilesDrawingOffsetY(){
+        return (int)((double)((int)screenStartY % tileSize));
     }
 }

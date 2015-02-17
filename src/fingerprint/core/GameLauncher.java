@@ -15,6 +15,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Guice;
@@ -133,6 +134,7 @@ public class GameLauncher extends StateBasedGame {
                 logger.log(Level.INFO,"Switching into gameplayState");
                 GamePlayState gpState = (GamePlayState)gameStates.get(3);
                 gpState.setGameWorld(gamePlayStateLoader.getWorld());
+                gpState.setPlayer(gamePlayStateLoader.getPlayer());
                 enterState(State_IDs.GAME_PLAY_ID);
                 gamePlayStateLoader.reset();
                 gamePlayStateLoader.setOn(false);
@@ -147,6 +149,14 @@ public class GameLauncher extends StateBasedGame {
             
         }
         System.exit(0); // dirty exit! TODO: rework
+    }
+    /**
+     * All events that don't catch anything. This is not supposed to happen ever.
+     * @param event Event which was not delivered anywhere.
+     */
+    @Subscribe public void listenDeadEvents(DeadEvent event){
+        logger.warning(String.format("%s was NOT delivered to its correct destination!",event.getEvent().toString()));
+
     }
     
 

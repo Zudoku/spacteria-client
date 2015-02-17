@@ -12,6 +12,7 @@ import fingerprint.states.events.SelectPlayableWorldEvent;
 @Singleton
 public class PreGamePlayStateLoader {
     private GameWorld world;
+    private Player player;
     private boolean characterDone = false;
     private boolean on = true;
     
@@ -44,12 +45,16 @@ public class PreGamePlayStateLoader {
     public void listenSelectPlayableWorldEvent(SelectPlayableWorldEvent event){
         world = event.getWorld();
     }
+    public Player getPlayer() {
+        return player;
+    }
     @Subscribe
     public void listenPlayerOutlookEvent(PlayerOutlookEvent event){
         if(event.isOnWorld()){
+            
             characterDone = true;
         }else{
-            world.setPlayer(PlayerBuilder.spawnGenericPlayer());
+            player = PlayerBuilder.spawnGenericPlayer();
             characterDone = true;
         }
     }

@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="dependencies/javax.inject.jar"/>
 	<classpathentry kind="lib" path="dependencies/slick.jar"/>
 	<classpathentry kind="lib" path="dependencies/lwjgl.jar"/>
+	<classpathentry kind="lib" path="dependencies/commons-codec-1.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

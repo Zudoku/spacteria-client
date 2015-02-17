@@ -31,9 +31,9 @@ public class PlayerContainer {
         if(currentPlayer == null){
             return;
         }
-        updateCamera();
         updateInput(inputManager,delta);
     }
+    
     private void updateInput(InputManager inputManager,int delta) {
         if(inputManager.isKeyBindDown(KeyBindAction.UP, true)){
             currentPlayer.setDeltaY(currentPlayer.getDeltaY() - 1d);
@@ -51,7 +51,7 @@ public class PlayerContainer {
     }
     
     
-    private void updateCamera(){
+    public void updateCamera(){
         int offsetX =  -(RenderingManager.unScaledScreenWidth/2 - playerCollisionWidth/2 - 1);
         int offsetY =  -(RenderingManager.unScaledScreenHeight/2 - playerCollisionHeight/2 - 1);
         double x = currentPlayer.getX();

@@ -16,6 +16,7 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
 import org.newdawn.slick.gui.TextField;
+import org.newdawn.slick.tiled.TiledMapPlus;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -127,11 +128,11 @@ public class RenderingManager {
             graphics.fill(triangle);
         }
     }
-    public void drawGamePlay(Graphics graphics,List<int[][]>tileLayers){
+    public void drawGamePlay(Graphics graphics,TiledMapPlus tilemap){
         initDraw(graphics);
         //LIGHTING
         //MAP
-        tileMapRenderer.draw(screenStartX, screenStartY,tileLayers);
+        tileMapRenderer.draw(screenStartX, screenStartY,tilemap);
         //OBJECTS
         for(GameObject drawableObject : entityManager.get(GameObject.class)){
             if(drawableObject instanceof Player){

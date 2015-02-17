@@ -98,7 +98,7 @@ public class AreaGenerator {
         }
         List<int[][]>tileLayers = new ArrayList<>();
         tileLayers.add(tilemap);
-        GameArea result = new GameArea(tileLayers, GameAreaType.OUTSKIRTS, idCounter);
+        GameArea result = new GameArea(tileLayers,OUTSKIRTS_SIZE,OUTSKIRTS_SIZE, GameAreaType.OUTSKIRTS, idCounter);
         return result;
     }
     private boolean checkIfShouldBeWall(int[][] tilemap,int x , int y,int width,int height){
