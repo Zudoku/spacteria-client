@@ -3,104 +3,68 @@ package fingerprint.gameplay.map.generation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.tiled.TiledMapPlus;
 
-import fingerprint.gameplay.map.GameArea;
-import fingerprint.gameplay.map.GameAreaType;
-import fingerprint.gameplay.map.blocks.Block;
+import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.blocks.BlockManager;
 import fingerprint.gameplay.map.village.Village;
+import fingerprint.inout.TileFileHandler;
+import fingerprint.rendering.map.TilemapRenderer;
 
 public class AreaGenerator {
 
-    private final int OUTSKIRTS_SIZE = 512;
+    private final int WORLD_SIZE = FunctionalMap.SIZE;
+    
     private int idCounter = 0;
     private AreaShapeGenerator shapeGenerator = new AreaShapeGenerator();
     private AreaStructureGenerator structureGenerator = new AreaStructureGenerator();
-    
-    public AreaGenerator() {
-        
+    private TileFileHandler tileFileHandler;
+    public AreaGenerator() { 
+        /*
+        int[][] areaMask = shapeGenerator.maskGeneration(VILLAGE_SIZE,VILLAGE_SIZE,
+                AreaShapeGenerator.GENERIC_AREA_SMOOTHNESS,AreaShapeGenerator.GENERIC_MASK_CUTOFF);
+        int[][]tilemap = areaMask.clone();
+        float[][]noisemap = shapeGenerator.getNoise(VILLAGE_SIZE, VILLAGE_SIZE, AreaShapeGenerator.GENERIC_AREA_SMOOTHNESS); 
+        */
     }
-    public List<GameArea> generateAreas(){
-        List<GameArea> areas = new ArrayList<>();
-        areas.add(generateOutskirts()); idCounter++;
-        return areas;
+    public FunctionalMap generateAreas(String worldName){
+        FunctionalMap map = new FunctionalMap(new byte[FunctionalMap.SIZE*FunctionalMap.SIZE]);
+        
+        tileFileHandler = new TileFileHandler();
+        tileFileHandler.init(worldName);
+        
+        short slice[][] = new short[FunctionalMap.SIZE][1];
+        for (int i = 0; i < FunctionalMap.SIZE; i++) {
+            slice[i][0] = 30;
+        }
+        for (int i = 0; i < FunctionalMap.SIZE; i++) {
+            tileFileHandler.writeMap(slice,0,i,FunctionalMap.SIZE,1);
+            
+        }
+        
+        return map;
+    }
+   
+
+    private int[][] overLapTiles(int[][] original,int[][] overWriting,int overwriteWidth,int overwriteHeight, int offsetWidth, int offsetHeight){
+        int[][] result = original.clone();
+        for(int y = 0; y < overwriteHeight; y++){
+            for(int x = 0; x < overwriteWidth; x++){
+                result[x + offsetWidth][y + offsetHeight] = overWriting[x][y];
+            }
+        }
+        return result;
     }
     public Village generateVillage(){
+        
+        
+        
         Village village = null;
         
         return village;
     }
-    private GameArea generateOutskirts(){
-        int[][] areaMask = shapeGenerator.maskGeneration(OUTSKIRTS_SIZE,OUTSKIRTS_SIZE,
-                AreaShapeGenerator.GENERIC_AREA_SMOOTHNESS,AreaShapeGenerator.GENERIC_MASK_CUTOFF);
-        int[][]tilemap = areaMask.clone();
-        float[][]noisemap = shapeGenerator.getNoise(OUTSKIRTS_SIZE, OUTSKIRTS_SIZE, AreaShapeGenerator.GENERIC_AREA_SMOOTHNESS);
-        structureGenerator.generatePassagesToNewArea(tilemap, OUTSKIRTS_SIZE,OUTSKIRTS_SIZE, 4);
-        
-        /**
-         * Generate the walls
-         */
-        for (int x = 1; x < OUTSKIRTS_SIZE-1; x++) {
-            for (int y = 1; y < OUTSKIRTS_SIZE-1; y++) {
-                if(checkIfShouldBeWall(tilemap, x, y, OUTSKIRTS_SIZE, OUTSKIRTS_SIZE)){
-                    tilemap[x][y] = 70;
-                }else{
-                    if(tilemap[x][y] == BlockManager.MaskBlockUnwalkable){
-                        tilemap[x][y] = BlockManager.VoidBlock;
-                    }
-                }
-            }
-         }
-        
-        /**
-         * Fill the rest with void 
-         */
-        for (int x = 0; x < OUTSKIRTS_SIZE; x++) {
-            for (int y = 0; y < OUTSKIRTS_SIZE; y++) {
-                if(tilemap[x][y] == BlockManager.MaskBlockUnwalkable){
-                    tilemap[x][y] = BlockManager.VoidBlock;
-                }
-            }
-        }
-        
-        /**
-         * Generate the land
-         */
-        
-        for (int x = 0; x < OUTSKIRTS_SIZE; x++) {
-            for (int y = 0; y < OUTSKIRTS_SIZE; y++) {
-                float noisevalue = noisemap[x][y]*10;
-                int value;
-                if(noisevalue <4){
-                    value = 1;
-                }else if(noisevalue < 7){
-                    value = 2;
-                }else{
-                    value = 3;
-                }
-                int blockID = BlockManager.ErrorBlock;
-                switch(value){
-                case 1:
-                    blockID = 60;
-                    break;
-                case 2:
-                    blockID = 61;
-                    break;
-                    
-                case 3:
-                    blockID = 62;
-                    break;
-                }
-                if(tilemap[x][y] == BlockManager.MaskBlockWalkable){
-                    tilemap[x][y] = blockID;
-                }
-            }
-        }
-        List<int[][]>tileLayers = new ArrayList<>();
-        tileLayers.add(tilemap);
-        GameArea result = new GameArea(tileLayers,OUTSKIRTS_SIZE,OUTSKIRTS_SIZE, GameAreaType.OUTSKIRTS, idCounter);
-        return result;
-    }
+    
     private boolean checkIfShouldBeWall(int[][] tilemap,int x , int y,int width,int height){
         if(tilemap[x][y] != BlockManager.MaskBlockUnwalkable) return false;
         if(tilemap[x+1][y] == BlockManager.MaskBlockWalkable) return true;

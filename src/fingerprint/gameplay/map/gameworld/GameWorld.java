@@ -5,15 +5,15 @@ import java.util.List;
 
 import javax.jws.Oneway;
 
-import fingerprint.gameplay.map.GameArea;
+import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.village.Village;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.Player;
 import fingerprint.gameplay.time.Clock;
 
 public class GameWorld {
-    private List<GameArea> areas = new ArrayList<GameArea>();
-    private Village village;
+    private transient FunctionalMap map;
+    
     private List<GameObject> objects; //not including player
     private GameWorldMetaData metaData;
     private Clock worldClock;
@@ -21,19 +21,6 @@ public class GameWorld {
     
     public GameWorld() {
         objects = new ArrayList<>();
-    }
-    
-    public List<GameArea> getAreas() {
-        return areas;
-    }
-    public void setAreas(List<GameArea> areas) {
-        this.areas = areas;
-    }
-    public void setVillage(Village village) {
-        this.village = village;
-    }
-    public Village getVillage() {
-        return village;
     }
     public GameWorldMetaData getMetaData() {
         return metaData;
@@ -58,5 +45,11 @@ public class GameWorld {
     }
     public void setPlayer(Player player) {
         this.player = player;
+    }
+    public FunctionalMap getMap() {
+        return map;
+    }
+    public void setMap(FunctionalMap map) {
+        this.map = map;
     }
 }

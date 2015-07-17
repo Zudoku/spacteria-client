@@ -65,6 +65,9 @@ public class RenderingManager {
             virtualResolutionWidth = currentResolution.getWidth();
         }
     }
+    public void setWorld(String world){
+        tileMapRenderer.setWorld(world);
+    }
     public void configure(EntityManager entityManager,BlockManager blockManager,EventBus eventBus){
         this.entityManager = entityManager;
         tileMapRenderer = new TilemapRenderer(blockManager);
@@ -128,11 +131,11 @@ public class RenderingManager {
             graphics.fill(triangle);
         }
     }
-    public void drawGamePlay(Graphics graphics,TiledMapPlus tilemap){
+    public void drawGamePlay(Graphics graphics){
         initDraw(graphics);
         //LIGHTING
         //MAP
-        tileMapRenderer.draw(screenStartX, screenStartY,tilemap);
+        tileMapRenderer.draw(screenStartX, screenStartY);
         //OBJECTS
         for(GameObject drawableObject : entityManager.get(GameObject.class)){
             if(drawableObject instanceof Player){

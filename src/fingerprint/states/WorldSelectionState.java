@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.map.gameworld.GameWorld;
+import fingerprint.inout.FileUtil;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.GameWorldInfoContainer;
 import fingerprint.mainmenus.WorldSelectionController;
@@ -56,7 +57,28 @@ public class WorldSelectionState extends BasicGameState {
         File dir = new File("Saves");
         savedGames= dir.listFiles(new FilenameFilter() {
                  public boolean accept(File dir, String filename)
-                      { return filename.endsWith(GameFileHandler.WORLD_FILE_EXTENSION); }
+                      { 
+                         if(!dir.isDirectory()){
+                             return false;
+                         }
+                         File handledFolder = null;
+                         for(File f : dir.listFiles()){
+                             if(f.getName().equals(filename)){
+                                 handledFolder = f;
+                                 break;
+                             }
+                         }
+                         if(handledFolder == null){
+                             return false;
+                         }
+                         for(File f : handledFolder.listFiles()){
+                             String fname = f.getName();
+                             if(fname.equals("data.world")){
+                                 return true;
+                             }
+                         }
+                         return false;
+                      }
         } );
         for(File file:savedGames){
             GameWorldInfoContainer gwic = new GameWorldInfoContainer();
