@@ -41,6 +41,7 @@ public class GameWorldContainer {
     public void setWorld(GameWorld world) {
         this.world = world;
         tileFileHandler.init(world.getMetaData().filename);
+        collisionManager.setMap(world.getMap());
         for(GameObject object: this.world.getObjects()){
             entityManager.addNewObject(object);
         }

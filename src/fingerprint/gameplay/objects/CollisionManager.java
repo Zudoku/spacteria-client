@@ -10,6 +10,7 @@ import org.newdawn.slick.geom.Shape;
 
 import com.google.inject.Inject;
 
+import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.blocks.Block;
 import fingerprint.gameplay.map.blocks.BlockManager;
 import fingerprint.gameplay.map.generation.GameWorldBuilder;
@@ -18,7 +19,7 @@ import fingerprint.rendering.map.TilemapRenderer;
 
 public class CollisionManager {
     private static final Logger logger = Logger.getLogger(CollisionManager.class.getName());
-    private List<int[][]> tilemaps = new ArrayList<>();
+    private FunctionalMap map;
 
     private EntityManager entityManager;
     private BlockManager blockManager;
@@ -28,12 +29,10 @@ public class CollisionManager {
         this.blockManager = blockManager;
         this.entityManager = entityManager;
     }
-    public void setTilemaps(List<int[][]> tilemaps) {
-        this.tilemaps = tilemaps;
+    public void setMap(FunctionalMap map) {
+        this.map = map;
     }
-    public List<int[][]> getTilemaps() {
-        return tilemaps;
-    }
+
     public void checkCollision(){
         //TODO: optimize this 
         for(CollidingObject object_1 : entityManager.get(CollidingObject.class)){
@@ -48,7 +47,6 @@ public class CollisionManager {
     }
     public boolean collideWithTerrain(Shape collider){
         List<int[][]> arrayPoints = new ArrayList<>();
-        logger.log(Level.INFO,"{0}",collider.getPointCount());
         for(int i = 0; i < collider.getPointCount() ; i ++){
             float[] point = collider.getPoint(i);
             int arrayPosX = (int)Math.floor(((int)Math.round(point[0]))/TilemapRenderer.tileSize);
@@ -60,30 +58,27 @@ public class CollisionManager {
                 arrayPoints.add(arrayPos);
             }
         }
-        logger.log(Level.INFO,"{0}",arrayPoints.size());
-        
-        int layerCounter = 0;
-        for (int[][] tilemap : tilemaps) {
-            for (int[][] arrayPos : arrayPoints) {
-                Block foundBlock = blockManager.getBlock(tilemap[arrayPos[0][0]][arrayPos[1][0]]);
-                if (foundBlock == null) {
-                    continue;
-                }
-                if (foundBlock.isBlocking()) {
-                    int rectangleX = arrayPos[0][0] *TilemapRenderer.tileSize;
-                    int rectangleY = arrayPos[1][0] *TilemapRenderer.tileSize;
-                    Rectangle blockRectangle = new Rectangle(rectangleX , rectangleY, TilemapRenderer.tileSize, TilemapRenderer.tileSize);
-                    if(blockRectangle.intersects(collider)){
-                        logger.log(Level.FINE,"Terrain collision on layer {0} at [ {1} ] [ {2} ]",new Object[]{layerCounter,rectangleX,rectangleY});
-                        return true;
-                    }
-                } else {
-                    continue;
-                }
+
+        for (int[][] arrayPos : arrayPoints) {
+            Block foundBlock = blockManager
+                    .getBlock(map.getData()[arrayPos[0][0]][arrayPos[1][0]]);
+            if (foundBlock == null) {
+                continue;
             }
-            layerCounter++;
+            if (foundBlock.isBlocking()) {
+                int rectangleX = arrayPos[0][0] * TilemapRenderer.tileSize;
+                int rectangleY = arrayPos[1][0] * TilemapRenderer.tileSize;
+                Rectangle blockRectangle = new Rectangle(rectangleX,
+                        rectangleY, TilemapRenderer.tileSize,
+                        TilemapRenderer.tileSize);
+                if (blockRectangle.intersects(collider)) {
+                    return true;
+                }
+            } else {
+                continue;
+            }
         }
-        
+
         return false;
     }
     

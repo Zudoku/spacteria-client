@@ -31,12 +31,18 @@ public class AreaGenerator {
     public FunctionalMap generateAreas(String worldName){
         FunctionalMap map = new FunctionalMap(new byte[FunctionalMap.SIZE*FunctionalMap.SIZE]);
         
+        for (int i = 0; i < FunctionalMap.SIZE; i++) {
+            for (int u = 0; u < FunctionalMap.SIZE; u++) {
+                map.getData()[i][u] = (byte) ((byte) i%10);
+            }
+        }
+        
         tileFileHandler = new TileFileHandler();
         tileFileHandler.init(worldName);
         
         short slice[][] = new short[FunctionalMap.SIZE][1];
         for (int i = 0; i < FunctionalMap.SIZE; i++) {
-            slice[i][0] = 1;
+            slice[i][0] = (short) (10);
         }
         for (int i = 0; i < FunctionalMap.SIZE; i++) {
             tileFileHandler.writeMap(slice,0,i,FunctionalMap.SIZE,1);

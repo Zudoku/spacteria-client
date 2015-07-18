@@ -64,6 +64,7 @@ public class GamePlayState extends BasicGameState{
         worldContainer.setWorld(world);
         renderingManager.setWorld(world.getMetaData().filename);
         
+        
     }
     public void setPlayer(Player player){
         worldContainer.setPlayer(player);

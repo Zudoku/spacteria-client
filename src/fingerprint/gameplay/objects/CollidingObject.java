@@ -1,5 +1,9 @@
 package fingerprint.gameplay.objects;
 
+import java.math.BigDecimal;
+
+import org.newdawn.slick.geom.Polygon;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
 
@@ -22,8 +26,13 @@ public class CollidingObject extends GameObject{
     @Override
     public void move(int delta, CollisionManager collisionManager) {
         if(!needMove()){
+            displaySpeedX = getDeltaX();
+            displaySpeedY = getDeltaY();
             return;
         }
+        displaySpeedX = getDeltaX();
+        displaySpeedY = getDeltaY();
+        
         //Reduce speed X 
         if(getDeltaX() > 0){
             setDeltaX(getDeltaX()-getSpeed() < 0? 0 : getDeltaX()-getSpeed());
@@ -35,19 +44,7 @@ public class CollidingObject extends GameObject{
         
         double[] destination = moveDestination(delta);
         if(collideToTerrain){
-            Shape clonedShape = new Shape() {
-                
-                @Override
-                public Shape transform(Transform arg0) {
-                    return null;
-                }
-                
-                @Override
-                protected void createPoints() {
-                    points = collideShape.getPoints();
-                    
-                }
-            };
+            Shape clonedShape = new Polygon(collideShape.getPoints());
             clonedShape.setLocation((float)destination[0],(float) destination[1]);
             if(!collisionManager.collideWithTerrain(clonedShape)){
                 setX(destination[0]);
@@ -68,12 +65,18 @@ public class CollidingObject extends GameObject{
     }
     @Override
     public void setX(double x) {
+        x = new BigDecimal(x).setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
         super.setX(x);
         collideShape.setX((float)getX());
     }
     @Override
     public void setY(double y) {
+        y = new BigDecimal(y).setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
         super.setY(y);
         collideShape.setY((float)getY());
+    }
+    
+    public void setCollideToTerrain(boolean collideToTerrain) {
+        this.collideToTerrain = collideToTerrain;
     }
 }

@@ -32,20 +32,17 @@ public class BlockManager {
         initializeBlocks();
     }
     private void initializeBlocks(){
-        
-        blocks.put(ErrorBlock, new Block(NON_COLLIDEABLE));
-        blocks.put(VoidBlock, new Block(NON_COLLIDEABLE));
-        blocks.put(DebugBlock, new Block(COLLIDEABLE));
-        blocks.put(PassageBlock, new Block(NON_COLLIDEABLE));
-        
-        blocks.put(60, new Block(NON_COLLIDEABLE));
-        blocks.put(61, new Block(NON_COLLIDEABLE));
-        blocks.put(62, new Block(NON_COLLIDEABLE));
-        blocks.put(70, new Block(NON_COLLIDEABLE));
-        blocks.put(50, new Block(NON_COLLIDEABLE));
-        
-        blocks.put(VillageWall, new Block(COLLIDEABLE));
-        
+        blocks.put(MaskBlockUnwalkable, new Block(NON_COLLIDEABLE));
+        blocks.put(MaskBlockWalkable, new Block(NON_COLLIDEABLE));
+        blocks.put(2, new Block(NON_COLLIDEABLE));
+        blocks.put(3, new Block(NON_COLLIDEABLE));
+        blocks.put(4, new Block(NON_COLLIDEABLE));
+        blocks.put(5, new Block(NON_COLLIDEABLE));
+        blocks.put(6, new Block(NON_COLLIDEABLE));
+        blocks.put(7, new Block(NON_COLLIDEABLE));
+        blocks.put(8, new Block(NON_COLLIDEABLE));
+        blocks.put(9, new Block(COLLIDEABLE));
+        blocks.put(10, new Block(NON_COLLIDEABLE));
     }
     public Block getBlock(int ID){
         if(blocks.containsKey(ID)){

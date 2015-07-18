@@ -70,21 +70,18 @@ public class TilemapRenderer {
                 return;
             }
             
-            startingX = tilesDrawnHorizontal - startingX -1;
-            offsetX += (-(tilesDrawnHorizontal-startingX) * tileSize);
+            startingX = 0;
+            offsetX = (int)(Math.floor((-screenX)));
             
         }
         if(startingY < 0 || startingY >= FunctionalMap.SIZE || (startingY + tilesDrawnVertical) >= FunctionalMap.SIZE){
-            if(startingX + tilesDrawnHorizontal < 0 || startingX + tilesDrawnHorizontal >= FunctionalMap.SIZE ){
+            if(startingY + tilesDrawnVertical < 0 || startingY + tilesDrawnVertical >= FunctionalMap.SIZE ){
                 return;
             }
             
-            startingY = tilesDrawnVertical - startingY -1;
-            offsetY += (-(tilesDrawnVertical-startingY) * tileSize);
+            startingY = 0;
+            offsetY = (int)(Math.floor((-screenY)));
         }
-        
-        
-        
         
         short[][] mapData = tilehandler.getPartOfMap(startingX, startingY, tilesDrawnHorizontal - tileOffsetX, tilesDrawnVertical - tileOffsetY);
         HashMap<Short, Image> updatedTileBuffer = new HashMap<>();

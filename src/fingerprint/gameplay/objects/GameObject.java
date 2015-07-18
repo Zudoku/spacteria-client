@@ -13,6 +13,8 @@ public class GameObject {
     private double speed;
     private double deltaX = 0;
     private double deltaY = 0;
+    public double displaySpeedX;
+    public double displaySpeedY;
     
     public GameObject(double initX, double initY,double speed,int areaID) {
         this.x = initX;
@@ -25,6 +27,9 @@ public class GameObject {
             double[] destination = moveDestination(delta);
             setX(destination[0]);
             setY(destination[1]);
+        }else{
+            displaySpeedX = 0;
+            displaySpeedY = 0;
         }
         
     }
@@ -35,6 +40,7 @@ public class GameObject {
         
         double destinationY =  (double)(getY() + Math.sin(rad) * speed * delta);
         double destinationX =  (double)(getX() + Math.cos(rad) * speed * delta);
+        
         return new double[]{destinationX,destinationY};
         
     }
