@@ -22,6 +22,7 @@ import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.player.Player;
 import fingerprint.gameplay.objects.player.PlayerContainer;
 import fingerprint.rendering.RenderingManager;
+import fingerprint.states.menu.enums.GamePlayStateMode;
 
 public class GamePlayState extends BasicGameState{
 
@@ -33,8 +34,9 @@ public class GamePlayState extends BasicGameState{
     
     @Inject private GameWorldContainer worldContainer;
     
+    private GamePlayStateMode mode = GamePlayStateMode.NORMAL;
     private boolean gamePaused = false;
-    private boolean debugInfo = true;
+    private boolean debugInfo = false;
     
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
@@ -48,8 +50,12 @@ public class GamePlayState extends BasicGameState{
     @Override
     public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
             throws SlickException {
-        renderingManager.drawGamePlay(graphics,debugInfo);
-        
+        if(mode == GamePlayStateMode.NORMAL){
+            renderingManager.drawGamePlay(graphics,debugInfo);
+        }
+        if(mode == GamePlayStateMode.DEBUG){
+            renderingManager.drawDebugGamePlay(graphics,worldContainer.getWorld());
+        }
     }
 
     @Override

@@ -26,7 +26,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import fingerprint.core.GameLauncher;
+import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.blocks.BlockManager;
+import fingerprint.gameplay.map.gameworld.GameWorld;
+import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.Player;
@@ -167,28 +170,50 @@ public class RenderingManager {
         Rectangle drawing = new Rectangle((float)object.getX(),(float)object.getY(),200f, 200f);
         return screen.intersects(drawing);
     }
-    public void drawDebugGamePlay(Graphics graphics,List<int[][]>tileLayers){
+    public void drawDebugGamePlay(Graphics graphics,GameWorld gameWorld){
         initDraw(graphics);
-        //TODO:
+        //MAP
+        tileMapRenderer.drawDebug(graphics,screenStartX, screenStartY,gameWorld.getMap());
+        //OBJECTS
+        for(GameObject drawableObject : entityManager.get(GameObject.class)){
+            //Draw only collideableobjects.
+            if(drawableObject instanceof CollidingObject && !(drawableObject instanceof Player)){
+                CollidingObject obj = (CollidingObject) drawableObject;
+                if(needToDraw(obj)){
+                    obj.drawDebug(graphics);
+                }
+            }
+            
+            
+        }
+        //PLAYER
+        for(Player drawableObject : entityManager.get(Player.class)){
+            drawableObject.drawDebug(graphics);
+        }
+        //UI
+        drawGamePlayUI(graphics, true);
     }
     
     
     private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo){
-        graphics.setColor(Color.black);
-        graphics.fillRect(0, 0, 300, 200);
-        
-        
-        
-        graphics.setFont(ttf);
-        graphics.setColor(Color.white);
-        graphics.drawString("Memory used: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
-        graphics.drawString("Screen coordinates: " + screenStartX + "," + screenStartY, 10, 50);
-        for(Player drawableObject : entityManager.get(Player.class)){
-            graphics.drawString("Player coordinates: " + drawableObject.getX() + "," + drawableObject.getY() , 10, 70);
-            graphics.drawString("Player speed (x,y): " + (int)drawableObject.displaySpeedX + "," + (int)drawableObject.displaySpeedY , 10, 90);
-            graphics.drawString("Player rectangle (x,y): " +(int)drawableObject.getCollideShape().getX()+"," +(int)drawableObject.getCollideShape().getY() , 10, 110);
+        if(drawDebugInfo){
+            graphics.setColor(Color.black);
+            graphics.fillRect(0, 0, 300, 200);
+            
+            
+            
+            graphics.setFont(ttf);
+            graphics.setColor(Color.white);
+            graphics.drawString("Memory used: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
+            graphics.drawString("Screen coordinates: " + screenStartX + "," + screenStartY, 10, 50);
+            for(Player drawableObject : entityManager.get(Player.class)){
+                graphics.drawString("Player coordinates: " + drawableObject.getX() + "," + drawableObject.getY() , 10, 70);
+                graphics.drawString("Player speed (x,y): " + (int)drawableObject.displaySpeedX + "," + (int)drawableObject.displaySpeedY , 10, 90);
+                graphics.drawString("Player rectangle (x,y): " +(int)drawableObject.getCollideShape().getX()+"," +(int)drawableObject.getCollideShape().getY() , 10, 110);
+            }
+            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 130);
         }
-        graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 130);
+        
     }
     
     

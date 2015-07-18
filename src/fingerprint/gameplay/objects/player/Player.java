@@ -22,7 +22,8 @@ public class Player extends CollidingObject{
     public void draw(Graphics graphics) {
         drawDebug(graphics);
     }
-    private void drawDebug(Graphics graphics){
+    @Override
+    public void drawDebug(Graphics graphics){
         double[] coordinates = getDrawingCoordinates();
         graphics.setColor(Color.red);
         graphics.fillRect((float)coordinates[0] +1,(float)coordinates[1] +1 , PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight);

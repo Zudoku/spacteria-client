@@ -20,7 +20,7 @@ public enum GameDifficulty {
         case HARD:
             return "Hard";
         case VERY_HARD:
-            return "Very hard";
+            return "Salmon snake";
         }
         return "DIFFICULTY_VALUE";
     }

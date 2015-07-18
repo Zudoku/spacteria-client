@@ -1,5 +1,7 @@
 package fingerprint.gameplay.map;
 
+import org.newdawn.slick.Color;
+
 public class FunctionalMap {
     public static int SIZE = 1280;
     private Byte data[][] = new Byte [SIZE][SIZE];
@@ -20,4 +22,12 @@ public class FunctionalMap {
     public void setData(Byte[][] data) {
         this.data = data;
     }
+    public Color getDebugColorForID(byte id){
+        if(id == 9){
+            return new Color(75,10,10);
+        }
+        
+        return new Color(10,10,143);
+    }
+    
 }

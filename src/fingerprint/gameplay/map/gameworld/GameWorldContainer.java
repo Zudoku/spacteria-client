@@ -54,5 +54,8 @@ public class GameWorldContainer {
     public String worldFileName(){
         return world.getMetaData().filename;
     }
+    public GameWorld getWorld() {
+        return world;
+    }
 
 }

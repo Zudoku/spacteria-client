@@ -53,6 +53,9 @@ public class GameObject {
     public void draw(Graphics graphics) {
 
     }
+    public void drawDebug(Graphics graphics) {
+
+    }
     public int getAreaID() {
         return areaID;
     }
