@@ -24,6 +24,15 @@ public class CollidingObject extends GameObject{
         if(!needMove()){
             return;
         }
+        //Reduce speed X 
+        if(getDeltaX() > 0){
+            setDeltaX(getDeltaX()-getSpeed() < 0? 0 : getDeltaX()-getSpeed());
+        }
+        //Reduce speed Y
+        if(getDeltaY() > 0){
+            setDeltaY(getDeltaY()-getSpeed() < 0? 0 : getDeltaY()-getSpeed());
+        }
+        
         double[] destination = moveDestination(delta);
         if(collideToTerrain){
             Shape clonedShape = new Shape() {
@@ -49,6 +58,10 @@ public class CollidingObject extends GameObject{
             setX(destination[0]);
             setY(destination[1]);
         }
+        
+        
+        
+        
     }
     protected void onCollision(CollidingObject collidedWith){
         

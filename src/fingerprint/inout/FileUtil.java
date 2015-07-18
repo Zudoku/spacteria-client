@@ -11,7 +11,7 @@ public class FileUtil {
     public static String WORLD_FILE_EXTENSION = ".world";
     public static String TILEDMAP_FILE_EXTENSION = ".tmx";
     
-    public static String FUNCTIONAL_MAP_FILE_EXTENSION = ".map";
+    public static String FUNCTIONAL_MAP_FILE_EXTENSION = ".fme";
     public static String FUNCTIONAL_MAP_FILE_NAME = "functional";
     
     public static String RENDER_MAP_FILE_EXTENSION = ".mai";

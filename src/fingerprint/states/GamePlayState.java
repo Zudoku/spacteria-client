@@ -33,18 +33,22 @@ public class GamePlayState extends BasicGameState{
     
     @Inject private GameWorldContainer worldContainer;
     
+    private boolean gamePaused = false;
+    private boolean debugInfo = true;
+    
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
             throws SlickException {
         //worldContainer = new GameWorldContainer();
         //GameLauncher.injector.injectMembers(worldContainer); //dirty trick
         eventBus.register(this);
+        
     }
 
     @Override
     public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
             throws SlickException {
-        renderingManager.drawGamePlay(graphics);
+        renderingManager.drawGamePlay(graphics,debugInfo);
         
     }
 

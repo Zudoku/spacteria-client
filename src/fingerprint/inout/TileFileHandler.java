@@ -61,11 +61,11 @@ public class TileFileHandler {
     public void writeMap(short[][] content, int x, int y, int width, int height){
         int mapSize = FunctionalMap.SIZE;
         
-        if(x < 0 || x >= mapSize || (x + width) >= mapSize){
+        if(x < 0 || x > mapSize || (x + width) > mapSize){
             logger.log(Level.SEVERE,"Can't write: X coord is out of bounds");
             return;
         }
-        if(y < 0 || y >= mapSize || (y + height) >= mapSize){
+        if(y < 0 || y > mapSize || (y + height) > mapSize){
             logger.log(Level.SEVERE,"Can't write: Y coord is out of bounds");
             return;
         }
@@ -83,6 +83,7 @@ public class TileFileHandler {
             buffer = buffer.load();
             for(int i = 0 ; i < width ; i++){
                 buffer.putShort(i*2, content[i][u]);
+                //logger.log(Level.FINEST,"{0} {1}",new Object[]{i*2,content[i][u]});
             }
             buffer = buffer.force();
         }
@@ -100,6 +101,13 @@ public class TileFileHandler {
         short data[][] = new short[width][height];
         
         int mapSize = FunctionalMap.SIZE;
+        
+        if(x < 0 || x >= mapSize || (x + width) >= mapSize){
+            logger.log(Level.SEVERE,"Can't read: X coord is out of bounds");
+        }
+        if(y < 0 || y >= mapSize || (y + height) >= mapSize){
+            logger.log(Level.SEVERE,"Can't read: Y coord is out of bounds");
+        }
         
         
         for (int i = 0; i < height; i++) {
@@ -127,7 +135,7 @@ public class TileFileHandler {
     private static MappedByteBuffer map(RandomAccessFile raf,MapMode mode,long position,long size) throws IOException {
         FileChannel channel=raf.getChannel();
         boolean threw=true;
-          MappedByteBuffer mbb=channel.map(mode,0,size);
+          MappedByteBuffer mbb=channel.map(mode,position,size);
           threw=false;
           return mbb;
       }

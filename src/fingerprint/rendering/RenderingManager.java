@@ -1,6 +1,7 @@
 package fingerprint.rendering;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.io.ObjectInputStream.GetField;
 import java.util.List;
 import java.util.logging.Level;
@@ -12,6 +13,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
@@ -53,6 +55,8 @@ public class RenderingManager {
     private int virtualResolutionHeight;
     private int virtualResolutionWidth;
     
+    private TrueTypeFont ttf;
+    
     public RenderingManager() {
         currentResolution = GameLauncher.gameSettings.resolution;
         mainMenuRenderer = new MainMenuRenderer();
@@ -64,9 +68,14 @@ public class RenderingManager {
             virtualResolutionHeight = currentResolution.getHeight();
             virtualResolutionWidth = currentResolution.getWidth();
         }
+        
+        
+        
     }
     public void setWorld(String world){
         tileMapRenderer.setWorld(world);
+        Font font = new Font("Verdana", Font.PLAIN, 10);
+        ttf = new TrueTypeFont(font, true);
     }
     public void configure(EntityManager entityManager,BlockManager blockManager,EventBus eventBus){
         this.entityManager = entityManager;
@@ -131,7 +140,7 @@ public class RenderingManager {
             graphics.fill(triangle);
         }
     }
-    public void drawGamePlay(Graphics graphics){
+    public void drawGamePlay(Graphics graphics,boolean drawDebugInfo){
         initDraw(graphics);
         //LIGHTING
         //MAP
@@ -151,6 +160,7 @@ public class RenderingManager {
         }
         //EFFECTS
         //UI
+        drawGamePlayUI(graphics, drawDebugInfo);
     }
     private boolean needToDraw(GameObject object){
         Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)virtualResolutionWidth,(float) virtualResolutionHeight);
@@ -161,33 +171,82 @@ public class RenderingManager {
         initDraw(graphics);
         //TODO:
     }
+    
+    
+    private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo){
+        graphics.setColor(Color.black);
+        graphics.fillRect(0, 0, 300, 200);
+        
+        
+        
+        graphics.setFont(ttf);
+        graphics.setColor(Color.white);
+        graphics.drawString("Memory used: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
+        graphics.drawString("Screen coordinates: " + (int)screenStartX + "," + (int)screenStartY, 10, 50);
+        for(Player drawableObject : entityManager.get(Player.class)){
+            graphics.drawString("Player coordinates: " + (int)drawableObject.getX() + "," + (int)drawableObject.getY() , 10, 70);
+            graphics.drawString("Player speed (x,y): " + (int)drawableObject.getDeltaX() + "," + (int)drawableObject.getDeltaY() , 10, 90);
+        }
+        
+    }
+    
+    
+    
     private void initDraw(Graphics graphics){
         graphics.scale((float) ((double)virtualResolutionWidth/(double)unScaledScreenWidth),(float)((double)virtualResolutionHeight/(double)unScaledScreenHeight));
         graphics.setBackground(Color.black);
     }
+    
+    
+    
+    
+    
+    
     public static int calculateTextAllignCenterX(Graphics graphics,String title){
         int titleLenght = graphics.getFont().getWidth(title);
         int place = RenderingManager.unScaledScreenWidth/2 - titleLenght/2;
         
         return place;
     }
+    
+    
+    
+    
+    
+    
     public void drawCharacterCreation(Graphics graphics) {
         initDraw(graphics);
         graphics.setColor(FONT_BASE_COLOR);
         graphics.drawString("CHARACTER CREATION SCREEN",  calculateTextAllignCenterX(graphics,"CHARACTER CREATION SCREEN" ), 100);
     }
+    
+    
+    
+    
+    
+    
+    
+    
     public void setScreenStartX(double screenX) {
         screenStartX = screenX;
     }
     public void setScreenStartY(double screenY) {
         screenStartY = screenY;
     }
+    
+    
+    
+    
     public static double getScreenStartX() {
         return screenStartX;
     }
     public static double getScreenStartY() {
         return screenStartY;
     }
+    
+    
+    
+    
     @Subscribe
     public void listenSetScreenStartCoordinates(SetScreenStartCoordinatesEvent event){
         screenStartX = event.newX;

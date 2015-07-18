@@ -36,7 +36,7 @@ public class AreaGenerator {
         
         short slice[][] = new short[FunctionalMap.SIZE][1];
         for (int i = 0; i < FunctionalMap.SIZE; i++) {
-            slice[i][0] = 30;
+            slice[i][0] = 1;
         }
         for (int i = 0; i < FunctionalMap.SIZE; i++) {
             tileFileHandler.writeMap(slice,0,i,FunctionalMap.SIZE,1);

@@ -2,7 +2,7 @@ package fingerprint.gameplay.map;
 
 public class FunctionalMap {
     public static int SIZE = 1280;
-    private Byte data[][] = new Byte [1280][1280];
+    private Byte data[][] = new Byte [SIZE][SIZE];
     
     
     public FunctionalMap(byte[] input){
