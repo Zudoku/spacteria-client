@@ -207,7 +207,7 @@ public class RenderingManager {
             graphics.drawString("Memory used: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
             graphics.drawString("Screen coordinates: " + screenStartX + "," + screenStartY, 10, 50);
             for(Player drawableObject : entityManager.get(Player.class)){
-                graphics.drawString("Player coordinates: " + drawableObject.getX() + "," + drawableObject.getY() , 10, 70);
+                graphics.drawString("Player coordinates: " + drawableObject.getX() + "," + drawableObject.getY() + " (" + (int)Math.floor(drawableObject.getX()/64) + "," + (int)Math.floor(drawableObject.getY()/64) + ")", 10, 70);
                 graphics.drawString("Player speed (x,y): " + (int)drawableObject.displaySpeedX + "," + (int)drawableObject.displaySpeedY , 10, 90);
                 graphics.drawString("Player rectangle (x,y): " +(int)drawableObject.getCollideShape().getX()+"," +(int)drawableObject.getCollideShape().getY() , 10, 110);
             }

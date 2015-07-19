@@ -36,7 +36,7 @@ public class GamePlayState extends BasicGameState{
     
     private GamePlayStateMode mode = GamePlayStateMode.NORMAL;
     private boolean gamePaused = false;
-    private boolean debugInfo = false;
+    private boolean debugInfo = true;
     
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
@@ -64,6 +64,16 @@ public class GamePlayState extends BasicGameState{
         inputManager.setInput(gc.getInput());
         inputManager.update();
         worldContainer.updateWorld(inputManager,delta);
+        
+        if(inputManager.isKeyBindPressed(KeyBindAction.DEBUG_TOGGLE, true)){
+            if(mode == GamePlayStateMode.DEBUG){
+                mode = GamePlayStateMode.NORMAL;
+            }else if(mode == GamePlayStateMode.NORMAL){
+                mode = GamePlayStateMode.DEBUG;
+            }
+        }
+        
+        
         
     }
     public void setGameWorld(GameWorld world){

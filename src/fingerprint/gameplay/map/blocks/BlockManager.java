@@ -8,22 +8,14 @@ import com.google.inject.Singleton;
 @Singleton
 public class BlockManager {
     private static final Logger logger = Logger.getLogger(BlockManager.class.getName());
-    private HashMap<Integer,Block> blocks = new HashMap<>();
-    
-    //CURRENT TILEMAP HOLDS 800 tiles (0-799)
+    private HashMap<Byte,Block> blocks = new HashMap<>();
     
     //META
-    public static int MaskBlockUnwalkable = 0;
-    public static int MaskBlockWalkable = 1;
-    public static int ErrorBlock = 20;
-    public static int VoidBlock = 25;
-    public static int DebugBlock = 30;
-    public static int PassageBlock = 50;
+    public static byte MaskBlockUnwalkable = 0;
+    public static byte MaskBlockWalkable = 1;
     
-    //VILLAGE
-    public static int VillageWall = 100;
-    
-    //OUTSKIRTS
+    public static byte UnWalkableBasic = 30;
+
     
     private static boolean NON_COLLIDEABLE = false;
     private static boolean COLLIDEABLE = true;
@@ -34,15 +26,16 @@ public class BlockManager {
     private void initializeBlocks(){
         blocks.put(MaskBlockUnwalkable, new Block(NON_COLLIDEABLE));
         blocks.put(MaskBlockWalkable, new Block(NON_COLLIDEABLE));
-        blocks.put(2, new Block(NON_COLLIDEABLE));
-        blocks.put(3, new Block(NON_COLLIDEABLE));
-        blocks.put(4, new Block(NON_COLLIDEABLE));
-        blocks.put(5, new Block(NON_COLLIDEABLE));
-        blocks.put(6, new Block(NON_COLLIDEABLE));
-        blocks.put(7, new Block(NON_COLLIDEABLE));
-        blocks.put(8, new Block(NON_COLLIDEABLE));
-        blocks.put(9, new Block(COLLIDEABLE));
-        blocks.put(10, new Block(NON_COLLIDEABLE));
+        blocks.put((byte)2, new Block(NON_COLLIDEABLE));
+        blocks.put((byte)3, new Block(NON_COLLIDEABLE));
+        blocks.put((byte)4, new Block(NON_COLLIDEABLE));
+        blocks.put((byte)5, new Block(NON_COLLIDEABLE));
+        blocks.put((byte)6, new Block(NON_COLLIDEABLE));
+        blocks.put((byte)7, new Block(NON_COLLIDEABLE));
+        blocks.put((byte)8, new Block(NON_COLLIDEABLE));
+        blocks.put((byte)9, new Block(COLLIDEABLE));
+        blocks.put((byte)10, new Block(NON_COLLIDEABLE));
+        blocks.put(UnWalkableBasic,new Block(COLLIDEABLE));
     }
     public Block getBlock(int ID){
         if(blocks.containsKey(ID)){

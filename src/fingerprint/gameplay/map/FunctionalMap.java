@@ -10,6 +10,9 @@ public class FunctionalMap {
     public FunctionalMap(byte[] input){
         for(int x = 0;x<SIZE;x++){
             for(int y = 0;y<SIZE;y++){
+                if(input[x*SIZE + y] == 30){
+                    System.out.println("load30 at " + x +","+ y);
+                }
                 data[x][y] = input[x*SIZE + y];
             }
         }
@@ -23,7 +26,7 @@ public class FunctionalMap {
         this.data = data;
     }
     public Color getDebugColorForID(byte id){
-        if(id == 9){
+        if(id == 9 || id==30){
             return new Color(75,10,10);
         }
         

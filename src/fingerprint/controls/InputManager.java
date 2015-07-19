@@ -78,7 +78,7 @@ public class InputManager {
         result.put(KeyBindAction.B, Keyboard.KEY_X);
         result.put(KeyBindAction.C, Keyboard.KEY_C);
         result.put(KeyBindAction.D, Keyboard.KEY_SPACE);
-        
+        result.put(KeyBindAction.DEBUG_TOGGLE, Keyboard.KEY_F2);
         result.put(KeyBindAction.MENU, Keyboard.KEY_RETURN);
         result.put(KeyBindAction.EXIT, Keyboard.KEY_ESCAPE);
         
