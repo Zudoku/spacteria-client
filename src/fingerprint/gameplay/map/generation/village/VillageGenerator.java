@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fingerprint.gameplay.map.FunctionalMap;
+import fingerprint.gameplay.map.blocks.BlockRendering;
 import fingerprint.gameplay.map.generation.StructureContainer;
 import fingerprint.inout.TileFileHandler;
 
@@ -31,6 +32,9 @@ public class VillageGenerator {
         byte functionalMapBuffer[][] = new byte[VILLAGEWIDTH][VILLAGEHEIGHT];
         short renderingMapBuffer[][] = new short[VILLAGEWIDTH][VILLAGEHEIGHT];
         
+        
+        
+        placeBorders(functionalMapBuffer, renderingMapBuffer);
         placeHouses(functionalMapBuffer, renderingMapBuffer);
         
         
@@ -39,7 +43,6 @@ public class VillageGenerator {
                 int xIndex = x + startingPoint[0];
                 int yIndex = y + startingPoint[1];
                 if(functionalMapBuffer[x][y] != 0){
-                    logger.log(Level.INFO,"house: ({0},{1})",new Object[]{xIndex,yIndex});
                     map.getData()[xIndex][yIndex] = functionalMapBuffer[x][y];
                 }
                 
@@ -50,6 +53,84 @@ public class VillageGenerator {
         
         return map;
     }
+    
+    private void placeBorders(byte[][] functionalMapBuffer,short[][] renderingMapBuffer){
+        //THIS CODE IS REALLY SHITTY
+        //SORRY IN ADVANCE
+        byte villageFunctionalBlock = 30;
+        
+        for (int i = 0; i < VILLAGEWIDTH-8; i++) {
+            functionalMapBuffer[4 +i][0]= villageFunctionalBlock;
+            functionalMapBuffer[4 +i][VILLAGEHEIGHT-1]= villageFunctionalBlock;
+            
+            renderingMapBuffer[4 +i][0] = BlockRendering.VILLAGE_FENCE;
+            renderingMapBuffer[4 +i][VILLAGEHEIGHT-1] = BlockRendering.VILLAGE_FENCE;
+            
+        }
+        for (int i = 0; i < VILLAGEHEIGHT-8; i++) {
+            functionalMapBuffer[VILLAGEWIDTH-1][4+i]= villageFunctionalBlock;
+            functionalMapBuffer[0][4+i]= villageFunctionalBlock;
+            
+            renderingMapBuffer[VILLAGEWIDTH-1][4+i] = BlockRendering.VILLAGE_FENCE;
+            renderingMapBuffer[0][4+i] = BlockRendering.VILLAGE_FENCE;
+        }
+        //TOP LEFT
+        renderingMapBuffer[1][2] = BlockRendering.VILLAGE_FENCE;
+        renderingMapBuffer[1][3] = BlockRendering.VILLAGE_FENCE;
+        
+        renderingMapBuffer[2][1] = BlockRendering.VILLAGE_FENCE;
+        renderingMapBuffer[3][1] = BlockRendering.VILLAGE_FENCE;
+        
+        functionalMapBuffer[1][2] = villageFunctionalBlock;
+        functionalMapBuffer[1][3] = villageFunctionalBlock;
+        
+        functionalMapBuffer[2][1] = villageFunctionalBlock;
+        functionalMapBuffer[3][1] = villageFunctionalBlock;
+        
+        
+        //BOTTOM LEFT
+        renderingMapBuffer[1][VILLAGEHEIGHT-2-1] = BlockRendering.VILLAGE_FENCE;
+        renderingMapBuffer[1][VILLAGEHEIGHT-3-1] = BlockRendering.VILLAGE_FENCE;
+
+        renderingMapBuffer[2][VILLAGEHEIGHT-1-1] = BlockRendering.VILLAGE_FENCE;
+        renderingMapBuffer[3][VILLAGEHEIGHT-1-1] = BlockRendering.VILLAGE_FENCE;
+        
+        functionalMapBuffer[1][VILLAGEHEIGHT-2-1] = villageFunctionalBlock;
+        functionalMapBuffer[1][VILLAGEHEIGHT-3-1] = villageFunctionalBlock;
+
+        functionalMapBuffer[2][VILLAGEHEIGHT-1-1] = villageFunctionalBlock;
+        functionalMapBuffer[3][VILLAGEHEIGHT-1-1] = villageFunctionalBlock;
+        
+        //TOP RIGHT
+        renderingMapBuffer[VILLAGEWIDTH-2-1][1] = BlockRendering.VILLAGE_FENCE;
+        renderingMapBuffer[VILLAGEWIDTH-3-1][1] = BlockRendering.VILLAGE_FENCE;
+        
+        renderingMapBuffer[VILLAGEWIDTH-1-1][2] = BlockRendering.VILLAGE_FENCE;
+        renderingMapBuffer[VILLAGEWIDTH-1-1][3] = BlockRendering.VILLAGE_FENCE;
+        
+        functionalMapBuffer[VILLAGEWIDTH-2-1][1] = villageFunctionalBlock;
+        functionalMapBuffer[VILLAGEWIDTH-3-1][1] = villageFunctionalBlock;
+        
+        functionalMapBuffer[VILLAGEWIDTH-1-1][2] = villageFunctionalBlock;
+        functionalMapBuffer[VILLAGEWIDTH-1-1][3] = villageFunctionalBlock;
+        
+        //BOTTOM RIGHT
+        renderingMapBuffer[VILLAGEWIDTH-1-1][VILLAGEHEIGHT-1-2] = BlockRendering.VILLAGE_FENCE;
+        renderingMapBuffer[VILLAGEWIDTH-1-1][VILLAGEHEIGHT-1-3] = BlockRendering.VILLAGE_FENCE;
+        
+        renderingMapBuffer[VILLAGEWIDTH-1-2][VILLAGEHEIGHT-1-1] = BlockRendering.VILLAGE_FENCE;
+        renderingMapBuffer[VILLAGEWIDTH-1-3][VILLAGEHEIGHT-1-1] = BlockRendering.VILLAGE_FENCE;
+        
+        functionalMapBuffer[VILLAGEWIDTH-1-1][VILLAGEHEIGHT-1-2] = villageFunctionalBlock;
+        functionalMapBuffer[VILLAGEWIDTH-1-1][VILLAGEHEIGHT-1-3] = villageFunctionalBlock;
+        
+        functionalMapBuffer[VILLAGEWIDTH-1-2][VILLAGEHEIGHT-1-1] = villageFunctionalBlock;
+        functionalMapBuffer[VILLAGEWIDTH-1-3][VILLAGEHEIGHT-1-1] = villageFunctionalBlock;
+        
+        
+    }
+    
+    
     private void placeHouses(byte[][] functionalMapBuffer,short[][] renderingMapBuffer){
         int houseAmount = 3 +random.nextInt(3);
         logger.log(Level.INFO,"Placing {0} houses",houseAmount);
@@ -110,7 +191,6 @@ public class VillageGenerator {
             }
         }
         
-        logger.log(Level.INFO,"Structure placed at villagespawnpoint + ({0},{1})",new Object[]{x,y});
         return true;
     }
     

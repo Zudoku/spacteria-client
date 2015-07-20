@@ -37,7 +37,7 @@ public class BlockManager {
         blocks.put((byte)10, new Block(NON_COLLIDEABLE));
         blocks.put(UnWalkableBasic,new Block(COLLIDEABLE));
     }
-    public Block getBlock(int ID){
+    public Block getBlock(byte ID){
         if(blocks.containsKey(ID)){
             return blocks.get(ID);
         }else{

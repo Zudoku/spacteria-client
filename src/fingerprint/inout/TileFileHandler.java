@@ -99,7 +99,6 @@ public class TileFileHandler {
      */
     public short[][] getPartOfMap(int x, int y, int width,int height){
         short data[][] = new short[width][height];
-        
         int mapSize = FunctionalMap.SIZE;
         
         if(x < 0 || x >= mapSize || (x + width) >= mapSize){
@@ -112,9 +111,9 @@ public class TileFileHandler {
         
         for (int i = 0; i < height; i++) {
             for (int u = 0; u < width; u++) {
-              //We multiply by two because short == 2 byte
+                //We multiply by two because short == 2 byte
                 //We also need to transfer 2d array position to 1d array position
-                long position = (height * mapSize * 2) + (width * 2);
+                long position = ((y + i) * mapSize * 2) + (x * 2);
                 try {
                     MappedByteBuffer buffer = map(tileFile, FileChannel.MapMode.READ_WRITE, position, width * 2);
                     buffer = buffer.load();

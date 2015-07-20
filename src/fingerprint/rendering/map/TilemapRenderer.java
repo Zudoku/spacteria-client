@@ -1,5 +1,6 @@
 package fingerprint.rendering.map;
 
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.tiled.TiledMapPlus;
 
 import com.google.inject.Inject;
@@ -39,6 +41,7 @@ public class TilemapRenderer {
     
     private HashMap<Short,Image> tilebuffer = new HashMap<>();
     private TileFileHandler tilehandler = new TileFileHandler();
+    private TrueTypeFont ttf;
     
     public TilemapRenderer(BlockManager blockManager) {
         this.blockManager = blockManager;
@@ -52,6 +55,8 @@ public class TilemapRenderer {
         } catch (SlickException e) {
             e.printStackTrace();
         }
+        Font font = new Font("Verdana", Font.PLAIN,10);
+        ttf = new TrueTypeFont(font, true);
     }
     
     public void draw(double screenX, double screenY){
@@ -161,20 +166,24 @@ public class TilemapRenderer {
             startingY = 0;
             offsetY = (int)(Math.floor((-screenY)));
         }
-        
+        short[][] renderingMapData = tilehandler.getPartOfMap(startingX, startingY, tilesDrawnHorizontal - tileOffsetX, tilesDrawnVertical - tileOffsetY);
         for (int y = 0; y < tilesDrawnVertical; y++) {
             for (int x = 0; x < tilesDrawnHorizontal; x++) {
-                byte currentDrawableTile = map.getData()[x][y];
-                
+                byte currentFunctionTile = map.getData()[startingX + x][startingY+y];
+                short currentRenderingTile= renderingMapData[x][y];
                 double drawingCordinateX = offsetX + x * tileSize;
                 double drawingCordinateY = offsetY + y * tileSize;
                 
-                graphics.setColor(map.getDebugColorForID(currentDrawableTile));
+                graphics.setColor(map.getDebugColorForID(currentFunctionTile));
                 graphics.fillRect((float)drawingCordinateX,(float)drawingCordinateY, tileSize, tileSize);
                 graphics.setColor(Color.black);
                 graphics.drawRect((float)drawingCordinateX,(float)drawingCordinateY, tileSize, tileSize);
                 graphics.setColor(Color.white);
-                graphics.drawString("" + currentDrawableTile, (float)drawingCordinateX + 25, (float)drawingCordinateY + 32);
+                graphics.setFont(ttf);
+                graphics.drawString("" + (startingX + x) + "," + (startingY+y), (float)drawingCordinateX + 5, (float)drawingCordinateY + 5);
+                graphics.drawString("" + currentFunctionTile, (float)drawingCordinateX + 25, (float)drawingCordinateY + 32);
+                graphics.drawString("" + currentRenderingTile, (float)drawingCordinateX + 25, (float)drawingCordinateY +50);
+                
             }
         }
     }

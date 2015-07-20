@@ -6,4 +6,6 @@ public class BlockRendering {
     public static short WOODEN_PLANK = 60;
     public static short WOODEN_ROOF = 61;
     public static short WOODEN_DOOR = 62;
+    
+    public static short VILLAGE_FENCE = 70;
 }

@@ -10,9 +10,6 @@ public class FunctionalMap {
     public FunctionalMap(byte[] input){
         for(int x = 0;x<SIZE;x++){
             for(int y = 0;y<SIZE;y++){
-                if(input[x*SIZE + y] == 30){
-                    System.out.println("load30 at " + x +","+ y);
-                }
                 data[x][y] = input[x*SIZE + y];
             }
         }

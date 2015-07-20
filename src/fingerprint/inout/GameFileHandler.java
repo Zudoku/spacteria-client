@@ -170,9 +170,6 @@ public class GameFileHandler {
         byte content[] = new byte[FunctionalMap.SIZE*FunctionalMap.SIZE];
         for(int x=0;x<FunctionalMap.SIZE;x++){
             for(int y=0;y<FunctionalMap.SIZE;y++){
-                if(src.getData()[x][y] == 30){
-                    System.out.println("write30");
-                }
                 content[x*FunctionalMap.SIZE + y] = src.getData()[x][y];
             }
         }
