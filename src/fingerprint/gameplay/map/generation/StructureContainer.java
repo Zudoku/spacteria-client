@@ -28,12 +28,13 @@ public class StructureContainer {
     }
     public void flipHorizontal(){
         byte[][] replaceFunctional = new byte[width][height];
-        short[][] replaceRendering = new short[width][height];
+        short[][] replaceRendering = new short[width*2][height];
 
         for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                replaceFunctional[x][y] = functional[(width-1)-x][y];
-                replaceRendering[x][y] = rendering[(width-1)-x][y];
+            for (int x = 0; x < width*2; x+=2) {
+                replaceFunctional[x/2][y] = functional[(width-1)-(x/2)][y];
+                replaceRendering[x][y] = rendering[(width*2-1)-x][y];
+                replaceRendering[x+1][y] = rendering[(width*2)-x][y];
             }
         }
         functional = replaceFunctional;
@@ -42,12 +43,13 @@ public class StructureContainer {
     }
     public void flipVertical(){
         byte[][] replaceFunctional = new byte[width][height];
-        short[][] replaceRendering = new short[width][height];
+        short[][] replaceRendering = new short[width*2][height];
 
         for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                replaceFunctional[x][y] = functional[width][(height-1)-y];
-                replaceRendering[x][y] = rendering[width][(height-1)-y];
+            for (int x = 0; x < width*2; x+=2) {
+                replaceFunctional[x][y] = functional[x/2][(height-1)-y];
+                replaceRendering[x][y] = rendering[x][(height-1)-y];
+                replaceRendering[x+1][y] = rendering[x+1][(height-1)-y];
             }
         }
         functional = replaceFunctional;

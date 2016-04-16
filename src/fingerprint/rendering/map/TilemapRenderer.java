@@ -98,26 +98,28 @@ public class TilemapRenderer {
         //go through the array
         for (int y = 0; y < tilesDrawnVertical; y++) {
             for (int x = 0; x < tilesDrawnHorizontal; x++) {
-                short currentDrawableTile = mapData[x][y];
-                //Get drawable tile id
-                //Get the image from the id from:
-                //HashMap if it was drawn on last frame too
-                //Load from spritesheet if didn't render last frame
-                Image currentDrawableImage = null;
-                if(tilebuffer.containsKey(currentDrawableTile)){
-                    currentDrawableImage = tilebuffer.get(currentDrawableTile);
-                }else{
-                    int spriteX = currentDrawableTile % 20;
-                    int spriteY = (int) Math.floor(currentDrawableTile / 20);
-                    currentDrawableImage = spriteSheet.getSprite(spriteX, spriteY);
+                for(int i = 0; i < 2 ; i++){
+                    short currentDrawableTile = mapData[(x*2)+i][y];
+                    //Get drawable tile id
+                    //Get the image from the id from:
+                    //HashMap if it was drawn on last frame too
+                    //Load from spritesheet if didn't render last frame
+                    Image currentDrawableImage = null;
+                    if(tilebuffer.containsKey(currentDrawableTile)){
+                        currentDrawableImage = tilebuffer.get(currentDrawableTile);
+                    }else{
+                        int spriteX = currentDrawableTile % 20;
+                        int spriteY = (int) Math.floor(currentDrawableTile / 20);
+                        currentDrawableImage = spriteSheet.getSprite(spriteX, spriteY);
+                    }
+                    if(!updatedTileBuffer.containsKey(currentDrawableTile)){
+                        updatedTileBuffer.put(currentDrawableTile, currentDrawableImage);
+                    }
+                    double drawingCordinateX = offsetX + x * tileSize;
+                    double drawingCordinateY = offsetY + y * tileSize;
+                    //Draw image
+                    currentDrawableImage.draw((float)drawingCordinateX,(float)drawingCordinateY);
                 }
-                if(!updatedTileBuffer.containsKey(currentDrawableTile)){
-                    updatedTileBuffer.put(currentDrawableTile, currentDrawableImage);
-                }
-                double drawingCordinateX = offsetX + x * tileSize;
-                double drawingCordinateY = offsetY + y * tileSize;
-                //Draw image
-                currentDrawableImage.draw((float)drawingCordinateX,(float)drawingCordinateY);
             }
         }
         tilebuffer = updatedTileBuffer;
@@ -170,7 +172,8 @@ public class TilemapRenderer {
         for (int y = 0; y < tilesDrawnVertical; y++) {
             for (int x = 0; x < tilesDrawnHorizontal; x++) {
                 byte currentFunctionTile = map.getData()[startingX + x][startingY+y];
-                short currentRenderingTile= renderingMapData[x][y];
+                short currentRenderingTile= renderingMapData[x*2][y];
+                short currentRenderingTile2= renderingMapData[x*2+1][y];
                 double drawingCordinateX = offsetX + x * tileSize;
                 double drawingCordinateY = offsetY + y * tileSize;
                 
@@ -181,8 +184,9 @@ public class TilemapRenderer {
                 graphics.setColor(Color.white);
                 graphics.setFont(ttf);
                 graphics.drawString("" + (startingX + x) + "," + (startingY+y), (float)drawingCordinateX + 5, (float)drawingCordinateY + 5);
-                graphics.drawString("" + currentFunctionTile, (float)drawingCordinateX + 25, (float)drawingCordinateY + 32);
-                graphics.drawString("" + currentRenderingTile, (float)drawingCordinateX + 25, (float)drawingCordinateY +50);
+                graphics.drawString("F1 " + currentFunctionTile, (float)drawingCordinateX + 20, (float)drawingCordinateY + 20);
+                graphics.drawString("R1 " + currentRenderingTile, (float)drawingCordinateX + 20, (float)drawingCordinateY +35);
+                graphics.drawString("R2 " + currentRenderingTile2, (float)drawingCordinateX + 20, (float)drawingCordinateY +50);
                 
             }
         }

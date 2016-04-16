@@ -32,10 +32,9 @@ public class TileFileHandler {
         }
         try {
             tileFile = new RandomAccessFile(file, "rw");
-            if(tileFile.length() != (FunctionalMap.SIZE*2) * (FunctionalMap.SIZE*2)){
-                tileFile.setLength((FunctionalMap.SIZE*2) * (FunctionalMap.SIZE*2));
+            if(tileFile.length() != (FunctionalMap.SIZE*2*2) * (FunctionalMap.SIZE*2)){
+                tileFile.setLength((FunctionalMap.SIZE*2*2) * (FunctionalMap.SIZE*2));
             }
-            
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -49,7 +48,7 @@ public class TileFileHandler {
             slice[i][0] = (short) (40 + i);
         }
         for (int i = 0; i < FunctionalMap.SIZE; i++) {
-            writeMap(slice,0,i,FunctionalMap.SIZE,1);
+            writeMap(slice,0,i,FunctionalMap.SIZE,1,true);
             
         }
         System.out.println("written");
@@ -58,14 +57,14 @@ public class TileFileHandler {
     }
     
     
-    public void writeMap(short[][] content, int x, int y, int width, int height){
-        int mapSize = FunctionalMap.SIZE;
+    public void writeMap(short[][] content, int x, int y, int width, int height,boolean writeFloorZeros){
+        final int MAPSIZE = FunctionalMap.SIZE;
         
-        if(x < 0 || x > mapSize || (x + width) > mapSize){
+        if(x < 0 || x > MAPSIZE || (x + width) > MAPSIZE){
             logger.log(Level.SEVERE,"Can't write: X coord is out of bounds");
             return;
         }
-        if(y < 0 || y > mapSize || (y + height) > mapSize){
+        if(y < 0 || y > MAPSIZE || (y + height) > MAPSIZE){
             logger.log(Level.SEVERE,"Can't write: Y coord is out of bounds");
             return;
         }
@@ -73,17 +72,22 @@ public class TileFileHandler {
         for(int u = 0; u < height; u++){
             //We multiply by two because short == 2 byte
             //We also need to transfer 2d array position to 1d array position
-            int bufferPositionStarts = (x  * 2) + ((y + u) * mapSize * 2);
+            int BYTETOSHORT = 2;
+            int LAYERS = 2;
+            
+            int bufferPositionStarts = (x  * BYTETOSHORT * LAYERS) + ((y + u) * MAPSIZE * BYTETOSHORT * LAYERS);
             MappedByteBuffer buffer = null;
             try {
-                buffer = map(tileFile, FileChannel.MapMode.READ_WRITE, bufferPositionStarts , width * 2);
+                buffer = map(tileFile, FileChannel.MapMode.READ_WRITE, bufferPositionStarts , width * BYTETOSHORT * LAYERS);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             buffer = buffer.load();
-            for(int i = 0 ; i < width ; i++){
+            for(int i = 0 ; i < width*2 ; i++){
+                if(i%2 == 0 && content[i][u] == 0 && !writeFloorZeros){
+                    continue;
+                }
                 buffer.putShort(i*2, content[i][u]);
-                //logger.log(Level.FINEST,"{0} {1}",new Object[]{i*2,content[i][u]});
             }
             buffer = buffer.force();
         }
@@ -98,7 +102,7 @@ public class TileFileHandler {
      * @return
      */
     public short[][] getPartOfMap(int x, int y, int width,int height){
-        short data[][] = new short[width][height];
+        short data[][] = new short[width*2][height];
         int mapSize = FunctionalMap.SIZE;
         
         if(x < 0 || x >= mapSize || (x + width) >= mapSize){
@@ -110,21 +114,20 @@ public class TileFileHandler {
         
         
         for (int i = 0; i < height; i++) {
-            for (int u = 0; u < width; u++) {
-                //We multiply by two because short == 2 byte
-                //We also need to transfer 2d array position to 1d array position
-                long position = ((y + i) * mapSize * 2) + (x * 2);
-                try {
-                    MappedByteBuffer buffer = map(tileFile, FileChannel.MapMode.READ_WRITE, position, width * 2);
-                    buffer = buffer.load();
-                    ShortBuffer asd  = buffer.asShortBuffer();
-                    for(int z=0;z<width;z++){
-                        data[z][i] = asd.get(z);
-                    }
-                } catch (IOException e) {
-                    logger.log(Level.SEVERE,e.getMessage());
+            //We multiply by two because short == 2 byte
+            //We also need to transfer 2d array position to 1d array position
+            long position = ((y + i) * (mapSize * 2 * 2)) + (x * 2 * 2);
+            try {
+                MappedByteBuffer buffer = map(tileFile, FileChannel.MapMode.READ_WRITE, position, width * 2 * 2);
+                buffer = buffer.load();
+                ShortBuffer asd  = buffer.asShortBuffer();
+                for(int z=0;z<width*2;z++){
+                    data[z][i] = asd.get(z);
                 }
+            } catch (IOException e) {
+                logger.log(Level.SEVERE,e.getMessage());
             }
+            
         }
         return data;
     }

@@ -11,6 +11,7 @@ import org.newdawn.slick.tiled.TiledMapPlus;
 
 import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.blocks.BlockManager;
+import fingerprint.gameplay.map.blocks.BlockRendering;
 import fingerprint.gameplay.map.generation.village.VillageGenerator;
 import fingerprint.gameplay.map.village.Village;
 import fingerprint.inout.TileFileHandler;
@@ -36,12 +37,28 @@ public class AreaGenerator {
         FunctionalMap map = new FunctionalMap(new byte[FunctionalMap.SIZE*FunctionalMap.SIZE]);
         tileFileHandler = new TileFileHandler();
         tileFileHandler.init(worldName);
+        logger.log(Level.INFO,"Laying out grass");
+        layoutGrass();
         
         logger.log(Level.INFO,"Generating Village...");
         map = villageGenerator.generateVillage(map, tileFileHandler);
         
         return map;
     }
+    
+    private void layoutGrass(){
+        
+        for (int y = 0; y < WORLD_SIZE; y++) {
+            short[][] slice = new short[WORLD_SIZE*2][1];
+            for (int x = 0; x < WORLD_SIZE*2; x+=2) {
+                slice[x][0] = BlockRendering.GRASS;
+            }
+            
+            tileFileHandler.writeMap(slice, 0, y, WORLD_SIZE, 1,false);
+        }
+        
+    }
+    
     
     
 

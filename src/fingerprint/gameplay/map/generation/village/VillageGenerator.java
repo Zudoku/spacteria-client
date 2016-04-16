@@ -30,13 +30,15 @@ public class VillageGenerator {
         
         
         byte functionalMapBuffer[][] = new byte[VILLAGEWIDTH][VILLAGEHEIGHT];
-        short renderingMapBuffer[][] = new short[VILLAGEWIDTH][VILLAGEHEIGHT];
+        short renderingMapBuffer[][] = new short[VILLAGEWIDTH*2][VILLAGEHEIGHT];
         
         
         
-        placeBorders(functionalMapBuffer, renderingMapBuffer);
-        placeHouses(functionalMapBuffer, renderingMapBuffer);
+        //placeBorders(functionalMapBuffer, renderingMapBuffer);
+        //placeHouses(functionalMapBuffer, renderingMapBuffer);
         
+        //Place player house
+        placePlayerHouse(functionalMapBuffer, renderingMapBuffer);
         
         for (int y = 0; y < VILLAGEHEIGHT; y++) {
             for (int x = 0; x < VILLAGEWIDTH; x++) {
@@ -49,9 +51,29 @@ public class VillageGenerator {
             }
         }
         
-        tileFileHandler.writeMap(renderingMapBuffer, startingPoint[0], startingPoint[1], VILLAGEWIDTH, VILLAGEHEIGHT);
+        tileFileHandler.writeMap(renderingMapBuffer, startingPoint[0], startingPoint[1], VILLAGEWIDTH, VILLAGEHEIGHT,false);
         
         return map;
+    }
+    
+    private void placePlayerHouse(byte[][] functionalMapBuffer,short[][] renderingMapBuffer){
+        StructureContainer house = villageStructs.getPlayerHouseHorizontal();
+        
+        short tries = 0;
+        boolean trying = true;
+        while(trying){
+            if(tryToFitStructureIntoBuffer(house, functionalMapBuffer, renderingMapBuffer, VILLAGEWIDTH, VILLAGEHEIGHT)){
+                
+                trying = false;
+                continue;
+            }
+            if(tries > 100){
+                logger.log(Level.INFO,"Can't place house {0} because there is not enough space.");
+                trying = false;
+            }
+            tries++;
+        }
+        logger.log(Level.INFO,"Placing Players house took {1} tries",new Object[]{tries});
     }
     
     private void placeBorders(byte[][] functionalMapBuffer,short[][] renderingMapBuffer){
@@ -186,7 +208,8 @@ public class VillageGenerator {
                 // (x,y) == (u,i)
                 if(container.getFunctional()[u][i] != 0){
                     functionalMapBuffer[x+u][y+i] = container.getFunctional()[u][i];
-                    renderingMapBuffer[x+u][y+i] = container.getRendering()[u][i];
+                    renderingMapBuffer[(x+u)*2][y+i] = container.getRendering()[u*2][i];
+                    renderingMapBuffer[(x+u)*2 +1][y+i] = container.getRendering()[u*2 +1][i];
                 }
             }
         }
