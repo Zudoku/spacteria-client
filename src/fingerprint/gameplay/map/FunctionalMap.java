@@ -2,6 +2,8 @@ package fingerprint.gameplay.map;
 
 import org.newdawn.slick.Color;
 
+import fingerprint.gameplay.map.blocks.BlockManager;
+
 public class FunctionalMap {
     public static int SIZE = 1280;
     private Byte data[][] = new Byte [SIZE][SIZE];
@@ -23,8 +25,11 @@ public class FunctionalMap {
         this.data = data;
     }
     public Color getDebugColorForID(byte id){
-        if(id == 9 || id==30){
-            return new Color(75,10,10);
+        if(id == BlockManager.Dirt){
+            return new Color(102, 51, 0);
+        }
+        if(id == BlockManager.Bush || id == BlockManager.Tree){
+            return new Color(102, 255, 51);
         }
         
         return new Color(10,10,143);

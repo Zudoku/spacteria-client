@@ -24,22 +24,39 @@ public class GameObject {
     }
     public void move(int delta,CollisionManager collisionManager){
         if(needMove()){
-            double[] destination = moveDestination(delta);
-            setX(destination[0]);
-            setY(destination[1]);
+            //double[] destination = moveDestination(delta);
+            //setX(destination[0]);
+            //setY(destination[1]);
         }else{
             displaySpeedX = 0;
             displaySpeedY = 0;
         }
         
     }
-    protected double[] moveDestination(int delta){
-        double rad = Math.atan2(getDeltaY(),getDeltaX());
-        setDeltaX(0);
-        setDeltaY(0);
+    protected double[] moveDestinationX(int delta){
+        double movechunk = 0;
+        if(getDeltaX() > 0){
+            movechunk = 0.1d;
+        } else {
+            movechunk = -0.1d;
+        }
         
-        double destinationY =  (double)(getY() + Math.sin(rad) * speed * delta);
-        double destinationX =  (double)(getX() + Math.cos(rad) * speed * delta);
+        double destinationY =  (double)(getY());
+        double destinationX =  (double)(getX() + (movechunk / delta));
+        
+        return new double[]{destinationX,destinationY};
+        
+    }
+    protected double[] moveDestinationY(int delta){
+        double movechunk = 0;
+        if(getDeltaY() > 0){
+            movechunk = 0.1d;
+        } else {
+            movechunk = -0.1d;
+        }
+        
+        double destinationY =  (double)(getY() + (movechunk / delta));
+        double destinationX =  (double)(getX());
         
         return new double[]{destinationX,destinationY};
         

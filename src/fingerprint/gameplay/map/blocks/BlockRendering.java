@@ -4,7 +4,14 @@ public class BlockRendering {
     
     
     //CURRENT TILEMAP HOLDS 800 tiles (0-799)
-    public static final short WOODEN_PLANK = 80;
+    public static final short DIRT = 80;
+    public static final short WATER = 3;
+    
+    
+    public static final short BUSH = 81;
+    public static final short TREE = 82;
+    
+    
     
     public static final short TILE_ROOF = 60;
     public static final short TILE_ROOF_GUTTER = 61;

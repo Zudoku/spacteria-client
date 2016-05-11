@@ -15,6 +15,10 @@ public class AreaShapeGenerator {
     public static final double GENERIC_AREA_SMOOTHNESS = 20d;
     public static final double GRAINY_AREA_SMOOTHNESS = 40d;
     
+    
+    public static final double SHORTEST_MASK_CUTOFF = 0.95d;
+    public static final double MINIMAL_MASK_CUTOFF = 0.8d;
+    public static final double SHORTER_MASK_CUTOFF = 0.6d;
     public static final double SHORT_MASK_CUTOFF = 0.4d;
     public static final double GENERIC_MASK_CUTOFF = 0.2d;
     public static final double LONG_MASK_CUTOFF = 0.1d;
@@ -93,15 +97,15 @@ public class AreaShapeGenerator {
     public float[][] toUnitArray(float[][] original,int width,int height){
         float[][] result = original;
         double minValue = result[0][0], maxValue = result[0][0];
-        for (int x = 0; x < height; x++) {
-            for (int y = 0; y < width; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 minValue = Math.min(result[x][y], minValue);
                 maxValue = Math.max(result[x][y], maxValue);
             }
         }
         
-        for(int x=0;x<height;x++) {
-            for(int y=0;y<width;y++) {
+        for(int x=0;x<width;x++) {
+            for(int y=0;y<height;y++) {
                 result[x][y]=(float) ( (result[x][y] - minValue) / (maxValue - minValue));
             }
         }        
@@ -115,7 +119,7 @@ public class AreaShapeGenerator {
      * @param maskCutOff
      * @return
      */
-    public int[][] maskGeneration(int width,int height,double areaSmoothness, double maskCutOff){
+    public int[][] maskGeneration(int width,int height,double areaSmoothness, double maskCutOff,boolean applyPostProcessing){
         float temporaryResult[][] = new float[width][height];
         float[][] noise = getNoise(width,height,areaSmoothness);
         for( int x = 0; x < width; x++ ) {
@@ -136,11 +140,12 @@ public class AreaShapeGenerator {
                 }
             }
         }
-        
-        applyPostProcessing(result, width, height,8);
-        applyPostProcessing(result, width, height,4);
-        applyPostProcessing(result, width, height,3);
-        
+        if(applyPostProcessing){
+            applyPostProcessing(result, width, height,8);
+            applyPostProcessing(result, width, height,4);
+            applyPostProcessing(result, width, height,3);
+        }
+                
         
         return result;
     }

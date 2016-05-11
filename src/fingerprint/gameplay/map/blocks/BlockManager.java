@@ -13,7 +13,10 @@ public class BlockManager {
     //META
     public static byte MaskBlockUnwalkable = 0;
     public static byte MaskBlockWalkable = 1;
-    
+    public static byte Bush = 5;
+    public static byte Tree = 6;
+    public static byte Water = 9;
+    public static byte Dirt = 10;
     public static byte UnWalkableBasic = 30;
 
     
@@ -29,12 +32,12 @@ public class BlockManager {
         blocks.put((byte)2, new Block(NON_COLLIDEABLE));
         blocks.put((byte)3, new Block(NON_COLLIDEABLE));
         blocks.put((byte)4, new Block(NON_COLLIDEABLE));
-        blocks.put((byte)5, new Block(NON_COLLIDEABLE));
-        blocks.put((byte)6, new Block(NON_COLLIDEABLE));
+        blocks.put(Bush, new Block(NON_COLLIDEABLE));
+        blocks.put(Tree, new Block(COLLIDEABLE));
         blocks.put((byte)7, new Block(NON_COLLIDEABLE));
         blocks.put((byte)8, new Block(NON_COLLIDEABLE));
-        blocks.put((byte)9, new Block(COLLIDEABLE));
-        blocks.put((byte)10, new Block(NON_COLLIDEABLE));
+        blocks.put(Water, new Block(COLLIDEABLE));
+        blocks.put(Dirt, new Block(NON_COLLIDEABLE));
         blocks.put(UnWalkableBasic,new Block(COLLIDEABLE));
     }
     public Block getBlock(byte ID){

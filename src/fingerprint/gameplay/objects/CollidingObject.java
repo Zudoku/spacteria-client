@@ -30,32 +30,81 @@ public class CollidingObject extends GameObject{
             displaySpeedY = getDeltaY();
             return;
         }
+
         displaySpeedX = getDeltaX();
         displaySpeedY = getDeltaY();
         
-        //Reduce speed X 
-        if(getDeltaX() > 0){
-            setDeltaX(getDeltaX()-getSpeed() < 0? 0 : getDeltaX()-getSpeed());
-        }
-        //Reduce speed Y
-        if(getDeltaY() > 0){
-            setDeltaY(getDeltaY()-getSpeed() < 0? 0 : getDeltaY()-getSpeed());
-        }
-        
-        double[] destination = moveDestination(delta);
-        if(collideToTerrain){
-            Shape clonedShape = new Polygon(collideShape.getPoints());
-            clonedShape.setLocation((float)destination[0],(float) destination[1]);
-            if(!collisionManager.collideWithTerrain(clonedShape)){
-                setX(destination[0]);
-                setY(destination[1]);
+        double maxDelta = Math.max(Math.abs(getDeltaX()), Math.abs(getDeltaY()));
+        //Move in 0.1 chunks
+        for(double currentDelta = 0.0d ; currentDelta < maxDelta ; currentDelta += 0.1d){
+            //Move in X 
+            if(currentDelta < Math.abs(getDeltaX())){
+                double[] destination = moveDestinationX(delta);
+                if(collideToTerrain){
+                    Shape clonedShape = new Polygon(collideShape.getPoints());
+                    clonedShape.setLocation((float)Math.floor(destination[0]),(float) Math.floor(destination[1]));
+                    if(!collisionManager.collideWithTerrain(clonedShape)){
+                        setX(destination[0]);
+                        setY(destination[1]);
+                    }
+                    
+                }else{
+                    setX(destination[0]);
+                    setY(destination[1]);
+                }
             }
-            return;
-        }else{
-            setX(destination[0]);
-            setY(destination[1]);
+            
+            //Move in Y 
+            if(currentDelta < Math.abs(getDeltaY())){
+                double[] destination = moveDestinationY(delta);
+                if(collideToTerrain){
+                    Shape clonedShape = new Polygon(collideShape.getPoints());
+                    clonedShape.setLocation((float)Math.floor(destination[0]),(float) Math.floor(destination[1]));
+                    if(!collisionManager.collideWithTerrain(clonedShape)){
+                        setX(destination[0]);
+                        setY(destination[1]);
+                    }
+                    
+                }else{
+                    setX(destination[0]);
+                    setY(destination[1]);
+                }
+            }
         }
         
+        
+      //Reduce speed X 
+        if(getDeltaX() < 0){
+            if(-getDeltaX() > getSpeed()){
+                setDeltaX(getDeltaX()  + getSpeed());
+            }else{
+                setDeltaX(0);
+            }
+        }
+        
+        if(getDeltaX() > 0){
+            if(getDeltaX() > getSpeed()){
+                setDeltaX(getDeltaX()  - getSpeed());
+            }else{
+                setDeltaX(0);
+            }
+        }
+        //Reduce speed Y 
+        if(getDeltaY() < 0){
+            if(-getDeltaY() > getSpeed()){
+                setDeltaY(getDeltaY()  + getSpeed());
+            }else{
+                setDeltaY(0);
+            }
+        }
+        
+        if(getDeltaY() > 0){
+            if(getDeltaY() > getSpeed()){
+                setDeltaY(getDeltaY()  - getSpeed());
+            }else{
+                setDeltaY(0);
+            }
+        }
         
         
         

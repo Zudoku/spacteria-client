@@ -72,6 +72,7 @@ public class CollisionManager {
                         rectangleY, TilemapRenderer.tileSize,
                         TilemapRenderer.tileSize);
                 if (blockRectangle.intersects(collider)) {
+                    //logger.log(Level.INFO, "", new Object[]{});
                     return true;
                 }
             } else {

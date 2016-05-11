@@ -22,7 +22,7 @@ public class VillageStructureGenerator {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 functional[x][y] = BlockManager.UnWalkableBasic;
-                rendering[x*2][y] = BlockRendering.WOODEN_PLANK;
+                rendering[x*2][y] = BlockRendering.DIRT;
             }
         }
         //Make a roof
@@ -51,7 +51,7 @@ public class VillageStructureGenerator {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 functional[x][y] = BlockManager.UnWalkableBasic;
-                rendering[x*2][y] = BlockRendering.WOODEN_PLANK;
+                rendering[x*2][y] = BlockRendering.DIRT;
             }
         }
         //Make a roof

@@ -29,9 +29,10 @@ public class TilemapRenderer {
     
     private BlockManager blockManager;
     
-    public static int tilesDrawnHorizontal = 26 +1;
-    public static int tilesDrawnVertical = 16 +1;
-    public static int tileSize = 64;
+    public static final int tilesDrawnHorizontal = 26 +1;
+    public static final int tilesDrawnVertical = 16 +1;
+    public static final int tileSize = 64;
+    public static final int LAYERS = TileFileHandler.LAYERS;
     
     
     public static String spriteSheetPath = "resources/tilemap.png";
@@ -98,8 +99,8 @@ public class TilemapRenderer {
         //go through the array
         for (int y = 0; y < tilesDrawnVertical; y++) {
             for (int x = 0; x < tilesDrawnHorizontal; x++) {
-                for(int i = 0; i < 2 ; i++){
-                    short currentDrawableTile = mapData[(x*2)+i][y];
+                for(int i = 0; i < LAYERS ; i++){ // i = layer
+                    short currentDrawableTile = mapData[(x*LAYERS)+i][y];
                     //Get drawable tile id
                     //Get the image from the id from:
                     //HashMap if it was drawn on last frame too
@@ -172,8 +173,8 @@ public class TilemapRenderer {
         for (int y = 0; y < tilesDrawnVertical; y++) {
             for (int x = 0; x < tilesDrawnHorizontal; x++) {
                 byte currentFunctionTile = map.getData()[startingX + x][startingY+y];
-                short currentRenderingTile= renderingMapData[x*2][y];
-                short currentRenderingTile2= renderingMapData[x*2+1][y];
+                short currentRenderingTile= renderingMapData[x * LAYERS][y];
+                short currentRenderingTile2= renderingMapData[x * LAYERS +1][y];
                 double drawingCordinateX = offsetX + x * tileSize;
                 double drawingCordinateY = offsetY + y * tileSize;
                 
