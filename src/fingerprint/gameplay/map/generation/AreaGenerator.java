@@ -32,6 +32,15 @@ public class AreaGenerator {
     private Random random;
     
     
+    
+    
+    private static final int  SPAWN_RATE_ROCK_SMOOTH = 80;
+    private static final int  SPAWN_RATE_ROCK_SHARP = 80;
+    
+    
+    
+    
+    
     public AreaGenerator() { 
         villageGenerator = new VillageGenerator();
         random = new Random();
@@ -46,7 +55,7 @@ public class AreaGenerator {
         logger.log(Level.INFO,"Laying out dirt...");
         layoutDirt(map);
         
-        logger.log(Level.INFO,"Laying out seed plants...");
+        logger.log(Level.INFO,"Laying out plants...");
         layoutPlants(map);
         
         return map;
@@ -83,10 +92,13 @@ public class AreaGenerator {
                     } else if(value < 0.15){
                         tempMapData[x * LAYERS  + layer][0] = BlockRendering.WATER;
                         functionalData[x][y] = BlockManager.Water;
+                    } else if(r.nextInt(SPAWN_RATE_ROCK_SMOOTH) == 0){
+                        tempMapData[x * LAYERS  + layer][0] = BlockRendering.ROCK_SMOOTH;
+                        functionalData[x][y] = BlockManager.Rock_Smooth;
+                    } else if(r.nextInt(SPAWN_RATE_ROCK_SHARP) == 0){
+                        tempMapData[x * LAYERS  + layer][0] = BlockRendering.ROCK_SHARP;
+                        functionalData[x][y] = BlockManager.Rock_Sharp;
                     }
-                    
-                    
-                    
                     
                 }
             }

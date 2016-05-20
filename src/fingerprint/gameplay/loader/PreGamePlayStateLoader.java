@@ -34,6 +34,7 @@ public class PreGamePlayStateLoader {
     public void reset(){
         world = null;
         characterDone = false;
+        on = true;
     }
     public boolean isOn() {
         return on;
@@ -44,6 +45,11 @@ public class PreGamePlayStateLoader {
     @Subscribe
     public void listenSelectPlayableWorldEvent(SelectPlayableWorldEvent event){
         world = event.getWorld();
+        
+        if(world.getPlayer() != null){
+            player = world.getPlayer();
+            characterDone = true;
+        }
     }
     public Player getPlayer() {
         return player;
@@ -51,7 +57,6 @@ public class PreGamePlayStateLoader {
     @Subscribe
     public void listenPlayerOutlookEvent(PlayerOutlookEvent event){
         if(event.isOnWorld()){
-            
             characterDone = true;
         }else{
             player = PlayerBuilder.spawnGenericPlayer();

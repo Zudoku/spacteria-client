@@ -21,7 +21,10 @@ import fingerprint.gameplay.map.gameworld.GameWorld;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.player.Player;
 import fingerprint.gameplay.objects.player.PlayerContainer;
+import fingerprint.inout.GameFileHandler;
 import fingerprint.rendering.RenderingManager;
+import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.SaveAndExitWorldEvent;
 import fingerprint.states.menu.enums.GamePlayStateMode;
 
 public class GamePlayState extends BasicGameState{
@@ -31,6 +34,7 @@ public class GamePlayState extends BasicGameState{
     @Inject private RenderingManager renderingManager;
     @Inject private EventBus eventBus;
     @Inject private InputManager inputManager;
+    @Inject private GameFileHandler gameFileHandler;
     
     @Inject private GameWorldContainer worldContainer;
     
@@ -82,6 +86,12 @@ public class GamePlayState extends BasicGameState{
         
         
     }
+    
+    public GameWorld getGameWorld(){
+        return worldContainer.getWorld();
+    }
+    
+    
     public void setPlayer(Player player){
         worldContainer.setPlayer(player);
     }
@@ -89,6 +99,13 @@ public class GamePlayState extends BasicGameState{
     @Override
     public int getID() {
         return State_IDs.GAME_PLAY_ID;
+    }
+    
+    @Subscribe
+    public void listenSaveAndExitWorldEvent(SaveAndExitWorldEvent event){
+        gameFileHandler.saveWorldGameFile(worldContainer.getWorld());
+        
+        eventBus.post(new ChangeStateEvent(getID(), State_IDs.WORLD_SELECTION_ID));
     }
 
 

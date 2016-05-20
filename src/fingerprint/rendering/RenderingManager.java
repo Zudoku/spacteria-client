@@ -13,6 +13,8 @@ import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
@@ -26,6 +28,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import fingerprint.core.GameLauncher;
+import fingerprint.gameplay.items.Inventory;
+import fingerprint.gameplay.items.Item;
 import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.blocks.BlockManager;
 import fingerprint.gameplay.map.gameworld.GameWorld;
@@ -33,6 +37,7 @@ import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.PlayerState;
 import fingerprint.mainmenus.GameWorldInfoContainer;
 import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.states.MainMenuState;
@@ -158,12 +163,14 @@ public class RenderingManager {
             }
         }
         //PLAYER
+        Player player = null;
         for(Player drawableObject : entityManager.get(Player.class)){
             drawableObject.draw(graphics);
+            player = drawableObject;
         }
         //EFFECTS
         //UI
-        drawGamePlayUI(graphics, drawDebugInfo);
+        drawGamePlayUI(graphics,player, drawDebugInfo);
     }
     private boolean needToDraw(GameObject object){
         Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)virtualResolutionWidth,(float) virtualResolutionHeight);
@@ -187,15 +194,20 @@ public class RenderingManager {
             
         }
         //PLAYER
+        Player player = null;
         for(Player drawableObject : entityManager.get(Player.class)){
             drawableObject.drawDebug(graphics);
+            player = drawableObject;
         }
         //UI
-        drawGamePlayUI(graphics, true);
+        drawGamePlayUI(graphics,player, true);
     }
     
     
-    private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo){
+    private void drawGamePlayUI(Graphics graphics,Player player,boolean drawDebugInfo){
+        
+        Inventory inventory = player.getInventory();
+        
         if(drawDebugInfo){
             graphics.setColor(Color.black);
             graphics.fillRect(0, 0, 300, 200);
@@ -213,7 +225,61 @@ public class RenderingManager {
             }
             graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 130);
         }
-        
+        if(player.getState() == PlayerState.INVENTORY){
+            try {
+                Image image = new Image("resources/InventoryUI.png");
+                image.drawCentered(virtualResolutionWidth / 2, virtualResolutionHeight - 150);
+            } catch (SlickException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+            //Draw the items in the inventory
+            
+            Item[] items = inventory.getUIItems();
+            
+            for(int x = 0; x < 4 ; x++){
+                //calculate position
+                int xPosition = 507 + (x * 169);
+                int yPosition = virtualResolutionHeight - 137;
+                if(x > 1){
+                    xPosition += 8;
+                }
+                
+                if(items.length > x && items[x] != null){
+                    Item drawedItem = items[x];
+                    try {
+                        Image image = new Image("resources/Items/" + drawedItem.getName() + ".png");
+                        image.draw(xPosition, yPosition);
+                    } catch (SlickException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    
+                    
+                    int quantity = inventory.getQuantity(drawedItem);
+                    graphics.setColor(Color.white);
+                    graphics.drawString("" + quantity, xPosition + 20, yPosition + 100);
+                    
+                    
+                    //Draw the onHand indicator
+                    if(inventory.getOnHand() == drawedItem){
+                        graphics.setColor(Color.cyan);
+                        graphics.setLineWidth(4);
+                        graphics.drawRect(xPosition - 4, yPosition - 4 , 136, 136);
+                    }
+                    int slotIndex  = inventory.getIndex() + x;
+                    //Draw selection indicator
+                    if(slotIndex == inventory.getSelection()){
+                        graphics.setColor(Color.black);
+                        graphics.setLineWidth(4);
+                        graphics.drawRect(xPosition + 8, yPosition + 8 , 112, 112);
+                    }
+                }
+                
+                
+            }
+        }
     }
     
     

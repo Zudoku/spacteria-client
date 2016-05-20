@@ -132,8 +132,15 @@ public class WorldSelectionState extends BasicGameState {
                 return;
             }
             eventBus.post(new SelectPlayableWorldEvent(loadedGame));
+            
+            if(loadedGame.getPlayer() != null){
+                eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
+            } else {
+                eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SCREEN_ID));
+            }
+            
             //TODO: check for chara
-            eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
+           
         }
         
     }

@@ -31,6 +31,13 @@ public class FunctionalMap {
         if(id == BlockManager.Bush || id == BlockManager.Tree){
             return new Color(102, 255, 51);
         }
+        if(id == BlockManager.Rock_Smooth || id == BlockManager.Rock_Sharp){
+            return new Color(153, 102, 51);
+        }
+        
+        if(id == BlockManager.Water){
+            return new Color(0, 153, 255);
+        }
         
         return new Color(10,10,143);
     }

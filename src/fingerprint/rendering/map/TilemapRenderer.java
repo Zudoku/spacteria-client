@@ -128,16 +128,16 @@ public class TilemapRenderer {
     }
     
 
-    private int getTilesDrawingOffsetX(double drawX){
+    public static int getTilesDrawingOffsetX(double drawX){
         return (int)((double)((int)drawX % tileSize));
     }
-    private int getTilesDrawingOffsetY(double drawY){
+    public static int getTilesDrawingOffsetY(double drawY){
         return (int)((double)((int)drawY % tileSize));
     }
-    private int getTileStartX(double drawX){
+    public static int getTileStartX(double drawX){
         return (int)(Math.floor((drawX/tileSize)));
     }
-    private int getTileStartY(double drawY){
+    public static int getTileStartY(double drawY){
         return (int)(Math.floor((drawY/tileSize)));
     }
     public void drawDebug(Graphics graphics,double screenX, double screenY,

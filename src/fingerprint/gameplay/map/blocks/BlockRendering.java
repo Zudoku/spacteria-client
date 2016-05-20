@@ -6,6 +6,8 @@ public class BlockRendering {
     //CURRENT TILEMAP HOLDS 800 tiles (0-799)
     public static final short DIRT = 80;
     public static final short WATER = 3;
+    public static final short ROCK_SMOOTH = 120;
+    public static final short ROCK_SHARP = 121;
     
     
     public static final short BUSH = 81;

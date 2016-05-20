@@ -23,6 +23,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import fingerprint.core.GameLauncher;
+import fingerprint.gameplay.items.Inventory;
+import fingerprint.gameplay.items.InventoryDeserializer;
 import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.gameworld.GameWorld;
 import fingerprint.gameplay.map.gameworld.GameWorldDeserializer;
@@ -184,7 +186,9 @@ public class GameFileHandler {
         try {
             GsonBuilder gb=new GsonBuilder();
             gb.registerTypeAdapter(GameWorld.class,worldDeSerializer);
+            gb.registerTypeAdapter(Inventory.class,new InventoryDeserializer());
             Gson gson = gb.create();
+            
             loadedWorld = gson.fromJson(new FileReader(trueFileName), GameWorld.class);
         } catch (JsonSyntaxException e) {
             e.printStackTrace();

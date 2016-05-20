@@ -11,17 +11,19 @@ public class BlockManager {
     private HashMap<Byte,Block> blocks = new HashMap<>();
     
     //META
-    public static byte MaskBlockUnwalkable = 0;
-    public static byte MaskBlockWalkable = 1;
-    public static byte Bush = 5;
-    public static byte Tree = 6;
-    public static byte Water = 9;
-    public static byte Dirt = 10;
-    public static byte UnWalkableBasic = 30;
+    public static final byte MaskBlockUnwalkable = 0;
+    public static final byte MaskBlockWalkable = 1;
+    public static final byte Bush = 5;
+    public static final byte Tree = 6;
+    public static final byte Rock_Sharp = 7;
+    public static final byte Rock_Smooth = 8;
+    public static final byte Water = 9;
+    public static final byte Dirt = 10;
+    public static final byte UnWalkableBasic = 30;
 
     
-    private static boolean NON_COLLIDEABLE = false;
-    private static boolean COLLIDEABLE = true;
+    private static final boolean NON_COLLIDEABLE = false;
+    private static final boolean COLLIDEABLE = true;
     
     public BlockManager() {
         initializeBlocks();
@@ -34,8 +36,8 @@ public class BlockManager {
         blocks.put((byte)4, new Block(NON_COLLIDEABLE));
         blocks.put(Bush, new Block(NON_COLLIDEABLE));
         blocks.put(Tree, new Block(COLLIDEABLE));
-        blocks.put((byte)7, new Block(NON_COLLIDEABLE));
-        blocks.put((byte)8, new Block(NON_COLLIDEABLE));
+        blocks.put(Rock_Sharp, new Block(COLLIDEABLE));
+        blocks.put(Rock_Smooth, new Block(COLLIDEABLE));
         blocks.put(Water, new Block(COLLIDEABLE));
         blocks.put(Dirt, new Block(NON_COLLIDEABLE));
         blocks.put(UnWalkableBasic,new Block(COLLIDEABLE));
