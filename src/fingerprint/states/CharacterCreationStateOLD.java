@@ -1,0 +1,65 @@
+package fingerprint.states;
+
+import java.util.logging.Logger;
+
+import org.lwjgl.input.Keyboard;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.state.BasicGameState;
+import org.newdawn.slick.state.StateBasedGame;
+
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+
+import fingerprint.controls.InputManager;
+import fingerprint.controls.KeyBindAction;
+import fingerprint.rendering.RenderingManager;
+import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.PlayerOutlookEvent;
+
+public class CharacterCreationStateOLD extends BasicGameState{
+    private static final Logger logger = Logger.getLogger(CharacterCreationStateOLD.class.getName());
+    
+    @Inject private RenderingManager renderingManager;
+    @Inject private EventBus eventBus;
+    @Inject private InputManager inputManager;
+    
+    public CharacterCreationStateOLD() {
+        
+    }
+    
+    @Override
+    public void init(GameContainer gc, StateBasedGame caller)
+            throws SlickException {
+    }
+
+    @Override
+    public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
+            throws SlickException {
+        renderingManager.drawCharacterCreation(graphics);
+        
+    }
+
+    @Override
+    public void update(GameContainer gc, StateBasedGame caller, int delta)
+            throws SlickException {
+        inputManager.setInput(gc.getInput());
+        inputManager.update();
+        if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
+            //eventBus.post(new PlayerOutlookEvent(false));
+            //TODO:
+            eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
+        }
+        if(inputManager.isKeyBindPressed(KeyBindAction.EXIT, true)){
+            eventBus.post(new ChangeStateEvent(getID(),State_IDs.CHARACTER_SELECTION_ID));
+        }
+    }
+
+    @Override
+    public int getID() {
+        //return State_IDs.CHARACTER_CREATION_ID;
+        return 10000000;
+    }
+}

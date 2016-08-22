@@ -1,14 +1,14 @@
 package fingerprint.mainmenus;
 
-public class WorldCreationController {
+public class CharacterCreationController {
     private int selectedColumn = 0;
     private int selectedRow = 0;
     
     private int maxRows = 2;
-    private int maxColumn_0 = 3;
+    private int maxColumn_0 = 2;
     private int maxColumn_1 = 0;
     private int maxColumn_2 = 1;
-    public WorldCreationController() {
+    public CharacterCreationController() {
         
     }
     public void up(){

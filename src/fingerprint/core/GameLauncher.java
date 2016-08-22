@@ -26,12 +26,12 @@ import fingerprint.gameplay.loader.PreGamePlayStateLoader;
 import fingerprint.inout.GameSettings;
 import fingerprint.inout.GameSettingsProvider;
 import fingerprint.rendering.RenderingResolutions;
-import fingerprint.states.CharacterCreationState;
+import fingerprint.states.CharacterCreationStateOLD;
 import fingerprint.states.GamePlayState;
 import fingerprint.states.MainMenuState;
 import fingerprint.states.State_IDs;
-import fingerprint.states.WorldCreationState;
-import fingerprint.states.WorldSelectionState;
+import fingerprint.states.CharacterCreationState;
+import fingerprint.states.CharacterSelectionState;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 
@@ -99,16 +99,16 @@ public class GameLauncher extends StateBasedGame {
         MainMenuState mainMenu = new MainMenuState();
         initState(mainMenu);
 
-        WorldSelectionState worldSelection = new WorldSelectionState();
+        CharacterSelectionState worldSelection = new CharacterSelectionState();
         initState(worldSelection);
         
-        CharacterCreationState characterCreation = new CharacterCreationState();
+        CharacterCreationStateOLD characterCreation = new CharacterCreationStateOLD();
         initState(characterCreation);
         
         GamePlayState gamePlay = new GamePlayState();
         initState(gamePlay);
         
-        WorldCreationState worldCreation = new WorldCreationState();
+        CharacterCreationState worldCreation = new CharacterCreationState();
         initState(worldCreation);
     }
     private void initState(BasicGameState state){
@@ -118,6 +118,7 @@ public class GameLauncher extends StateBasedGame {
     }
     @Subscribe
     public void listenToChangeStateEvent(ChangeStateEvent event){
+        /*
         if (gamePlayStateLoader.isOn()) {
             if (event.getToState() == State_IDs.GAME_PLAY_ID) {
                 if (gamePlayStateLoader.getWorld() == null) {
@@ -140,7 +141,7 @@ public class GameLauncher extends StateBasedGame {
                 gamePlayStateLoader.setOn(false);
                 return;
             }
-        }
+        }*/
         enterState(event.getToState());
     }
     @Subscribe

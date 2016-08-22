@@ -26,92 +26,64 @@ import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.items.InventoryDeserializer;
 import fingerprint.gameplay.map.FunctionalMap;
-import fingerprint.gameplay.map.gameworld.GameWorld;
-import fingerprint.gameplay.map.gameworld.GameWorldDeserializer;
-import fingerprint.gameplay.map.gameworld.GameWorldMetaData;
-import fingerprint.gameplay.map.generation.GameWorldBuilder;
-import fingerprint.states.menu.enums.GameDifficulty;
+import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
+import fingerprint.gameplay.map.gameworld.CharacterSaveFileDeserializer;
+import fingerprint.gameplay.map.gameworld.CharacterMetaData;
+import fingerprint.gameplay.objects.player.Player;
+import fingerprint.states.menu.enums.CharacterClass;
 
 @Singleton
 public class GameFileHandler {
     private static final Logger logger = Logger.getLogger(GameFileHandler.class.getName());
-    private GameWorldDeserializer worldDeSerializer;
+    private CharacterSaveFileDeserializer worldDeSerializer;
     private EventBus eventBus;
     private boolean readableFiles = true;
-    
-    
-    
+
     @Inject
     public GameFileHandler(EventBus eventBus) {
-        worldDeSerializer = new GameWorldDeserializer();
+        worldDeSerializer = new CharacterSaveFileDeserializer();
         this.eventBus = eventBus;
     }
-    public boolean initiateWorld(String filename, GameDifficulty difficulty){
-        GameWorldBuilder worldBuilder = new GameWorldBuilder();
+    public boolean initCharacter(String filename, CharacterClass charClass){
         
-        GameWorldMetaData metaData = new GameWorldMetaData();
+        CharacterMetaData metaData = new CharacterMetaData();
         metaData.filename = filename;
         metaData.fileVersion = GameLauncher.GAME_VERSION;
         metaData.lastPlayed = System.currentTimeMillis();
         
-        try {
-            createWorldTemplate(metaData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        GameWorld createdWorld= worldBuilder.generateNewWorld(metaData);
-        if(createdWorld == null){
-            logger.log(Level.SEVERE,"Couldn't generate a proper world.");
-        }
+        CharacterSaveFile createdWorld = new CharacterSaveFile();
+        createdWorld.setMetaData(metaData);
+        createdWorld.setPlayer(new Player());
         
         if(!validateFileName(filename)){
             logger.log(Level.SEVERE,"Couldn't save a worldFile because of bad filename.");
             return false;
         }
         
-        return saveWorldGameFile(createdWorld);
-    }
-    private void createWorldTemplate(GameWorldMetaData metadata) throws IOException{
-        //Base dir
-        String worldDirPath = FileUtil.SAVES_FOLDER+"/"+metadata.filename;
-        File baseDirectory = new File(worldDirPath);
-        baseDirectory.mkdir();
-        //world file
-        File worldFile = new File(worldDirPath + "/data"+ FileUtil.WORLD_FILE_EXTENSION);
-        worldFile.createNewFile();
-        //Tile folder
-        String tiledataPath = worldDirPath + "/world";
-        File tileDataDirectory = new File(tiledataPath);
-        tileDataDirectory.mkdir();
-        //functionalmap
-        File functionalMap = new File(tiledataPath + "/" + FileUtil.FUNCTIONAL_MAP_FILE_NAME + FileUtil.FUNCTIONAL_MAP_FILE_EXTENSION);
-        functionalMap.createNewFile();
-        //rendermap
-        File renderingMap = new File(tiledataPath + "/" + FileUtil.RENDER_MAP_FILE_NAME + FileUtil.RENDER_MAP_FILE_EXTENSION);
-        renderingMap.createNewFile();
+        return saveCharacterFile(createdWorld);
     }
     
-    private void preSave(GameWorld initWorld){
+    private void preSave(CharacterSaveFile characterFile){
         //VERSION 
-        if(initWorld.getMetaData().fileVersion != GameLauncher.GAME_VERSION){
-            logger.log(Level.INFO,"World version differs {0} from current {1} ",new Object[]{initWorld.getMetaData().fileVersion , GameLauncher.GAME_VERSION});
-            if(!initWorld.getMetaData().oldVersions.contains(initWorld.getMetaData().fileVersion)){
-                initWorld.getMetaData().oldVersions.add(initWorld.getMetaData().fileVersion);
+        if(characterFile.getMetaData().fileVersion != GameLauncher.GAME_VERSION){
+            logger.log(Level.INFO,"World version differs {0} from current {1} ",new Object[]{characterFile.getMetaData().fileVersion , GameLauncher.GAME_VERSION});
+            if(!characterFile.getMetaData().oldVersions.contains(characterFile.getMetaData().fileVersion)){
+                characterFile.getMetaData().oldVersions.add(characterFile.getMetaData().fileVersion);
             }
-            initWorld.getMetaData().fileVersion = GameLauncher.GAME_VERSION;
+            characterFile.getMetaData().fileVersion = GameLauncher.GAME_VERSION;
         }
         //LAST PLAYED
         long lastPlayed= System.currentTimeMillis();
-        initWorld.getMetaData().lastPlayed = lastPlayed;
+        characterFile.getMetaData().lastPlayed = lastPlayed;
         
 
     }
     
     /**
      * Save the world state to JSON file to Saves folder.
-     * @param worldToSave
+     * @param characterFile
      */
-    public boolean saveWorldGameFile(GameWorld worldToSave){
+    public boolean saveCharacterFile(CharacterSaveFile characterFile){
      // Make Gson JSON serializer.
         Gson gson;
         GsonBuilder ga=new GsonBuilder();
@@ -120,15 +92,15 @@ public class GameFileHandler {
         }
         gson=ga.create();
         BufferedWriter writer = null;
-        logger.log(Level.FINEST,"Starting to save {0}",worldToSave);
-        if(!validateFileName(worldToSave.getMetaData().filename)){
-            logger.log(Level.SEVERE,"Couldn't save a worldFile because of bad filename.");
+        logger.log(Level.FINEST,"Starting to save {0}",characterFile);
+        if(!validateFileName(characterFile.getMetaData().filename)){
+            logger.log(Level.SEVERE,"Couldn't save a character because of bad filename.");
             return false;
         }
         //INIT SAVE
-        preSave(worldToSave);
+        preSave(characterFile);
         //Create directory
-        String worldDirPath = FileUtil.SAVES_FOLDER+"/"+worldToSave.getMetaData().filename;
+        String worldDirPath = FileUtil.CHARACTERS_PATH+"/"+characterFile.getMetaData().filename;
         File baseDirectory = new File(worldDirPath);
         baseDirectory.mkdir();
         //ACTUAL SAVING
@@ -136,9 +108,9 @@ public class GameFileHandler {
             
             //Open file
             writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(worldDirPath + "/data"+ FileUtil.WORLD_FILE_EXTENSION), "utf-8"));
+                    new FileOutputStream(FileUtil.CHARACTERS_PATH + "/"+ characterFile.getMetaData().filename + FileUtil.CHARACTER_FILE_EXTENSION), "utf-8"));
             //Write to file
-            gson.toJson(worldToSave, writer);
+            gson.toJson(characterFile, writer);
             //Close file
             writer.close();
         } catch (UnsupportedEncodingException ex) {
@@ -151,18 +123,6 @@ public class GameFileHandler {
             logger.log(Level.SEVERE,"IO Exeption! {0}",ex);
             return false;
         }
-        String tiledataPath = worldDirPath + "/world";
-        File tileDataDirectory = new File(tiledataPath);
-        tileDataDirectory.mkdir();
-        
-        File functionalMap = new File(tiledataPath + "/" + FileUtil.FUNCTIONAL_MAP_FILE_NAME + FileUtil.FUNCTIONAL_MAP_FILE_EXTENSION);
-        try {
-            writeFunctionalMap(worldToSave.getMap(), functionalMap);
-        } catch (IOException e) {
-           logger.log(Level.SEVERE,"Can't save functional map");
-            e.printStackTrace();
-        }
-        
         //POST SAVE
         //TODO:
         logger.log(Level.FINEST,"Saving finished!");
@@ -180,35 +140,22 @@ public class GameFileHandler {
     
 
     
-    public GameWorld loadWorldGameFile(String filename){
-        String trueFileName = "Saves/" + filename + "/data" + FileUtil.WORLD_FILE_EXTENSION;
-        GameWorld loadedWorld = null;
+    public CharacterSaveFile loadCharacterSaveFile(String filename){
+        String trueFileName = FileUtil.CHARACTERS_PATH + "/"+ filename + FileUtil.CHARACTER_FILE_EXTENSION;
+        
+        CharacterSaveFile loadedCharacter = null;
         try {
             GsonBuilder gb=new GsonBuilder();
-            gb.registerTypeAdapter(GameWorld.class,worldDeSerializer);
+            gb.registerTypeAdapter(CharacterSaveFile.class,worldDeSerializer);
             gb.registerTypeAdapter(Inventory.class,new InventoryDeserializer());
             Gson gson = gb.create();
             
-            loadedWorld = gson.fromJson(new FileReader(trueFileName), GameWorld.class);
-        } catch (JsonSyntaxException e) {
-            e.printStackTrace();
-        } catch (JsonIOException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
+            loadedCharacter = gson.fromJson(new FileReader(trueFileName), CharacterSaveFile.class);
+        } catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
             e.printStackTrace();
         }
-        File functionalMapPath = new File(FileUtil.SAVES_FOLDER + "/" + filename + "/world/" + FileUtil.FUNCTIONAL_MAP_FILE_NAME + FileUtil.FUNCTIONAL_MAP_FILE_EXTENSION);
-        try {
-            byte[] content = ByteStreams.toByteArray(new FileInputStream(functionalMapPath));
-            FunctionalMap functionalMap = new FunctionalMap(content);
-            loadedWorld.setMap(functionalMap);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        return loadedWorld;
+
+        return loadedCharacter;
     }
     public static boolean validateFileName(String filename){
         if(!filename.matches("^[a-zA-Z0-9_-]*$")){

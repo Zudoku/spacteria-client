@@ -1,11 +1,11 @@
 package fingerprint.mainmenus;
 
-public class WorldSelectionController {
+public class CharacterSelectionController {
     
     private int selection = 0;
     private int filesAmount;
     
-    public WorldSelectionController() {
+    public CharacterSelectionController() {
         
     }
     public void setFilesAmount(int filesAmount) {

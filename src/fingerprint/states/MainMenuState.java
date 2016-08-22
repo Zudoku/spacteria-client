@@ -3,11 +3,8 @@ package fingerprint.states;
 
 import java.util.logging.Logger;
 
-import org.lwjgl.input.Keyboard;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -79,7 +76,7 @@ public class MainMenuState extends BasicGameState{
     private void menuPressed(){
         switch(selection){
         case PLAY:
-            eventBus.post(new ChangeStateEvent(getID(), State_IDs.WORLD_SELECTION_ID));
+            eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
             break;
             
         case OPTIONS:

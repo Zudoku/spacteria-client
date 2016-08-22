@@ -11,10 +11,8 @@ import java.nio.channels.FileChannel.MapMode;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.common.io.Closeables;
 
 import fingerprint.gameplay.map.FunctionalMap;
-import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 
 public class TileFileHandler {
     private static final Logger logger = Logger.getLogger(TileFileHandler.class.getName());

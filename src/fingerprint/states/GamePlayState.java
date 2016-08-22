@@ -17,7 +17,7 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.core.GameLauncher;
-import fingerprint.gameplay.map.gameworld.GameWorld;
+import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.player.Player;
 import fingerprint.gameplay.objects.player.PlayerContainer;
@@ -58,7 +58,7 @@ public class GamePlayState extends BasicGameState{
             renderingManager.drawGamePlay(graphics,debugInfo);
         }
         if(mode == GamePlayStateMode.DEBUG){
-            renderingManager.drawDebugGamePlay(graphics,worldContainer.getWorld());
+            renderingManager.drawDebugGamePlay(graphics);
         }
     }
 
@@ -80,21 +80,7 @@ public class GamePlayState extends BasicGameState{
         
         
     }
-    public void setGameWorld(GameWorld world){
-        worldContainer.setWorld(world);
-        renderingManager.setWorld(world.getMetaData().filename);
-        
-        
-    }
     
-    public GameWorld getGameWorld(){
-        return worldContainer.getWorld();
-    }
-    
-    
-    public void setPlayer(Player player){
-        worldContainer.setPlayer(player);
-    }
 
     @Override
     public int getID() {
@@ -103,9 +89,9 @@ public class GamePlayState extends BasicGameState{
     
     @Subscribe
     public void listenSaveAndExitWorldEvent(SaveAndExitWorldEvent event){
-        gameFileHandler.saveWorldGameFile(worldContainer.getWorld());
+        gameFileHandler.saveCharacterFile(null);
         
-        eventBus.post(new ChangeStateEvent(getID(), State_IDs.WORLD_SELECTION_ID));
+        eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
     }
 
 

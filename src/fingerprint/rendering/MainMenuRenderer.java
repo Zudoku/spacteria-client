@@ -6,7 +6,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.gui.TextField;
 
 import fingerprint.core.GameLauncher;
-import fingerprint.states.menu.enums.GameDifficulty;
+import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
 
 public class MainMenuRenderer {
@@ -44,18 +44,18 @@ public class MainMenuRenderer {
         }
         
     }
-    public void drawWorldCreation(Graphics graphics,GameContainer container,GameDifficulty selectedDifficulty,int selectedRow,int selectedColumn,TextField nameField,boolean drawBadFileName){
+    public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass selectedDifficulty,int selectedRow,int selectedColumn,TextField nameField,boolean drawBadFileName){
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
-        String titleText = "Creating a new world";
+        String titleText = "Creating a new Character";
         graphics.drawString(titleText, RenderingManager.calculateTextAllignCenterX(graphics, titleText), 100);
         
-        String chooseDifficultyText = "Select Difficulty:";
+        String chooseDifficultyText = "Select Class:";
         graphics.drawString(chooseDifficultyText, 200, 400);
-        GameDifficulty[] difficulties = GameDifficulty.values();
+        CharacterClass[] difficulties = CharacterClass.values();
         graphics.setColor(Color.orange);
         int counter = 0;
         int offsetX = 0; 
-        for(GameDifficulty difficulty : difficulties){
+        for(CharacterClass difficulty : difficulties){
             if(difficulty == selectedDifficulty){
                 graphics.setColor(Color.white);
             }else{
@@ -76,7 +76,7 @@ public class MainMenuRenderer {
             counter++;
         }
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
-        String worldName = "Give the savefile a name:";
+        String worldName = "Give the Character a name:";
         graphics.drawString(worldName, 200, 490);
         graphics.setColor(Color.lightGray);
         nameField.render(container, graphics);
@@ -90,10 +90,10 @@ public class MainMenuRenderer {
         }
         if(drawBadFileName){
             graphics.setColor(Color.pink);
-            graphics.drawString("Bad filename!", 530, 530);
+            graphics.drawString("Bad name!", 530, 530);
         }
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
-        String generateString = "Generate world";
+        String generateString = "Create Character";
         graphics.drawString(generateString, 200, 590);
         String backString = "Back";
         graphics.drawString(backString, 200 + 30 + graphics.getFont().getWidth(generateString), 590);

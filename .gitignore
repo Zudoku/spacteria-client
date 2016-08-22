@@ -2,3 +2,5 @@
 /.settings
 /logs
 /Saves/
+/nbproject/private/
+/build/

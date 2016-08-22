@@ -30,5 +30,7 @@
     "DOWN": 2
   },
   "keyboardActive": true,
-  "CURRENT_CONTROLLER": 0
+  "CURRENT_CONTROLLER": 0,
+  "soundVolume" : 100,
+  "musicVolume" : 100
 }

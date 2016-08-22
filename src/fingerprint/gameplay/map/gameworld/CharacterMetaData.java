@@ -3,13 +3,13 @@ package fingerprint.gameplay.map.gameworld;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameWorldMetaData {
+public class CharacterMetaData {
     public String filename;
     public int fileVersion;
     public long lastPlayed;
     public List<Integer> oldVersions;
     
-    public GameWorldMetaData() {
+    public CharacterMetaData() {
         oldVersions = new ArrayList<>();
     }
 }

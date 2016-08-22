@@ -1,28 +1,20 @@
 package fingerprint.gameplay.time;
 
 public class Clock {
-    private int dayLength;
-    private int currentTime;
+    private double time;
     public Clock() {
-        
+        time = 0.0d;
     }
     
-    public void addCurrentTime(){
-        currentTime++;
-        if(currentTime >= dayLength){
-            
-        }
+    public void addTime(double passed){
+        time += passed;
     }
-    public int getCurrentTime() {
-        return currentTime;
+    
+    public double getTime() {
+        return time;
     }
-    public void setCurrentTime(int currentTime) {
-        this.currentTime = currentTime;
+    public void setTime(double time) {
+        this.time = time;
     }
-    public void setDayLength(int dayLength) {
-        this.dayLength = dayLength;
-    }
-    public int getDayLength() {
-        return dayLength;
-    }
+    
 }

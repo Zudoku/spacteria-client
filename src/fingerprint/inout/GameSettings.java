@@ -26,6 +26,13 @@ public class GameSettings {
     public boolean keyboardActive;
     public int CURRENT_CONTROLLER = 0;
     
+    /**
+     * SOUND
+     */
+    
+    public int soundVolume;
+    public int musicVolume;
+    
     
     public GameSettings() {
         
@@ -42,6 +49,8 @@ public class GameSettings {
         
         keyboardActive = true;
         CURRENT_CONTROLLER = 0;
+        soundVolume = 100;
+        musicVolume = 100;
         
     }
     

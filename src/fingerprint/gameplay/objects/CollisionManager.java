@@ -13,7 +13,7 @@ import com.google.inject.Inject;
 import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.blocks.Block;
 import fingerprint.gameplay.map.blocks.BlockManager;
-import fingerprint.gameplay.map.generation.GameWorldBuilder;
+
 import fingerprint.rendering.map.TilemapRenderer;
 
 

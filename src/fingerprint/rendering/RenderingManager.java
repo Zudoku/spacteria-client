@@ -32,16 +32,16 @@ import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.items.Item;
 import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.blocks.BlockManager;
-import fingerprint.gameplay.map.gameworld.GameWorld;
+import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.Player;
 import fingerprint.gameplay.objects.player.PlayerState;
-import fingerprint.mainmenus.GameWorldInfoContainer;
+import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.states.MainMenuState;
-import fingerprint.states.menu.enums.GameDifficulty;
+import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
 
 @Singleton
@@ -49,6 +49,7 @@ public class RenderingManager {
     private static final Logger logger = Logger.getLogger(RenderingManager.class.getName());
     private TilemapRenderer tileMapRenderer;
     private MainMenuRenderer mainMenuRenderer;
+    private UIManager uiManager;
     
     @Inject private EntityManager entityManager;
     
@@ -63,11 +64,15 @@ public class RenderingManager {
     private int virtualResolutionHeight;
     private int virtualResolutionWidth;
     
-    private TrueTypeFont ttf;
+    private TrueTypeFont smallVerdanaFont;
+    private TrueTypeFont mediumVerdanaFont;
+    private TrueTypeFont largeVerdanaFont;
+    private TrueTypeFont giganticVerdanaFont;
     
     public RenderingManager() {
         currentResolution = GameLauncher.gameSettings.resolution;
         mainMenuRenderer = new MainMenuRenderer();
+        uiManager = new UIManager();
         if(currentResolution == RenderingResolutions.IDENTIFY_SCREEN){
             Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
             virtualResolutionHeight = (int)dimension.getHeight();
@@ -82,15 +87,28 @@ public class RenderingManager {
     }
     public void setWorld(String world){
         tileMapRenderer.setWorld(world);
-        Font font = new Font("Verdana", Font.PLAIN, 10);
-        ttf = new TrueTypeFont(font, true);
+        resetFonts();
     }
+    
+    private void resetFonts(){
+        Font font = new Font("Verdana", Font.PLAIN, 10);
+        smallVerdanaFont = new TrueTypeFont(font, true);
+        font = new Font("Verdana", Font.PLAIN, 18);
+        mediumVerdanaFont = new TrueTypeFont(font, true);
+        font = new Font("Verdana", Font.PLAIN, 25);
+        largeVerdanaFont = new TrueTypeFont(font, true);
+        font = new Font("Verdana", Font.PLAIN, 35);
+        giganticVerdanaFont = new TrueTypeFont(font, true);
+        
+    }
+    
     public void configure(EntityManager entityManager,BlockManager blockManager,EventBus eventBus){
         this.entityManager = entityManager;
         tileMapRenderer = new TilemapRenderer(blockManager);
         eventBus.register(this);
+        eventBus.register(uiManager);
     }
-    public void drawWorldCreation(Graphics graphics,GameContainer container,GameDifficulty difficulty,int row,int col,TextField filename,boolean drawBadFileName){
+    public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass difficulty,int row,int col,TextField filename,boolean drawBadFileName){
         initDraw(graphics);
         mainMenuRenderer.drawWorldCreation(graphics,container,difficulty,row,col,filename,drawBadFileName);
     }
@@ -98,12 +116,18 @@ public class RenderingManager {
         initDraw(graphics);
         mainMenuRenderer.drawMainMenu(graphics, selection);
     }
-    public void drawWorldSelection(Graphics graphics,GameWorldInfoContainer gwic){
+    public void drawWorldSelection(Graphics graphics,CharacterInfoContainer gwic){
         initDraw(graphics);
         graphics.setColor(FONT_BASE_COLOR);
-        graphics.drawString(gwic.worldTitle,  calculateTextAllignCenterX(graphics, gwic.worldTitle), 100);
         
-        if(gwic.moreLeft){
+        if(!gwic.isIsCreateNewCharDummy()){
+            graphics.drawString(gwic.getFilename(),  calculateTextAllignCenterX(graphics, gwic.getFilename()), 100);
+        } else {
+            graphics.drawString("Create new Character",  calculateTextAllignCenterX(graphics, "Create new Character"), 100);
+        }
+        
+        
+        if(gwic.isMoreLeft()){
             
             Shape triangle = new Shape() {
                 
@@ -125,7 +149,7 @@ public class RenderingManager {
             };
             graphics.fill(triangle);
         }
-        if(gwic.moreRight){
+        if(gwic.isMoreRight()){
             
             Shape triangle = new Shape() {
                 
@@ -170,17 +194,17 @@ public class RenderingManager {
         }
         //EFFECTS
         //UI
-        drawGamePlayUI(graphics,player, drawDebugInfo);
+        drawGamePlayUI(graphics, drawDebugInfo);
     }
     private boolean needToDraw(GameObject object){
         Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)virtualResolutionWidth,(float) virtualResolutionHeight);
         Rectangle drawing = new Rectangle((float)object.getX(),(float)object.getY(),200f, 200f);
         return screen.intersects(drawing);
     }
-    public void drawDebugGamePlay(Graphics graphics,GameWorld gameWorld){
+    public void drawDebugGamePlay(Graphics graphics){
         initDraw(graphics);
         //MAP
-        tileMapRenderer.drawDebug(graphics,screenStartX, screenStartY,gameWorld.getMap());
+        tileMapRenderer.drawDebug(graphics,screenStartX, screenStartY,null);
         //OBJECTS
         for(GameObject drawableObject : entityManager.get(GameObject.class)){
             //Draw only collideableobjects.
@@ -200,21 +224,20 @@ public class RenderingManager {
             player = drawableObject;
         }
         //UI
-        drawGamePlayUI(graphics,player, true);
+        drawGamePlayUI(graphics, true);
     }
     
     
-    private void drawGamePlayUI(Graphics graphics,Player player,boolean drawDebugInfo){
+    private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo){
         
-        Inventory inventory = player.getInventory();
+        
         
         if(drawDebugInfo){
             graphics.setColor(Color.black);
             graphics.fillRect(0, 0, 300, 200);
             
             
-            
-            graphics.setFont(ttf);
+            graphics.setFont(smallVerdanaFont);
             graphics.setColor(Color.white);
             graphics.drawString("Memory used: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
             graphics.drawString("Screen coordinates: " + screenStartX + "," + screenStartY, 10, 50);
@@ -225,61 +248,25 @@ public class RenderingManager {
             }
             graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 130);
         }
-        if(player.getState() == PlayerState.INVENTORY){
-            try {
-                Image image = new Image("resources/InventoryUI.png");
-                image.drawCentered(virtualResolutionWidth / 2, virtualResolutionHeight - 150);
-            } catch (SlickException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
-            //Draw the items in the inventory
-            
-            Item[] items = inventory.getUIItems();
-            
-            for(int x = 0; x < 4 ; x++){
-                //calculate position
-                int xPosition = 507 + (x * 169);
-                int yPosition = virtualResolutionHeight - 137;
-                if(x > 1){
-                    xPosition += 8;
-                }
-                
-                if(items.length > x && items[x] != null){
-                    Item drawedItem = items[x];
-                    try {
-                        Image image = new Image("resources/Items/" + drawedItem.getName() + ".png");
-                        image.draw(xPosition, yPosition);
-                    } catch (SlickException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    
-                    
-                    int quantity = inventory.getQuantity(drawedItem);
-                    graphics.setColor(Color.white);
-                    graphics.drawString("" + quantity, xPosition + 20, yPosition + 100);
-                    
-                    
-                    //Draw the onHand indicator
-                    if(inventory.getOnHand() == drawedItem){
-                        graphics.setColor(Color.cyan);
-                        graphics.setLineWidth(4);
-                        graphics.drawRect(xPosition - 4, yPosition - 4 , 136, 136);
-                    }
-                    int slotIndex  = inventory.getIndex() + x;
-                    //Draw selection indicator
-                    if(slotIndex == inventory.getSelection()){
-                        graphics.setColor(Color.black);
-                        graphics.setLineWidth(4);
-                        graphics.drawRect(xPosition + 8, yPosition + 8 , 112, 112);
-                    }
-                }
-                
-                
-            }
-        }
+        
+        
+        //Draw the console
+        
+        drawTextEffect(uiManager.getNextConsoleText(), Color.black, Color.yellow, 30, virtualResolutionHeight - 60, 1, graphics, largeVerdanaFont);
+        
+        
+    }
+    
+    
+    private void drawTextEffect(String text, Color color1, Color color2, int x, int y, int sizeDiff, Graphics graphics, TrueTypeFont font){
+        graphics.setColor(color1);
+        graphics.setFont(font);
+        graphics.drawString(text, x, y - sizeDiff);
+        graphics.drawString(text, x, y + sizeDiff);
+        graphics.drawString(text, x + sizeDiff, y);
+        graphics.drawString(text, x - sizeDiff, y);
+        graphics.setColor(color2);
+        graphics.drawString(text, x, y);
     }
     
     
