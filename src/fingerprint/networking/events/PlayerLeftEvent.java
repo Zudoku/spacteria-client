@@ -3,16 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fingerprint.gameplay.map.gameworld;
-
-import org.newdawn.slick.tiled.TiledMapPlus;
+package fingerprint.networking.events;
 
 /**
  *
  * @author arska
  */
-public class GameWorld {
-    private TiledMapPlus tileMap;
+public class PlayerLeftEvent {
+    private String id;
+
+    public PlayerLeftEvent(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
     
     
     

@@ -19,6 +19,7 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
+import fingerprint.inout.FileUtil;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.CharacterSelectionController;
@@ -52,23 +53,19 @@ public class CharacterSelectionState extends BasicGameState {
         availableChars.add(createNewWorld);
         currentSelectionChar = createNewWorld;
         
-        File dir = new File("Saves/Characters");
+        File dir = new File(FileUtil.CHARACTERS_PATH);
         savedChars= dir.listFiles(new FilenameFilter() {
-                 public boolean accept(File characterfile, String filename)
-                      { 
-                         if(characterfile.isDirectory()){
-                             return false;
-                         }
-                         if(characterfile.getName().endsWith(".character")){
-                             return true;
-                         } else {
-                             return false;
-                         }
-                      }
+            public boolean accept(File characterfile, String filename){ 
+                if(filename.contains(".character")){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         } );
         for(File file:savedChars){
             CharacterInfoContainer gwic = new CharacterInfoContainer();
-            gwic.setFilename(file.getName());
+            gwic.setFilename(GameFileHandler.removeFileExension(file.getName()));
             //gwic.worldTitle = "World " + file.getName();
             //gwic.worldTitle = GameFileHandler.removeFileExension(gwic.worldTitle);
             availableChars.add(gwic);

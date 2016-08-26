@@ -7,7 +7,6 @@ import fingerprint.rendering.RenderingManager;
 
 public class GameObject {
 
-    private int areaID;
     private double x;
     private double y;
     private double speed;
@@ -16,11 +15,10 @@ public class GameObject {
     public double displaySpeedX;
     public double displaySpeedY;
     
-    public GameObject(double initX, double initY,double speed,int areaID) {
+    public GameObject(double initX, double initY,double speed) {
         this.x = initX;
         this.y = initY;
         this.speed = speed;
-        this.areaID = areaID;
     }
     public void move(int delta,CollisionManager collisionManager){
         if(needMove()){
@@ -73,12 +71,7 @@ public class GameObject {
     public void drawDebug(Graphics graphics) {
 
     }
-    public int getAreaID() {
-        return areaID;
-    }
-    public void setAreaID(int areaID) {
-        this.areaID = areaID;
-    }
+
     public double getX() {
         return x;
     }

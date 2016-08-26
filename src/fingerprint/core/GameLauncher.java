@@ -22,16 +22,15 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import fingerprint.gameplay.loader.PreGamePlayStateLoader;
 import fingerprint.inout.GameSettings;
 import fingerprint.inout.GameSettingsProvider;
 import fingerprint.rendering.RenderingResolutions;
-import fingerprint.states.CharacterCreationStateOLD;
 import fingerprint.states.GamePlayState;
 import fingerprint.states.MainMenuState;
 import fingerprint.states.State_IDs;
 import fingerprint.states.CharacterCreationState;
 import fingerprint.states.CharacterSelectionState;
+import fingerprint.states.ServerListState;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 
@@ -46,7 +45,6 @@ public class GameLauncher extends StateBasedGame {
     @Inject private EventBus eventBus;
     
     private List<BasicGameState> gameStates = new ArrayList<>();
-    private PreGamePlayStateLoader gamePlayStateLoader = new PreGamePlayStateLoader();
     private static GameModule gamemodule;
     private static AppGameContainer application;
     
@@ -55,7 +53,6 @@ public class GameLauncher extends StateBasedGame {
         injector = Guice.createInjector(gamemodule);
         injector.injectMembers(this);
         eventBus.register(this);
-        eventBus.register(gamePlayStateLoader);
     }
     public static void main(String[] arguments) {
         
@@ -102,8 +99,8 @@ public class GameLauncher extends StateBasedGame {
         CharacterSelectionState worldSelection = new CharacterSelectionState();
         initState(worldSelection);
         
-        CharacterCreationStateOLD characterCreation = new CharacterCreationStateOLD();
-        initState(characterCreation);
+        ServerListState serverList = new ServerListState();
+        initState(serverList);
         
         GamePlayState gamePlay = new GamePlayState();
         initState(gamePlay);
@@ -113,35 +110,12 @@ public class GameLauncher extends StateBasedGame {
     }
     private void initState(BasicGameState state){
         injector.injectMembers(state);
+        eventBus.register(state); //??
         gameStates.add(state);
         addState(state);
     }
     @Subscribe
     public void listenToChangeStateEvent(ChangeStateEvent event){
-        /*
-        if (gamePlayStateLoader.isOn()) {
-            if (event.getToState() == State_IDs.GAME_PLAY_ID) {
-                if (gamePlayStateLoader.getWorld() == null) {
-                    gamePlayStateLoader.reset();
-                    logger.log(Level.SEVERE,"Couldn't change to gameplaymode, because world was null. Reseting.");
-                    enterState(State_IDs.WORLD_SELECTION_ID);
-                    return;
-                }
-                if(!gamePlayStateLoader.isCharacterDone()){
-                    logger.log(Level.INFO,"Character isn't done. Going to character creation screen.");
-                    enterState(State_IDs.CHARACTER_SCREEN_ID);
-                    return;
-                }
-                logger.log(Level.INFO,"Switching into gameplayState");
-                GamePlayState gpState = (GamePlayState)gameStates.get(3);
-                gpState.setGameWorld(gamePlayStateLoader.getWorld());
-                gpState.setPlayer(gamePlayStateLoader.getPlayer());
-                enterState(State_IDs.GAME_PLAY_ID);
-                gamePlayStateLoader.reset();
-                gamePlayStateLoader.setOn(false);
-                return;
-            }
-        }*/
         enterState(event.getToState());
     }
     @Subscribe

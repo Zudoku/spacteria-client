@@ -1,67 +1,47 @@
 package fingerprint.rendering.map;
 
-import java.awt.Font;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.newdawn.slick.Color;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.SpriteSheet;
-import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.tiled.TiledMapPlus;
 
-import com.google.inject.Inject;
-
-import fingerprint.gameplay.map.FunctionalMap;
-import fingerprint.gameplay.map.blocks.Block;
-import fingerprint.gameplay.map.blocks.BlockManager;
-import fingerprint.inout.GameFileHandler;
-import fingerprint.inout.TileFileHandler;
-import fingerprint.rendering.RenderingManager;
 
 public class TilemapRenderer {
     private static final Logger logger = Logger.getLogger(TilemapRenderer.class.getName());
     
-    private BlockManager blockManager;
-    
     public static final int tilesDrawnHorizontal = 26 +1;
     public static final int tilesDrawnVertical = 16 +1;
     public static final int tileSize = 64;
-    public static final int LAYERS = TileFileHandler.LAYERS;
-    
     
     public static String spriteSheetPath = "resources/tilemap.png";
     public static String spriteSheetLocation = "resources";
     
-    private SpriteSheet spriteSheet;
     
-    private HashMap<Short,Image> tilebuffer = new HashMap<>();
-    private TileFileHandler tilehandler = new TileFileHandler();
-    private TrueTypeFont ttf;
+    private TiledMapPlus mapToRender;
+    private String filename = "";
     
-    public TilemapRenderer(BlockManager blockManager) {
-        this.blockManager = blockManager;
-        
+    public TilemapRenderer() {
         
     }
-    public void setWorld(String world){
-        tilehandler.init(world);
-        try {
-            spriteSheet = new SpriteSheet(spriteSheetPath, tileSize, tileSize);
-        } catch (SlickException e) {
-            e.printStackTrace();
-        }
-        Font font = new Font("Verdana", Font.PLAIN,10);
-        ttf = new TrueTypeFont(font, true);
+    public void setMap(String world){
+        filename = world;
+        mapToRender = null;
     }
     
     public void draw(double screenX, double screenY){
         
+        if(mapToRender == null){
+            if(filename.equals("")){
+                return;
+            }else {
+                try {
+                    mapToRender = new TiledMapPlus("resources/" + filename);
+                } catch (SlickException ex) {
+                    logger.log(Level.SEVERE, null, ex);
+                }
+            }
+        }
         
         //Initial floor offset 
         int offsetX = -getTilesDrawingOffsetX(screenX);
@@ -71,13 +51,15 @@ public class TilemapRenderer {
         int startingX = getTileStartX(screenX);
         int startingY = getTileStartY(screenY);
         
+        
+        
         //TODO: Tile Offset
         int tileOffsetX = 0;
         int tileOffsetY = 0;
         
         //Check if over the map
         if(startingX < 0 ){
-            if(startingX + tilesDrawnHorizontal < 0 || startingX + tilesDrawnHorizontal >= FunctionalMap.SIZE ){
+            if(startingX + tilesDrawnHorizontal < 0 || startingX + tilesDrawnHorizontal >= mapToRender.getWidth() ){
                 return;
             }
             //Set offset
@@ -86,45 +68,15 @@ public class TilemapRenderer {
             
         }//Check if over the map
         if(startingY < 0 ){
-            if(startingY + tilesDrawnVertical < 0 || startingY + tilesDrawnVertical >= FunctionalMap.SIZE ){
+            if(startingY + tilesDrawnVertical < 0 || startingY + tilesDrawnVertical >= mapToRender.getHeight()){
                 return;
             }
             //Set offset
             startingY = 0;
             offsetY = (int)(Math.floor((-screenY)));
         }
-        //Get mapdata for the drawable area
-        short[][] mapData = tilehandler.getPartOfMap(startingX, startingY, tilesDrawnHorizontal - tileOffsetX, tilesDrawnVertical - tileOffsetY);
-        HashMap<Short, Image> updatedTileBuffer = new HashMap<>();
-        //go through the array
-        for (int y = 0; y < tilesDrawnVertical; y++) {
-            for (int x = 0; x < tilesDrawnHorizontal; x++) {
-                for(int i = 0; i < LAYERS ; i++){ // i = layer
-                    short currentDrawableTile = mapData[(x*LAYERS)+i][y];
-                    //Get drawable tile id
-                    //Get the image from the id from:
-                    //HashMap if it was drawn on last frame too
-                    //Load from spritesheet if didn't render last frame
-                    Image currentDrawableImage = null;
-                    if(tilebuffer.containsKey(currentDrawableTile)){
-                        currentDrawableImage = tilebuffer.get(currentDrawableTile);
-                    }else{
-                        int spriteX = currentDrawableTile % 20;
-                        int spriteY = (int) Math.floor(currentDrawableTile / 20);
-                        currentDrawableImage = spriteSheet.getSprite(spriteX, spriteY);
-                    }
-                    if(!updatedTileBuffer.containsKey(currentDrawableTile)){
-                        updatedTileBuffer.put(currentDrawableTile, currentDrawableImage);
-                    }
-                    double drawingCordinateX = offsetX + x * tileSize;
-                    double drawingCordinateY = offsetY + y * tileSize;
-                    //Draw image
-                    currentDrawableImage.draw((float)drawingCordinateX,(float)drawingCordinateY);
-                }
-            }
-        }
-        tilebuffer = updatedTileBuffer;
         
+        mapToRender.render(offsetX, offsetY, tileOffsetX, tileOffsetY, tilesDrawnHorizontal, tilesDrawnVertical);
     }
     
 
@@ -139,57 +91,5 @@ public class TilemapRenderer {
     }
     public static int getTileStartY(double drawY){
         return (int)(Math.floor((drawY/tileSize)));
-    }
-    public void drawDebug(Graphics graphics,double screenX, double screenY,
-            FunctionalMap map) {
-        
-        int offsetX = -getTilesDrawingOffsetX(screenX);
-        int offsetY = -getTilesDrawingOffsetY(screenY);
-        
-        
-        int startingX = getTileStartX(screenX);
-        int startingY = getTileStartY(screenY);
-        
-        int tileOffsetX = 0;
-        int tileOffsetY = 0;
-        if(startingX < 0 || startingX >= FunctionalMap.SIZE || (startingX + tilesDrawnHorizontal) >= FunctionalMap.SIZE){
-            if(startingX + tilesDrawnHorizontal < 0 || startingX + tilesDrawnHorizontal >= FunctionalMap.SIZE ){
-                return;
-            }
-            
-            startingX = 0;
-            offsetX = (int)(Math.floor((-screenX)));
-            
-        }
-        if(startingY < 0 || startingY >= FunctionalMap.SIZE || (startingY + tilesDrawnVertical) >= FunctionalMap.SIZE){
-            if(startingY + tilesDrawnVertical < 0 || startingY + tilesDrawnVertical >= FunctionalMap.SIZE ){
-                return;
-            }
-            
-            startingY = 0;
-            offsetY = (int)(Math.floor((-screenY)));
-        }
-        short[][] renderingMapData = tilehandler.getPartOfMap(startingX, startingY, tilesDrawnHorizontal - tileOffsetX, tilesDrawnVertical - tileOffsetY);
-        for (int y = 0; y < tilesDrawnVertical; y++) {
-            for (int x = 0; x < tilesDrawnHorizontal; x++) {
-                byte currentFunctionTile = map.getData()[startingX + x][startingY+y];
-                short currentRenderingTile= renderingMapData[x * LAYERS][y];
-                short currentRenderingTile2= renderingMapData[x * LAYERS +1][y];
-                double drawingCordinateX = offsetX + x * tileSize;
-                double drawingCordinateY = offsetY + y * tileSize;
-                
-                graphics.setColor(map.getDebugColorForID(currentFunctionTile));
-                graphics.fillRect((float)drawingCordinateX,(float)drawingCordinateY, tileSize, tileSize);
-                graphics.setColor(Color.black);
-                graphics.drawRect((float)drawingCordinateX,(float)drawingCordinateY, tileSize, tileSize);
-                graphics.setColor(Color.white);
-                graphics.setFont(ttf);
-                graphics.drawString("" + (startingX + x) + "," + (startingY+y), (float)drawingCordinateX + 5, (float)drawingCordinateY + 5);
-                graphics.drawString("F1 " + currentFunctionTile, (float)drawingCordinateX + 20, (float)drawingCordinateY + 20);
-                graphics.drawString("R1 " + currentRenderingTile, (float)drawingCordinateX + 20, (float)drawingCordinateY +35);
-                graphics.drawString("R2 " + currentRenderingTile2, (float)drawingCordinateX + 20, (float)drawingCordinateY +50);
-                
-            }
-        }
     }
 }

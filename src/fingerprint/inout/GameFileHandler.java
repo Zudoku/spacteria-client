@@ -24,8 +24,6 @@ import com.google.inject.Singleton;
 
 import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.items.Inventory;
-import fingerprint.gameplay.items.InventoryDeserializer;
-import fingerprint.gameplay.map.FunctionalMap;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFileDeserializer;
 import fingerprint.gameplay.map.gameworld.CharacterMetaData;
@@ -51,16 +49,19 @@ public class GameFileHandler {
         metaData.fileVersion = GameLauncher.GAME_VERSION;
         metaData.lastPlayed = System.currentTimeMillis();
         
-        CharacterSaveFile createdWorld = new CharacterSaveFile();
-        createdWorld.setMetaData(metaData);
-        createdWorld.setPlayer(new Player());
+        CharacterSaveFile createdChar = new CharacterSaveFile();
+        createdChar.setMetaData(metaData);
+        Player player = new Player();
+        player.setCharactername(filename);
+        player.setCharacterClass(charClass);
+        createdChar.setPlayer(player);
         
         if(!validateFileName(filename)){
             logger.log(Level.SEVERE,"Couldn't save a worldFile because of bad filename.");
             return false;
         }
         
-        return saveCharacterFile(createdWorld);
+        return saveCharacterFile(createdChar);
     }
     
     private void preSave(CharacterSaveFile characterFile){
@@ -99,10 +100,6 @@ public class GameFileHandler {
         }
         //INIT SAVE
         preSave(characterFile);
-        //Create directory
-        String worldDirPath = FileUtil.CHARACTERS_PATH+"/"+characterFile.getMetaData().filename;
-        File baseDirectory = new File(worldDirPath);
-        baseDirectory.mkdir();
         //ACTUAL SAVING
         try {
             
@@ -128,15 +125,7 @@ public class GameFileHandler {
         logger.log(Level.FINEST,"Saving finished!");
         return true;
     }
-    private void writeFunctionalMap(FunctionalMap src, File target) throws IOException{
-        byte content[] = new byte[FunctionalMap.SIZE*FunctionalMap.SIZE];
-        for(int x=0;x<FunctionalMap.SIZE;x++){
-            for(int y=0;y<FunctionalMap.SIZE;y++){
-                content[x*FunctionalMap.SIZE + y] = src.getData()[x][y];
-            }
-        }
-        Files.write(content, target);
-    }
+    
     
 
     
@@ -147,7 +136,6 @@ public class GameFileHandler {
         try {
             GsonBuilder gb=new GsonBuilder();
             gb.registerTypeAdapter(CharacterSaveFile.class,worldDeSerializer);
-            gb.registerTypeAdapter(Inventory.class,new InventoryDeserializer());
             Gson gson = gb.create();
             
             loadedCharacter = gson.fromJson(new FileReader(trueFileName), CharacterSaveFile.class);

@@ -6,8 +6,10 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.gui.TextField;
 
 import fingerprint.core.GameLauncher;
+import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
+import java.util.List;
 
 public class MainMenuRenderer {
     
@@ -18,6 +20,41 @@ public class MainMenuRenderer {
     public MainMenuRenderer() {
         // TODO Auto-generated constructor stub
     }
+    
+    public void drawServerList(Graphics graphics, List<RoomDescription> rooms, int selection){
+        graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+        String titleText = "Select a room to join or make your own";
+        String roomsText = rooms.size() + " Rooms available";
+        graphics.drawString(titleText, RenderingManager.calculateTextAllignCenterX(graphics, titleText), 100);
+        graphics.drawString(roomsText, RenderingManager.calculateTextAllignCenterX(graphics, roomsText), 150);
+        for(int i = 0; i < rooms.size() + 1; i++){
+            RoomDescription drawed = null;
+            String roomString = "";
+            if(i == 0){
+                roomString = "Make a new room";
+            } else {
+                drawed =  rooms.get(i - 1);
+                roomString = drawed.getName() +" [" + drawed.getDifficulty() + "] (" + drawed.getPlayers() + ")";
+            }
+            if(selection == i){
+                graphics.setColor(Color.pink);
+            }
+            
+            graphics.drawString(roomString,RenderingManager.calculateTextAllignCenterX(graphics, roomString), MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i);
+            if(selection == i){
+                graphics.setColor(Color.cyan);
+                int selX= RenderingManager.calculateTextAllignCenterX(graphics, roomString) -17;
+                int selY = MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i-4;
+                int width = graphics.getFont().getWidth(roomString)+30;
+                int height = 25;
+                graphics.drawRect(selX,selY, width, height);
+            }
+            graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+        }
+        
+        
+    }
+    
 
     public void drawMainMenu(Graphics graphics, MainMenuSelection selection) {
         //PLACEHOLDER MENU

@@ -1,0 +1,23 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package fingerprint.networking;
+
+/**
+ *
+ * @author arska
+ */
+public class NetworkEvents {
+    
+    public static final String CLIENT_ASKTOJOINGAME = "joingame";
+    public static final String CLIENT_MAKENEWROOM = "makeroom";
+    public static final String CLIENT_REFRESHROOMLIST = "roomlist";
+    public static final String CLIENT_IDENTIFY = "identify";
+    
+    public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
+    public static final String SERVER_JOINROOM = "joinroom";
+    public static final String SERVER_PLAYERJOINEDMYGAME = "playerjoin";
+    public static final String SERVER_PLAYERLEFTMYGAME = "playerleft";
+}

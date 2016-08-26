@@ -107,6 +107,9 @@ public class CharacterCreationState extends BasicGameState{
                 String filename = characterName.getText();
                 
                 //Save character
+                fileHandler.initCharacter(filename, selectedClass);
+                
+                
                 eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
                 /*
                 if(fileHandler.initiateWorld(filename,selectedClass)){

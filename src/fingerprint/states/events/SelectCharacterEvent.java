@@ -3,11 +3,11 @@ package fingerprint.states.events;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 
 public class SelectCharacterEvent {
-    private CharacterSaveFile world;
+    private CharacterSaveFile characterInfo;
     public SelectCharacterEvent(CharacterSaveFile world) {
-        this.world = world;
+        this.characterInfo = world;
     }
-    public CharacterSaveFile getWorld() {
-        return world;
+    public CharacterSaveFile getCharacterInfo() {
+        return characterInfo;
     }
 }

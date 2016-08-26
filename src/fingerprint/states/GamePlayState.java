@@ -2,30 +2,34 @@ package fingerprint.states;
 
 import java.util.logging.Logger;
 
-import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.core.GameLauncher;
-import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
-import fingerprint.gameplay.objects.player.Player;
-import fingerprint.gameplay.objects.player.PlayerContainer;
+import fingerprint.gameplay.objects.player.DummyPlayer;
 import fingerprint.inout.GameFileHandler;
+import fingerprint.mainmenus.serverlist.RoomDescription;
+import fingerprint.networking.NetworkEvents;
+import fingerprint.networking.events.PlayerJoinedEvent;
+import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.InitGameInfoEvent;
 import fingerprint.states.events.SaveAndExitWorldEvent;
-import fingerprint.states.menu.enums.GamePlayStateMode;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+import java.util.logging.Level;
+
 
 public class GamePlayState extends BasicGameState{
 
@@ -37,15 +41,17 @@ public class GamePlayState extends BasicGameState{
     @Inject private GameFileHandler gameFileHandler;
     
     @Inject private GameWorldContainer worldContainer;
-    
-    private GamePlayStateMode mode = GamePlayStateMode.NORMAL;
-    private boolean gamePaused = false;
+    @Inject private Gson gson;
+
     private boolean debugInfo = true;
+    
+    private String myID = "";
+    
+    private Socket mySocket;
     
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
             throws SlickException {
-        //worldContainer = new GameWorldContainer();
         //GameLauncher.injector.injectMembers(worldContainer); //dirty trick
         eventBus.register(this);
         
@@ -54,12 +60,8 @@ public class GamePlayState extends BasicGameState{
     @Override
     public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
             throws SlickException {
-        if(mode == GamePlayStateMode.NORMAL){
-            renderingManager.drawGamePlay(graphics,debugInfo);
-        }
-        if(mode == GamePlayStateMode.DEBUG){
-            renderingManager.drawDebugGamePlay(graphics);
-        }
+        renderingManager.drawGamePlay(graphics,debugInfo);
+        //renderingManager.drawDebugGamePlay(graphics);
     }
 
     @Override
@@ -68,23 +70,67 @@ public class GamePlayState extends BasicGameState{
         inputManager.setInput(gc.getInput());
         inputManager.update();
         worldContainer.updateWorld(inputManager,delta);
-        
-        if(inputManager.isKeyBindPressed(KeyBindAction.DEBUG_TOGGLE, true)){
-            if(mode == GamePlayStateMode.DEBUG){
-                mode = GamePlayStateMode.NORMAL;
-            }else if(mode == GamePlayStateMode.NORMAL){
-                mode = GamePlayStateMode.DEBUG;
-            }
-        }
-        
-        
-        
     }
     
 
     @Override
     public int getID() {
         return State_IDs.GAME_PLAY_ID;
+    }
+    
+    @Subscribe
+    public void listenInitGameInfoEvent(InitGameInfoEvent event){
+        myID = event.getMyID();
+        event.getMyCharacter().setX(event.getDescription().getMapDescription().getStartX());
+        event.getMyCharacter().setY(event.getDescription().getMapDescription().getStartY());
+        worldContainer.setMyCharacter(event.getMyCharacter(),myID);
+        
+        RoomDescription description = event.getDescription();
+        logger.log(Level.SEVERE, myID);
+        DummyPlayer ourOwn = null;
+        //Remove our own dummy
+        for(DummyPlayer dp : description.getPlayers()){
+            logger.log(Level.SEVERE, dp.getId());
+            if(dp.getId().substring(2).equals(myID)){
+                ourOwn = dp;
+                
+            }
+        }
+        mySocket = event.getSocket();
+        description.getPlayers().remove(ourOwn);
+        worldContainer.setCurrentRoom(event.getDescription());
+        try{
+            renderingManager.setMap(event.getDescription().getMapDescription());
+        } catch(Exception e){
+            logger.log(Level.SEVERE, null, e);
+        }
+        
+        initializeSocketToGamePlayMode();
+    }
+    
+    
+    private void initializeSocketToGamePlayMode(){
+        mySocket.off(NetworkEvents.SERVER_DISPLAYROOMLIST);
+        mySocket.off(NetworkEvents.SERVER_JOINROOM);
+        
+        mySocket.on(NetworkEvents.SERVER_PLAYERJOINEDMYGAME, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                String payload = args[0].toString();
+                PlayerJoinedEvent event = new PlayerJoinedEvent((DummyPlayer) gson.fromJson(payload, DummyPlayer.class));
+                eventBus.post(event);
+            }
+
+        }).on(NetworkEvents.SERVER_PLAYERLEFTMYGAME, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                eventBus.post(gson.fromJson(args[0].toString(), PlayerLeftEvent.class));
+            }
+
+        });
+        
     }
     
     @Subscribe

@@ -11,8 +11,8 @@ public class CollidingObject extends GameObject{
     protected transient Shape collideShape;
     protected boolean collideToTerrain;
     
-    public CollidingObject(double initX , double initY,double speed,int areaID,Shape collidingShape) {
-        super(initX, initY,speed,areaID);
+    public CollidingObject(double initX , double initY,double speed,Shape collidingShape) {
+        super(initX, initY,speed);
         this.collideShape = collidingShape;
     }
     

@@ -10,6 +10,7 @@ import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.CollisionManager;
+import fingerprint.states.menu.enums.CharacterClass;
 
 
 public class Player extends CollidingObject{
@@ -17,18 +18,19 @@ public class Player extends CollidingObject{
 
     private transient final static double playerSpeed = 5.3d;
     private transient CharacterSaveFile saveFile;
-    
+    private String charactername = "";
     private Inventory inventory;
+    private CharacterClass characterClass;
     
     
     
     
     public Player() {
-        super(0,0,playerSpeed,0, new Rectangle(0,0, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
+        super(0,0,playerSpeed, new Rectangle(0,0, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
     }
     
-    public Player(double initX, double initY,int areaID) {
-        super(initX,initY,playerSpeed,areaID,new Rectangle((float)initX,(float) initY, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
+    public Player(double initX, double initY) {
+        super(initX,initY,playerSpeed,new Rectangle((float)initX,(float) initY, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
         setCollideToTerrain(true);
         inventory = new Inventory();
     }
@@ -71,6 +73,34 @@ public class Player extends CollidingObject{
      */
     public void setSaveFile(CharacterSaveFile saveFile) {
         this.saveFile = saveFile;
+    }
+
+    /**
+     * @return the charactername
+     */
+    public String getCharactername() {
+        return charactername;
+    }
+
+    /**
+     * @param charactername the charactername to set
+     */
+    public void setCharactername(String charactername) {
+        this.charactername = charactername;
+    }
+
+    /**
+     * @return the characterClass
+     */
+    public CharacterClass getCharacterClass() {
+        return characterClass;
+    }
+
+    /**
+     * @param characterClass the characterClass to set
+     */
+    public void setCharacterClass(CharacterClass characterClass) {
+        this.characterClass = characterClass;
     }
 
 }

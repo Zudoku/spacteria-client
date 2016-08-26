@@ -10,26 +10,25 @@ import org.newdawn.slick.geom.Shape;
 
 import com.google.inject.Inject;
 
-import fingerprint.gameplay.map.FunctionalMap;
-import fingerprint.gameplay.map.blocks.Block;
-import fingerprint.gameplay.map.blocks.BlockManager;
+
 
 import fingerprint.rendering.map.TilemapRenderer;
+import org.newdawn.slick.tiled.TiledMapPlus;
 
 
 public class CollisionManager {
     private static final Logger logger = Logger.getLogger(CollisionManager.class.getName());
-    private FunctionalMap map;
+    private TiledMapPlus map;
 
     private EntityManager entityManager;
-    private BlockManager blockManager;
+
     
     @Inject
-    public CollisionManager(BlockManager blockManager,EntityManager entityManager) {
-        this.blockManager = blockManager;
+    public CollisionManager(EntityManager entityManager) {
+
         this.entityManager = entityManager;
     }
-    public void setMap(FunctionalMap map) {
+    public void setMap(TiledMapPlus map) {
         this.map = map;
     }
 
@@ -45,7 +44,7 @@ public class CollisionManager {
             }
         }
     }
-    public boolean collideWithTerrain(Shape collider){
+    public boolean collideWithTerrain(Shape collider){/*
         List<int[][]> arrayPoints = new ArrayList<>();
         for(int i = 0; i < collider.getPointCount() ; i ++){
             float[] point = collider.getPoint(i);
@@ -79,7 +78,7 @@ public class CollisionManager {
                 continue;
             }
         }
-
+*/
         return false;
     }
     

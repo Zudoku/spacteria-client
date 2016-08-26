@@ -2,25 +2,16 @@ package fingerprint.rendering;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.io.ObjectInputStream.GetField;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
 import org.newdawn.slick.gui.TextField;
-import org.newdawn.slick.tiled.TiledMapPlus;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -28,21 +19,17 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import fingerprint.core.GameLauncher;
-import fingerprint.gameplay.items.Inventory;
-import fingerprint.gameplay.items.Item;
-import fingerprint.gameplay.map.FunctionalMap;
-import fingerprint.gameplay.map.blocks.BlockManager;
-import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.Player;
-import fingerprint.gameplay.objects.player.PlayerState;
 import fingerprint.mainmenus.CharacterInfoContainer;
+import fingerprint.mainmenus.serverlist.MapDescription;
+import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.map.TilemapRenderer;
-import fingerprint.states.MainMenuState;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
+import java.util.List;
 
 @Singleton
 public class RenderingManager {
@@ -85,9 +72,9 @@ public class RenderingManager {
         
         
     }
-    public void setWorld(String world){
-        tileMapRenderer.setWorld(world);
-        resetFonts();
+    public void setMap(MapDescription map){
+        tileMapRenderer.setMap(map.getFilename());
+        
     }
     
     private void resetFonts(){
@@ -102,12 +89,18 @@ public class RenderingManager {
         
     }
     
-    public void configure(EntityManager entityManager,BlockManager blockManager,EventBus eventBus){
+    public void configure(EntityManager entityManager,EventBus eventBus){
         this.entityManager = entityManager;
-        tileMapRenderer = new TilemapRenderer(blockManager);
+        tileMapRenderer = new TilemapRenderer();
         eventBus.register(this);
         eventBus.register(uiManager);
+        
     }
+    public void drawServerList(Graphics graphics,List<RoomDescription> rooms, int selection){
+        initDraw(graphics);
+        mainMenuRenderer.drawServerList(graphics, rooms, selection);
+    }
+    
     public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass difficulty,int row,int col,TextField filename,boolean drawBadFileName){
         initDraw(graphics);
         mainMenuRenderer.drawWorldCreation(graphics,container,difficulty,row,col,filename,drawBadFileName);
@@ -201,37 +194,9 @@ public class RenderingManager {
         Rectangle drawing = new Rectangle((float)object.getX(),(float)object.getY(),200f, 200f);
         return screen.intersects(drawing);
     }
-    public void drawDebugGamePlay(Graphics graphics){
-        initDraw(graphics);
-        //MAP
-        tileMapRenderer.drawDebug(graphics,screenStartX, screenStartY,null);
-        //OBJECTS
-        for(GameObject drawableObject : entityManager.get(GameObject.class)){
-            //Draw only collideableobjects.
-            if(drawableObject instanceof CollidingObject && !(drawableObject instanceof Player)){
-                CollidingObject obj = (CollidingObject) drawableObject;
-                if(needToDraw(obj)){
-                    obj.drawDebug(graphics);
-                }
-            }
-            
-            
-        }
-        //PLAYER
-        Player player = null;
-        for(Player drawableObject : entityManager.get(Player.class)){
-            drawableObject.drawDebug(graphics);
-            player = drawableObject;
-        }
-        //UI
-        drawGamePlayUI(graphics, true);
-    }
     
     
     private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo){
-        
-        
-        
         if(drawDebugInfo){
             graphics.setColor(Color.black);
             graphics.fillRect(0, 0, 300, 200);
@@ -274,6 +239,10 @@ public class RenderingManager {
     private void initDraw(Graphics graphics){
         graphics.scale((float) ((double)virtualResolutionWidth/(double)unScaledScreenWidth),(float)((double)virtualResolutionHeight/(double)unScaledScreenHeight));
         graphics.setBackground(Color.black);
+        if(smallVerdanaFont == null){
+            resetFonts();
+        }
+        
     }
     
     
@@ -298,13 +267,6 @@ public class RenderingManager {
         graphics.setColor(FONT_BASE_COLOR);
         graphics.drawString("CHARACTER CREATION SCREEN",  calculateTextAllignCenterX(graphics,"CHARACTER CREATION SCREEN" ), 100);
     }
-    
-    
-    
-    
-    
-    
-    
     
     public void setScreenStartX(double screenX) {
         screenStartX = screenX;

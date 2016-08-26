@@ -1,5 +1,7 @@
 package fingerprint.gameplay.objects;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,25 +10,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.inject.Singleton;
+import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.networking.events.PlayerJoinedEvent;
+import fingerprint.networking.events.PlayerLeftEvent;
+import fingerprint.rendering.DisplayConsoleMessageEvent;
+import org.newdawn.slick.Color;
 
 @Singleton
 public class EntityManager {
     private static final Logger logger = Logger.getLogger(EntityManager.class.getName());
-    private transient Map<Integer,GameObject> idMap=new HashMap<>();
-    private int currentID;
+    private transient Map<String,GameObject> idMap=new HashMap<>();
+    
+    private EventBus eventBus;
     
     public EntityManager() {
-        currentID = 1;
-    }
-    /**
-     * Reserves ID for you. It is used to identify the object later.
-     * Remember to add the object to idMap so it can be looked up.
-     * @return unique int.
-     */
-    public int reserveID(){
-        currentID+=1;
-        logger.log(Level.FINEST,"RESERVED ID TO YOU.YOUR ID IS {1}",new Object[]{currentID,currentID-1});
-        return currentID-1;
+        
     }
     /**
      * This is a straight forward way of reserving ID and adding it later on.
@@ -34,22 +32,11 @@ public class EntityManager {
      * @param value Object to assign.
      * @return ID that was used to assign value.
      */
-    public int addNewObject(GameObject value){
-        idMap.put(currentID, value);
-        currentID+=1;
-        logger.log(Level.FINEST,"Added {0} with ID {1} to MAP. CurrentID = {2}",new Object[]{value.toString(),currentID -1,currentID});
-        return currentID-1;
+    public void addNewObject(String key, GameObject value){
+        idMap.put(key, value);
+        logger.log(Level.FINEST,"Added {0} with ID {1} to MAP.",new Object[]{value.toString(),key,});
     }
-    /**
-     * Add value to idMap using ID.
-     * @param ID unique ID that was reserved from reserveID()
-     * @param value Object to assign.
-     */
-    public void addOldObject(int ID,GameObject value){
-        idMap.put(ID, value);
-        logger.log(Level.FINEST,"Added {0} with ID {1} to MAP",new Object[]{value.toString(),ID});
-    }
-    public Map<Integer, GameObject> getIdMap() {
+    public Map<String, GameObject> getIdMap() {
         return idMap;
     }
     /**
@@ -58,21 +45,14 @@ public class EntityManager {
      * @param ID unique ID.
      * @return Object.
      */
-    public GameObject getObjectWithID(int ID){
+    public GameObject getObjectWithID(String ID){
         GameObject object=null;
         if(idMap.containsKey(ID)){
             object=idMap.get(ID);
         }
         return object;
     }
-    public int getCurrentID() {
-        return currentID;
-    }
-
-    public void setCurrentID(int currentID) {
-        this.currentID = currentID;
-    }
-    public void removeObjectWithID(int ID){
+    public void removeObjectWithID(String ID){
         if(idMap.containsKey(ID)){
             idMap.remove(ID);
             logger.log(Level.FINEST,"Removed object with ID {0} from MAP",new Object[]{ID});
@@ -88,6 +68,24 @@ public class EntityManager {
             }
         }
         return objects;
+    }
+
+    public void configure(EventBus eventBus) {
+        this.eventBus = eventBus;
+        eventBus.register(this);
+    }
+    
+    @Subscribe
+    public void listenPlayerJoinedEvent(PlayerJoinedEvent event){
+        addNewObject(event.getPlayer().getId(), event.getPlayer());
+        eventBus.post(new DisplayConsoleMessageEvent("Player " + event.getPlayer().getCharactername() + " joined game!", Color.yellow));
+    }
+    
+    @Subscribe
+    public void listenPlayerLeftEvent(PlayerLeftEvent event){
+        DummyPlayer player = (DummyPlayer) getObjectWithID(event.getId());
+        eventBus.post(new DisplayConsoleMessageEvent("Player " + player.getCharactername() + " left game!", Color.yellow));
+        removeObjectWithID(event.getId());
     }
     
 }
