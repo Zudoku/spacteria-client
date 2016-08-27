@@ -18,8 +18,8 @@ public class PlayerContainer {
     @Inject private EventBus eventBus;
     @Inject private CollisionManager collisionManager;
     
-    public transient static final int playerCollisionWidth = 62;
-    public transient static final int playerCollisionHeight = 62;
+    public transient static final int playerCollisionWidth = 32;
+    public transient static final int playerCollisionHeight = 32;
     public transient static final int playerRenderWidth = 64;
     public transient static final int playerRenderHeight = 64;
     
@@ -44,6 +44,9 @@ public class PlayerContainer {
         double angleInRadians = (angle / 360) * (2 * Math.PI);
         double scaler = ((double)getStats().getSpeed() * delta / 20d);
         
+        currentPlayer.setDeltaX(0);
+        currentPlayer.setDeltaY(0);
+        
         if(inputManager.isKeyBindDown(KeyBindAction.UP, true)){
             
             double deltaX = -Math.sin(angleInRadians);
@@ -55,8 +58,8 @@ public class PlayerContainer {
             deltaX *= scaler;
             deltaY *= scaler;
             
-            currentPlayer.setDeltaX(deltaX);
-            currentPlayer.setDeltaY(deltaY);
+            currentPlayer.setDeltaX(currentPlayer.getDeltaX() + deltaX);
+            currentPlayer.setDeltaY(currentPlayer.getDeltaY() + deltaY);
         }
         if(inputManager.isKeyBindDown(KeyBindAction.DOWN, true)){
             double deltaX = Math.sin(angleInRadians);
@@ -69,8 +72,8 @@ public class PlayerContainer {
             deltaX *= scaler;
             deltaY *= scaler;
             
-            currentPlayer.setDeltaX(deltaX);
-            currentPlayer.setDeltaY(deltaY);
+            currentPlayer.setDeltaX(currentPlayer.getDeltaX() + deltaX);
+            currentPlayer.setDeltaY(currentPlayer.getDeltaY() + deltaY);
         }
         if(inputManager.isKeyBindDown(KeyBindAction.RIGHT, false)){
             double deltaY = -Math.sin(angleInRadians);
@@ -81,8 +84,8 @@ public class PlayerContainer {
             deltaX *= scaler;
             deltaY *= scaler;
             
-            currentPlayer.setDeltaX(deltaX);
-            currentPlayer.setDeltaY(deltaY);
+            currentPlayer.setDeltaX(currentPlayer.getDeltaX() + deltaX);
+            currentPlayer.setDeltaY(currentPlayer.getDeltaY() + deltaY);
         }
         if(inputManager.isKeyBindDown(KeyBindAction.LEFT, false)){
             double deltaY = Math.sin(angleInRadians);
@@ -93,14 +96,14 @@ public class PlayerContainer {
             deltaX *= scaler;
             deltaY *= scaler;
             
-            currentPlayer.setDeltaX(deltaX);
-            currentPlayer.setDeltaY(deltaY);
+            currentPlayer.setDeltaX(currentPlayer.getDeltaX() + deltaX);
+            currentPlayer.setDeltaY(currentPlayer.getDeltaY() + deltaY);
         }
         if(inputManager.isKeyBindDown(KeyBindAction.A, false)){
-            rotateCameraLeft(delta);
+            rotateCameraRight(delta);
         }
         if(inputManager.isKeyBindDown(KeyBindAction.B, false)){
-            rotateCameraRight(delta);
+            rotateCameraLeft(delta);
         }
         
         

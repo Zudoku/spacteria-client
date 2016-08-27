@@ -8,6 +8,8 @@ package fingerprint.gameplay.objects.player;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.states.menu.enums.CharacterClass;
 import java.util.logging.Logger;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 
 /**
  *
@@ -27,6 +29,19 @@ public class DummyPlayer extends GameObject{
     public String getId() {
         return id;
     }
+
+    @Override
+    public void draw(Graphics graphics) {
+        double[] coordinates = getDrawingCoordinates();
+        //Draw the collision rectangle
+        graphics.setColor(Color.white);
+        graphics.fillRect((float)coordinates[0] + 2,(float)coordinates[1] + 2, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight);
+        graphics.setColor(Color.blue);
+        graphics.fillRect((float)coordinates[0] + 6,(float)coordinates[1] + 6, PlayerContainer.playerCollisionWidth - 8,PlayerContainer.playerCollisionHeight -8);
+        
+    }
+    
+    
     
     
 

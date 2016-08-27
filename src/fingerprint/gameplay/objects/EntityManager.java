@@ -29,8 +29,8 @@ public class EntityManager {
     /**
      * This is a straight forward way of reserving ID and adding it later on.
      * This reserves ID to you, then adds it to idMap and returns you the ID that object was assigned to.
+     * @param key
      * @param value Object to assign.
-     * @return ID that was used to assign value.
      */
     public void addNewObject(String key, GameObject value){
         idMap.put(key, value);
@@ -63,7 +63,7 @@ public class EntityManager {
     public <T extends GameObject> Set<T> get(Class<T> type) {
         HashSet<T> objects = new HashSet<T>();
         for (GameObject co : idMap.values()) {
-            if (co.getClass().equals(type)) {
+            if (type.isInstance(co)) {
                 objects.add((T) co);
             }
         }

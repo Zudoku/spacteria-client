@@ -69,13 +69,13 @@ public class InputManager {
     }
     public static Map<KeyBindAction,Integer> getDefaultKeyBoardBinds(){
         Map<KeyBindAction,Integer> result = new HashMap<>();
-        result.put(KeyBindAction.UP, Keyboard.KEY_UP);
-        result.put(KeyBindAction.DOWN, Keyboard.KEY_DOWN);
-        result.put(KeyBindAction.LEFT, Keyboard.KEY_LEFT);
-        result.put(KeyBindAction.RIGHT, Keyboard.KEY_RIGHT);
+        result.put(KeyBindAction.UP, Keyboard.KEY_W);
+        result.put(KeyBindAction.DOWN, Keyboard.KEY_S);
+        result.put(KeyBindAction.LEFT, Keyboard.KEY_A);
+        result.put(KeyBindAction.RIGHT, Keyboard.KEY_D);
         
-        result.put(KeyBindAction.A, Keyboard.KEY_Z);
-        result.put(KeyBindAction.B, Keyboard.KEY_X);
+        result.put(KeyBindAction.A, Keyboard.KEY_Q);
+        result.put(KeyBindAction.B, Keyboard.KEY_E);
         result.put(KeyBindAction.C, Keyboard.KEY_C);
         result.put(KeyBindAction.D, Keyboard.KEY_SPACE);
         result.put(KeyBindAction.DEBUG_TOGGLE, Keyboard.KEY_F2);

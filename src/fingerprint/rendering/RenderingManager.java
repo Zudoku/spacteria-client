@@ -30,6 +30,7 @@ import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
 import java.util.List;
+import java.util.Set;
 
 @Singleton
 public class RenderingManager {
@@ -41,7 +42,7 @@ public class RenderingManager {
     @Inject private EntityManager entityManager;
     
     public static RenderingResolutions currentResolution;
-    public static int unScaledScreenWidth = 26*TilemapRenderer.tileSize;  //64 = 1664
+    public static int unScaledScreenWidth = 16*TilemapRenderer.tileSize;  //64 = 1024
     public static int unScaledScreenHeight = 16*TilemapRenderer.tileSize; //64 = 1024
     public static Color FONT_BASE_COLOR = Color.red;
     
@@ -171,9 +172,9 @@ public class RenderingManager {
         //MAP
         graphics.rotate(unScaledScreenWidth / 2 , unScaledScreenHeight / 2, (float)cameraRotation);
         tileMapRenderer.draw(screenStartX, screenStartY);
-        graphics.rotate(unScaledScreenWidth / 2 , unScaledScreenHeight / 2, 360f -(float)cameraRotation);
+        Set<GameObject> asd = entityManager.get(GameObject.class);
         //OBJECTS
-        for(GameObject drawableObject : entityManager.get(GameObject.class)){
+        for(GameObject drawableObject : asd){
             if(drawableObject instanceof Player){
                 continue;
             }
@@ -184,7 +185,9 @@ public class RenderingManager {
         //PLAYER
         Player player = null;
         for(Player drawableObject : entityManager.get(Player.class)){
+            
             drawableObject.draw(graphics);
+            graphics.rotate(unScaledScreenWidth / 2 , unScaledScreenHeight / 2, 360f -(float)cameraRotation);
             player = drawableObject;
         }
         //EFFECTS

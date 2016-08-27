@@ -1,36 +1,36 @@
 {
   "fullScreen": false,
   "borderless": false,
-  "resolution": "RES_1664_1024",
+  "resolution": "RES_1280_1024",
   "frameCap": 60,
   "vSync": true,
   "keyboardKeyBinds": {
-    "RIGHT": 205,
-    "A": 44,
-    "UP": 200,
+    "B": 18,
+    "RIGHT": 32,
+    "MENU": 28,
+    "DOWN": 31,
     "EXIT": 1,
-    "LEFT": 203,
-    "D": 57,
+    "UP": 17,
+    "A": 16,
     "C": 46,
     "DEBUG_TOGGLE": 60,
-    "B": 45,
-    "MENU": 28,
-    "DOWN": 208
+    "LEFT": 30,
+    "D": 57
   },
   "controllerKeyBinds": {
-    "RIGHT": 4,
-    "A": 5,
-    "UP": 1,
-    "EXIT": 10,
-    "LEFT": 3,
-    "D": 8,
-    "C": 7,
     "B": 6,
+    "RIGHT": 4,
     "MENU": 9,
-    "DOWN": 2
+    "DOWN": 2,
+    "EXIT": 10,
+    "UP": 1,
+    "A": 5,
+    "C": 7,
+    "LEFT": 3,
+    "D": 8
   },
   "keyboardActive": true,
   "CURRENT_CONTROLLER": 0,
-  "soundVolume" : 100,
-  "musicVolume" : 100
+  "soundVolume": 100,
+  "musicVolume": 100
 }

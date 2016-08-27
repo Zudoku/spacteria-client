@@ -51,11 +51,11 @@ public class Player extends CollidingObject{
     public void drawDebug(Graphics graphics){
         double[] coordinates = getDrawingCoordinates();
         //Draw the collision rectangle
-        graphics.setColor(Color.pink);
+        graphics.setColor(Color.white);
         graphics.fillRect((float)coordinates[0] + 2,(float)coordinates[1] + 2, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight);
         graphics.setColor(Color.red);
         graphics.fillRect((float)coordinates[0] + 6,(float)coordinates[1] + 6, PlayerContainer.playerCollisionWidth - 8,PlayerContainer.playerCollisionHeight -8);
-
+        
     }
     
     @Override
