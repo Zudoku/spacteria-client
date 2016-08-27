@@ -50,5 +50,9 @@ public class GameWorldContainer {
         
     }
     
+    public double getCameraAngle(){
+        return playerContainer.getAngle();
+    }
+    
 
 }

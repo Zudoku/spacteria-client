@@ -15,24 +15,31 @@ import fingerprint.states.menu.enums.CharacterClass;
 
 public class Player extends CollidingObject{
     private transient static final Logger logger = Logger.getLogger(Player.class.getName());
+    
+    private int level;
+    private int experience;
 
-    private transient final static double playerSpeed = 5.3d;
     private transient CharacterSaveFile saveFile;
     private String charactername = "";
     private Inventory inventory;
     private CharacterClass characterClass;
-    
+    private transient StatManager statManager;
     
     
     
     public Player() {
-        super(0,0,playerSpeed, new Rectangle(0,0, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
+        super(0,0, new Rectangle(0,0, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
+    }
+    
+    public void init(){
+        statManager = new StatManager(characterClass, level);
     }
     
     public Player(double initX, double initY) {
-        super(initX,initY,playerSpeed,new Rectangle((float)initX,(float) initY, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
+        super(initX,initY,new Rectangle((float)initX,(float) initY, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
         setCollideToTerrain(true);
         inventory = new Inventory();
+        
     }
     
     @Override
@@ -101,6 +108,26 @@ public class Player extends CollidingObject{
      */
     public void setCharacterClass(CharacterClass characterClass) {
         this.characterClass = characterClass;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public void setExperience(int experience) {
+        this.experience = experience;
+    }
+
+    public StatManager getStatManager() {
+        return statManager;
     }
 
 }

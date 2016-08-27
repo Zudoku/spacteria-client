@@ -21,8 +21,7 @@ public class DummyPlayer extends GameObject{
     private String id;
 
     public DummyPlayer() {
-        super(0, 0, 0);
-        
+        super(0, 0);
     }
 
     public String getId() {
@@ -32,7 +31,7 @@ public class DummyPlayer extends GameObject{
     
 
     public DummyPlayer(CharacterClass characterClass,String charactername, double initX, double initY) {
-        super(initX,initY,0);
+        super(initX,initY);
         this.characterClass = characterClass;
     }
 

@@ -1,8 +1,6 @@
 package fingerprint.inout;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -13,8 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
@@ -23,7 +19,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import fingerprint.core.GameLauncher;
-import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFileDeserializer;
 import fingerprint.gameplay.map.gameworld.CharacterMetaData;
@@ -54,6 +49,8 @@ public class GameFileHandler {
         Player player = new Player();
         player.setCharactername(filename);
         player.setCharacterClass(charClass);
+        player.setLevel(1);
+        player.setExperience(0);
         createdChar.setPlayer(player);
         
         if(!validateFileName(filename)){

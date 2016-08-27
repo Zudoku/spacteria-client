@@ -165,11 +165,13 @@ public class RenderingManager {
             graphics.fill(triangle);
         }
     }
-    public void drawGamePlay(Graphics graphics,boolean drawDebugInfo){
+    public void drawGamePlay(Graphics graphics,boolean drawDebugInfo, double cameraRotation){
         initDraw(graphics);
         //LIGHTING
         //MAP
+        graphics.rotate(unScaledScreenWidth / 2 , unScaledScreenHeight / 2, (float)cameraRotation);
         tileMapRenderer.draw(screenStartX, screenStartY);
+        graphics.rotate(unScaledScreenWidth / 2 , unScaledScreenHeight / 2, 360f -(float)cameraRotation);
         //OBJECTS
         for(GameObject drawableObject : entityManager.get(GameObject.class)){
             if(drawableObject instanceof Player){
@@ -187,7 +189,7 @@ public class RenderingManager {
         }
         //EFFECTS
         //UI
-        drawGamePlayUI(graphics, drawDebugInfo);
+        drawGamePlayUI(graphics, drawDebugInfo, cameraRotation);
     }
     private boolean needToDraw(GameObject object){
         Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)virtualResolutionWidth,(float) virtualResolutionHeight);
@@ -196,7 +198,7 @@ public class RenderingManager {
     }
     
     
-    private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo){
+    private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo, double cameraRotation){
         if(drawDebugInfo){
             graphics.setColor(Color.black);
             graphics.fillRect(0, 0, 300, 200);
@@ -210,8 +212,9 @@ public class RenderingManager {
                 graphics.drawString("Player coordinates: " + drawableObject.getX() + "," + drawableObject.getY() + " (" + (int)Math.floor(drawableObject.getX()/64) + "," + (int)Math.floor(drawableObject.getY()/64) + ")", 10, 70);
                 graphics.drawString("Player speed (x,y): " + (int)drawableObject.displaySpeedX + "," + (int)drawableObject.displaySpeedY , 10, 90);
                 graphics.drawString("Player rectangle (x,y): " +(int)drawableObject.getCollideShape().getX()+"," +(int)drawableObject.getCollideShape().getY() , 10, 110);
+                graphics.drawString("Player rotation: " + (int)Math.floor(cameraRotation) , 10, 130);
             }
-            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 130);
+            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 150);
         }
         
         

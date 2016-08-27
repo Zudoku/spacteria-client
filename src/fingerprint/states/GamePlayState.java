@@ -60,7 +60,7 @@ public class GamePlayState extends BasicGameState{
     @Override
     public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
             throws SlickException {
-        renderingManager.drawGamePlay(graphics,debugInfo);
+        renderingManager.drawGamePlay(graphics,debugInfo, worldContainer.getCameraAngle());
         //renderingManager.drawDebugGamePlay(graphics);
     }
 

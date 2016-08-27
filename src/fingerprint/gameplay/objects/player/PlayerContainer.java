@@ -24,7 +24,7 @@ public class PlayerContainer {
     public transient static final int playerRenderHeight = 64;
     
     
-    
+    private double angle = 45;
     
     
     private Player currentPlayer;
@@ -37,25 +37,92 @@ public class PlayerContainer {
             return;
         }
         updateInput(inputManager,delta);
+        currentPlayer.move(delta, collisionManager);
     }
     
     private void updateInput(InputManager inputManager,int delta) {
+        double angleInRadians = (angle / 360) * (2 * Math.PI);
+        double scaler = ((double)getStats().getSpeed() * delta / 20d);
+        
         if(inputManager.isKeyBindDown(KeyBindAction.UP, true)){
-            currentPlayer.setDeltaY(currentPlayer.getDeltaY() - currentPlayer.getSpeed());
+            
+            double deltaX = -Math.sin(angleInRadians);
+            double deltaY = -Math.cos(angleInRadians);
+            
+            //Apply speed buffs
+            
+            
+            deltaX *= scaler;
+            deltaY *= scaler;
+            
+            currentPlayer.setDeltaX(deltaX);
+            currentPlayer.setDeltaY(deltaY);
         }
         if(inputManager.isKeyBindDown(KeyBindAction.DOWN, true)){
-            currentPlayer.setDeltaY(currentPlayer.getDeltaY() + currentPlayer.getSpeed());
+            double deltaX = Math.sin(angleInRadians);
+            double deltaY = Math.cos(angleInRadians);
+            
+            
+            //Apply speed buffs
+
+            
+            deltaX *= scaler;
+            deltaY *= scaler;
+            
+            currentPlayer.setDeltaX(deltaX);
+            currentPlayer.setDeltaY(deltaY);
         }
         if(inputManager.isKeyBindDown(KeyBindAction.RIGHT, false)){
-            currentPlayer.setDeltaX(currentPlayer.getDeltaX() + currentPlayer.getSpeed());
+            double deltaY = -Math.sin(angleInRadians);
+            double deltaX = Math.cos(angleInRadians);
+            
+            //Apply speed buffs
+            
+            deltaX *= scaler;
+            deltaY *= scaler;
+            
+            currentPlayer.setDeltaX(deltaX);
+            currentPlayer.setDeltaY(deltaY);
         }
         if(inputManager.isKeyBindDown(KeyBindAction.LEFT, false)){
-            currentPlayer.setDeltaX(currentPlayer.getDeltaX() - currentPlayer.getSpeed());
+            double deltaY = Math.sin(angleInRadians);
+            double deltaX = -Math.cos(angleInRadians);
+            
+            //Apply speed buffs
+            
+            deltaX *= scaler;
+            deltaY *= scaler;
+            
+            currentPlayer.setDeltaX(deltaX);
+            currentPlayer.setDeltaY(deltaY);
         }
+        if(inputManager.isKeyBindDown(KeyBindAction.A, false)){
+            rotateCameraLeft(delta);
+        }
+        if(inputManager.isKeyBindDown(KeyBindAction.B, false)){
+            rotateCameraRight(delta);
+        }
+        
+        
         if(inputManager.isKeyBindPressed(KeyBindAction.EXIT, true)){
             eventBus.post(new SaveAndExitWorldEvent());
         }
         
+    }
+    private void rotateCameraLeft(int delta){
+        double amount = ((double)delta) * 12d / 60d;
+        angle -= amount;
+        if(angle < 0){
+            angle = 360 - angle;
+        }
+        
+    }
+    private void rotateCameraRight(int delta){
+        double amount = ((double)delta) * 12d / 60d;
+        angle += amount;
+        if(angle > 360){
+            angle = angle - 360;
+        }
     }
     
     
@@ -68,6 +135,14 @@ public class PlayerContainer {
     }
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
+        this.currentPlayer.init();
+    }
+
+    public double getAngle() {
+        return angle;
     }
     
+    private StatContainer getStats(){
+        return currentPlayer.getStatManager().getStats();
+    }
 }

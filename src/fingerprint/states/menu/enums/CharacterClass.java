@@ -1,13 +1,19 @@
 package fingerprint.states.menu.enums;
 
 public enum CharacterClass {
-    WARRIOR(200,200),MAGE(150,250),KNIGHT(300,100);
+    WARRIOR(5,2,12,5,5),MAGE(3,4,7,5,2),KNIGHT(6,1,10,5,7);
     
-    private int baseHealth;
-    private int baseDexterity;
-    private CharacterClass(int baseHealth, int baseDexterity) {
+    private int baseHealth; //HP
+    private int baseDexterity; //AS
+    private int baseStrength; //DMG
+    private int baseVitality; //HP REGEN
+    private int baseDefence; //DEF
+    private CharacterClass(int baseHealth, int baseDexterity, int baseStrength, int baseVitality, int baseDefence) {
         this.baseHealth = baseHealth;
         this.baseDexterity = baseDexterity;
+        this.baseStrength = baseStrength;
+        this.baseVitality = baseVitality;
+        this.baseDefence = baseDefence;
     }
     
     @Override
@@ -22,4 +28,25 @@ public enum CharacterClass {
         }
         return "CLASS_VALUE";
     }
+
+    public int getBaseDexterity() {
+        return baseDexterity;
+    }
+
+    public int getBaseHealth() {
+        return baseHealth;
+    }
+
+    public int getBaseDefence() {
+        return baseDefence;
+    }
+
+    public int getBaseStrength() {
+        return baseStrength;
+    }
+
+    public int getBaseVitality() {
+        return baseVitality;
+    }
+    
 }

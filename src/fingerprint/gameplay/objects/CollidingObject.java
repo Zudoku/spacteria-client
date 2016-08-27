@@ -11,8 +11,8 @@ public class CollidingObject extends GameObject{
     protected transient Shape collideShape;
     protected boolean collideToTerrain;
     
-    public CollidingObject(double initX , double initY,double speed,Shape collidingShape) {
-        super(initX, initY,speed);
+    public CollidingObject(double initX , double initY,Shape collidingShape) {
+        super(initX, initY);
         this.collideShape = collidingShape;
     }
     
@@ -72,35 +72,35 @@ public class CollidingObject extends GameObject{
             }
         }
         
-        
+        float speed = 5.5f;
       //Reduce speed X 
         if(getDeltaX() < 0){
-            if(-getDeltaX() > getSpeed()){
-                setDeltaX(getDeltaX()  + getSpeed());
+            if(-getDeltaX() > speed){
+                setDeltaX(getDeltaX()  + speed);
             }else{
                 setDeltaX(0);
             }
         }
         
         if(getDeltaX() > 0){
-            if(getDeltaX() > getSpeed()){
-                setDeltaX(getDeltaX()  - getSpeed());
+            if(getDeltaX() > speed){
+                setDeltaX(getDeltaX()  - speed);
             }else{
                 setDeltaX(0);
             }
         }
         //Reduce speed Y 
         if(getDeltaY() < 0){
-            if(-getDeltaY() > getSpeed()){
-                setDeltaY(getDeltaY()  + getSpeed());
+            if(-getDeltaY() > speed){
+                setDeltaY(getDeltaY()  + speed);
             }else{
                 setDeltaY(0);
             }
         }
         
         if(getDeltaY() > 0){
-            if(getDeltaY() > getSpeed()){
-                setDeltaY(getDeltaY()  - getSpeed());
+            if(getDeltaY() > speed){
+                setDeltaY(getDeltaY()  - speed);
             }else{
                 setDeltaY(0);
             }

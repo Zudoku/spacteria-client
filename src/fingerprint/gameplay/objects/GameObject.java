@@ -9,16 +9,14 @@ public class GameObject {
 
     private double x;
     private double y;
-    private double speed;
     private double deltaX = 0;
     private double deltaY = 0;
     public double displaySpeedX;
     public double displaySpeedY;
     
-    public GameObject(double initX, double initY,double speed) {
+    public GameObject(double initX, double initY) {
         this.x = initX;
         this.y = initY;
-        this.speed = speed;
     }
     public void move(int delta,CollisionManager collisionManager){
         if(needMove()){
@@ -79,9 +77,6 @@ public class GameObject {
         return y;
     }
 
-    public double getSpeed() {
-        return speed;
-    }
     public void setX(double x) {
         this.x = x;
     }
@@ -100,8 +95,12 @@ public class GameObject {
     public void setDeltaY(double deltaY) {
         this.deltaY = deltaY;
     }
-    public void setSpeed(double speed) {
-        this.speed = speed;
+    
+    public void setDeltaX(double deltaX,double slowAmount) {
+        this.deltaX = deltaX;
+    }
+    public void setDeltaY(double deltaY, double slowAmount) {
+        this.deltaY = deltaY;
     }
     protected double[] getDrawingCoordinates(){
         
