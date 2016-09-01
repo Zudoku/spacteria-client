@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import com.google.inject.Singleton;
 import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.networking.events.CorrectPlayerPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.rendering.DisplayConsoleMessageEvent;
@@ -86,6 +87,15 @@ public class EntityManager {
         DummyPlayer player = (DummyPlayer) getObjectWithID(event.getId());
         eventBus.post(new DisplayConsoleMessageEvent("Player " + player.getCharactername() + " left game!", Color.yellow));
         removeObjectWithID(event.getId());
+    }
+    
+    @Subscribe
+    public void listenCorrectPlayerPositionEvent(CorrectPlayerPositionEvent event){
+        GameObject handled = getObjectWithID(event.getId());
+        if(handled instanceof DummyPlayer){
+            handled.setX(event.getX());
+            handled.setY(event.getY());
+        }
     }
     
 }

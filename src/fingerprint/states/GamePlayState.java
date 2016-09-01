@@ -20,8 +20,10 @@ import fingerprint.gameplay.objects.player.DummyPlayer;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.networking.NetworkEvents;
+import fingerprint.networking.events.CorrectPlayerPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
+import fingerprint.networking.events.UpdatePositionEvent;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.InitGameInfoEvent;
@@ -29,6 +31,8 @@ import fingerprint.states.events.SaveAndExitWorldEvent;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import java.util.logging.Level;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class GamePlayState extends BasicGameState{
@@ -129,6 +133,13 @@ public class GamePlayState extends BasicGameState{
                 eventBus.post(gson.fromJson(args[0].toString(), PlayerLeftEvent.class));
             }
 
+        }).on(NetworkEvents.SERVER_CORRECTPLAYERPOSITION, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                eventBus.post(gson.fromJson(args[0].toString(), CorrectPlayerPositionEvent.class));
+            }
+
         });
         
     }
@@ -138,6 +149,15 @@ public class GamePlayState extends BasicGameState{
         gameFileHandler.saveCharacterFile(null);
         
         eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
+    }
+    
+    @Subscribe
+    public void listenUpdatePositionEvent(UpdatePositionEvent event){
+        try {
+            mySocket.emit(NetworkEvents.CLIENT_UPDATE_POSITION, new JSONObject(gson.toJson(event, UpdatePositionEvent.class)));
+        } catch (JSONException ex) {
+            Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 

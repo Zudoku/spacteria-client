@@ -38,7 +38,7 @@ public class GameObject {
         }
         
         double destinationY =  (double)(getY());
-        double destinationX =  (double)(getX() + (movechunk / delta));
+        double destinationX =  (double)(getX() + (movechunk / 1));
         
         return new double[]{destinationX,destinationY};
         
@@ -51,7 +51,7 @@ public class GameObject {
             movechunk = -0.1d;
         }
         
-        double destinationY =  (double)(getY() + (movechunk / delta));
+        double destinationY =  (double)(getY() + (movechunk / 1));
         double destinationX =  (double)(getX());
         
         return new double[]{destinationX,destinationY};

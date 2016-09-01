@@ -3,9 +3,7 @@ package fingerprint.gameplay.objects;
 import java.math.BigDecimal;
 
 import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
-import org.newdawn.slick.geom.Transform;
 
 public class CollidingObject extends GameObject{
     protected transient Shape collideShape;
@@ -42,7 +40,11 @@ public class CollidingObject extends GameObject{
                 double[] destination = moveDestinationX(delta);
                 if(collideToTerrain){
                     Shape clonedShape = new Polygon(collideShape.getPoints());
-                    clonedShape.setLocation((float)Math.floor(destination[0]),(float) Math.floor(destination[1]));
+                    
+                    float locationX = (float)Math.floor(destination[0]);
+                    float locationY = (float)Math.floor(destination[1]);
+                    
+                    clonedShape.setLocation(locationX,locationY);
                     if(!collisionManager.collideWithTerrain(clonedShape)){
                         setX(destination[0]);
                         setY(destination[1]);
@@ -114,13 +116,13 @@ public class CollidingObject extends GameObject{
     }
     @Override
     public void setX(double x) {
-        x = new BigDecimal(x).setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
+        x = new BigDecimal(x).setScale(3, BigDecimal.ROUND_FLOOR).doubleValue();
         super.setX(x);
         collideShape.setX((float)getX());
     }
     @Override
     public void setY(double y) {
-        y = new BigDecimal(y).setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
+        y = new BigDecimal(y).setScale(3, BigDecimal.ROUND_FLOOR).doubleValue();
         super.setY(y);
         collideShape.setY((float)getY());
     }

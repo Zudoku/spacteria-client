@@ -9,27 +9,38 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 
 
 import fingerprint.rendering.map.TilemapRenderer;
+import java.util.Arrays;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.tiled.TiledMapPlus;
 
-
+@Singleton
 public class CollisionManager {
     private static final Logger logger = Logger.getLogger(CollisionManager.class.getName());
     private TiledMapPlus map;
 
     private EntityManager entityManager;
+    
+    private List<Integer> blockingTiles;
+    private String filename = "";
 
     
     @Inject
     public CollisionManager(EntityManager entityManager) {
+        Integer[] blocking = new Integer[]{1,2};
+        
+        this.blockingTiles = new ArrayList<>(Arrays.asList(blocking));
 
         this.entityManager = entityManager;
     }
-    public void setMap(TiledMapPlus map) {
-        this.map = map;
+    
+    public void setMap(String filename) {
+        this.filename = filename;
+        this.map = null;
     }
 
     public void checkCollision(){
@@ -44,12 +55,23 @@ public class CollisionManager {
             }
         }
     }
-    public boolean collideWithTerrain(Shape collider){/*
+    public boolean collideWithTerrain(Shape collider){
+        if(map == null){
+            if(filename.equals("")){
+                return true;
+            }else {
+                try {
+                    map = new TiledMapPlus("resources/" + filename);
+                } catch (SlickException ex) {
+                    logger.log(Level.SEVERE, null, ex);
+                }
+            }
+        }
         List<int[][]> arrayPoints = new ArrayList<>();
         for(int i = 0; i < collider.getPointCount() ; i ++){
             float[] point = collider.getPoint(i);
-            int arrayPosX = (int)Math.floor(((int)Math.round(point[0]))/TilemapRenderer.tileSize);
-            int arrayPosY = (int)Math.floor(((int)Math.round(point[1]))/TilemapRenderer.tileSize);
+            int arrayPosX = (int)Math.floor(((int)Math.floor(point[0]))/TilemapRenderer.tileSize);
+            int arrayPosY = (int)Math.floor(((int)Math.floor(point[1]))/TilemapRenderer.tileSize);
             int[][] arrayPos = new int[2][1];
             arrayPos[0][0] = arrayPosX;
             arrayPos[1][0] = arrayPosY;
@@ -59,26 +81,22 @@ public class CollisionManager {
         }
 
         for (int[][] arrayPos : arrayPoints) {
-            Block foundBlock = blockManager
-                    .getBlock(map.getData()[arrayPos[0][0]][arrayPos[1][0]]);
-            if (foundBlock == null) {
-                continue;
-            }
-            if (foundBlock.isBlocking()) {
+            int tileID = map.getTileId(arrayPos[0][0], arrayPos[1][0], 0);
+            if (blockingTiles.contains((Integer) tileID)) {
                 int rectangleX = arrayPos[0][0] * TilemapRenderer.tileSize;
                 int rectangleY = arrayPos[1][0] * TilemapRenderer.tileSize;
                 Rectangle blockRectangle = new Rectangle(rectangleX,
                         rectangleY, TilemapRenderer.tileSize,
                         TilemapRenderer.tileSize);
                 if (blockRectangle.intersects(collider)) {
-                    //logger.log(Level.INFO, "", new Object[]{});
+                    //logger.log(Level.INFO, "collides", new Object[]{});
                     return true;
                 }
             } else {
                 continue;
             }
         }
-*/
+
         return false;
     }
     

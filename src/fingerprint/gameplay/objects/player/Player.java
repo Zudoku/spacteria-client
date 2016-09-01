@@ -29,15 +29,17 @@ public class Player extends CollidingObject{
     
     public Player() {
         super(0,0, new Rectangle(0,0, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
+        collideToTerrain = true;
     }
     
     public void init(){
         statManager = new StatManager(characterClass, level);
+        collideToTerrain = true;
     }
     
     public Player(double initX, double initY) {
         super(initX,initY,new Rectangle((float)initX,(float) initY, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight));
-        setCollideToTerrain(true);
+        collideToTerrain = true;
         inventory = new Inventory();
         
     }

@@ -20,7 +20,7 @@ public class GameWorldContainer {
     private static final Logger logger = Logger.getLogger(GameWorldContainer.class.getName());
     
     @Inject private EntityManager entityManager;
-    //@Inject private CollisionManager collisionManager;
+    @Inject private CollisionManager collisionManager;
     private RoomDescription world;
     @Inject private PlayerContainer playerContainer;
     @Inject private EventBus eventBus;
@@ -44,6 +44,7 @@ public class GameWorldContainer {
     }
     public void setCurrentRoom(RoomDescription roomDescription){
         world = roomDescription;
+        collisionManager.setMap(roomDescription.getMapDescription().getFilename());
         for(DummyPlayer dp : roomDescription.getPlayers()){
             entityManager.addNewObject(dp.getId(),dp);
         }

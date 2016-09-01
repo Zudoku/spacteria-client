@@ -6,6 +6,8 @@
 package fingerprint.gameplay.objects.player;
 
 import fingerprint.gameplay.objects.GameObject;
+import static fingerprint.rendering.RenderingManager.unScaledScreenHeight;
+import static fingerprint.rendering.RenderingManager.unScaledScreenWidth;
 import fingerprint.states.menu.enums.CharacterClass;
 import java.util.logging.Logger;
 import org.newdawn.slick.Color;
@@ -38,7 +40,10 @@ public class DummyPlayer extends GameObject{
         graphics.fillRect((float)coordinates[0] + 2,(float)coordinates[1] + 2, PlayerContainer.playerCollisionWidth,PlayerContainer.playerCollisionHeight);
         graphics.setColor(Color.blue);
         graphics.fillRect((float)coordinates[0] + 6,(float)coordinates[1] + 6, PlayerContainer.playerCollisionWidth - 8,PlayerContainer.playerCollisionHeight -8);
-        
+        graphics.setColor(Color.magenta);
+        int titleLenght = graphics.getFont().getWidth(charactername);
+        graphics.drawString(charactername, (float)coordinates[0] - titleLenght/2, (float)coordinates[1]);
+
     }
     
     

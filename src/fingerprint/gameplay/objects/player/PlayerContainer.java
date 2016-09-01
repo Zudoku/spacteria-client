@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.objects.CollisionManager;
+import fingerprint.networking.events.UpdatePositionEvent;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.rendering.SetScreenStartCoordinatesEvent;
 import fingerprint.states.events.SaveAndExitWorldEvent;
@@ -26,6 +27,9 @@ public class PlayerContainer {
     
     private double angle = 45;
     
+    private int lastPosOnServerX = 0;
+    private int lastPosOnServerY = 0;
+    private final int updateTreshhold = 2;
     
     private Player currentPlayer;
     
@@ -38,11 +42,24 @@ public class PlayerContainer {
         }
         updateInput(inputManager,delta);
         currentPlayer.move(delta, collisionManager);
+        
+        int currX = (int) Math.floor(currentPlayer.getX());
+        int currY = (int) Math.floor(currentPlayer.getY());
+        
+        int deltaX = Math.abs(lastPosOnServerX - currX);
+        int deltaY = Math.abs(lastPosOnServerY - currY);
+        
+        if(deltaX + deltaY > updateTreshhold){
+            lastPosOnServerX = currX;
+            lastPosOnServerY = currY;
+            eventBus.post(new UpdatePositionEvent(currX, currY));
+        }
+        
     }
     
     private void updateInput(InputManager inputManager,int delta) {
         double angleInRadians = (angle / 360) * (2 * Math.PI);
-        double scaler = ((double)getStats().getSpeed() * delta / 20d);
+        double scaler = ((double)getStats().getSpeed() * delta / 200d);
         
         currentPlayer.setDeltaX(0);
         currentPlayer.setDeltaY(0);
