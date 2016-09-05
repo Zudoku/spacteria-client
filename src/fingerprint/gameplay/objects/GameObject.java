@@ -1,5 +1,8 @@
 package fingerprint.gameplay.objects;
 
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+import fingerprint.core.GameLauncher;
 import org.newdawn.slick.Graphics;
 
 import fingerprint.rendering.RenderingManager;
@@ -14,9 +17,13 @@ public class GameObject {
     public double displaySpeedX;
     public double displaySpeedY;
     
+    @Inject protected transient EventBus eventBus;
+    
     public GameObject(double initX, double initY) {
         this.x = initX;
         this.y = initY;
+        //TODO: Dirty trick
+        GameLauncher.injector.injectMembers(this);
     }
     public void move(int delta,CollisionManager collisionManager){
         if(needMove()){

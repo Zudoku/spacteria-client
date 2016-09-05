@@ -33,8 +33,9 @@ public class GameWorldContainer {
     }
     public void updateWorld(InputManager inputManager,int delta){
         playerContainer.updatePlayer(inputManager,delta);
-
         playerContainer.updateCamera();
+        entityManager.updateProjectileDelta(delta);
+        entityManager.updateEntities(delta,collisionManager);
 
     }
     public void setMyCharacter(Player player, String id) {

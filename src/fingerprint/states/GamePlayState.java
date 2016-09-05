@@ -58,6 +58,7 @@ public class GamePlayState extends BasicGameState{
             throws SlickException {
         //GameLauncher.injector.injectMembers(worldContainer); //dirty trick
         eventBus.register(this);
+        inputManager.setInput(gc.getInput());
         
     }
 

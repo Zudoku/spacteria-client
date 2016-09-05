@@ -32,6 +32,9 @@ public class CollidingObject extends GameObject{
         displaySpeedX = getDeltaX();
         displaySpeedY = getDeltaY();
         
+        //boolean blockedXMovement = false;
+        //boolean blockedYMovement = false;
+        
         double maxDelta = Math.max(Math.abs(getDeltaX()), Math.abs(getDeltaY()));
         //Move in 0.1 chunks
         for(double currentDelta = 0.0d ; currentDelta < maxDelta ; currentDelta += 0.1d){
@@ -48,6 +51,8 @@ public class CollidingObject extends GameObject{
                     if(!collisionManager.collideWithTerrain(clonedShape)){
                         setX(destination[0]);
                         setY(destination[1]);
+                    }else {
+                        onTerrainCollision();
                     }
                     
                 }else{
@@ -65,6 +70,8 @@ public class CollidingObject extends GameObject{
                     if(!collisionManager.collideWithTerrain(clonedShape)){
                         setX(destination[0]);
                         setY(destination[1]);
+                    } else {
+                        onTerrainCollision();
                     }
                     
                 }else{
@@ -112,6 +119,10 @@ public class CollidingObject extends GameObject{
         
     }
     protected void onCollision(CollidingObject collidedWith){
+        
+    }
+    
+    protected void onTerrainCollision(){
         
     }
     @Override

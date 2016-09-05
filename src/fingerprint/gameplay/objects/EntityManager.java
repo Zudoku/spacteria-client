@@ -10,7 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.inject.Singleton;
+import fingerprint.gameplay.objects.events.DeleteEntityEvent;
 import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.networking.events.CorrectPlayerPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
@@ -97,5 +99,38 @@ public class EntityManager {
             handled.setY(event.getY());
         }
     }
+    
+    @Subscribe
+    public void listenDeleteEntityEvent(DeleteEntityEvent event){
+        removeObjectWithID(event.getId());
+    }
+
+    public void updateProjectileDelta(int delta) {
+        for(Projectile projectile : get(Projectile.class)){
+            double angleInRadians = (projectile.getAngle() / 360) * (2 * Math.PI);
+            double scaler = ((double)projectile.getSpeed() * delta / 200d);
+            
+            double deltaX = -Math.sin(angleInRadians);
+            double deltaY = -Math.cos(angleInRadians);
+            
+            //Apply speed buffs
+            
+            deltaX *= scaler;
+            deltaY *= scaler;
+            
+            projectile.setDeltaX(deltaX);
+            projectile.setDeltaY(deltaY);
+        }
+    }
+    public void updateEntities(int delta, CollisionManager collisionManager){
+        updateProjectiles(delta, collisionManager);
+    }
+    
+    private void updateProjectiles(int delta, CollisionManager collisionManager){
+        for(Projectile projectile : get(Projectile.class)){
+            projectile.move(delta, collisionManager);
+        }
+    }
+    
     
 }

@@ -32,7 +32,7 @@ public class GameModule extends AbstractModule{
     @Override
     protected void configure() {
         entityManager.configure(eventBus);
-        renderingManager.configure(entityManager,eventBus);
+        renderingManager.configure(entityManager,eventBus, inputManager);
         
     }
     

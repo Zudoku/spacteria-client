@@ -34,7 +34,6 @@ public class CollisionManager {
         Integer[] blocking = new Integer[]{1,2};
         
         this.blockingTiles = new ArrayList<>(Arrays.asList(blocking));
-
         this.entityManager = entityManager;
     }
     

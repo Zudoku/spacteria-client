@@ -15,11 +15,10 @@ import org.newdawn.slick.gui.TextField;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import fingerprint.controls.InputManager;
 
 import fingerprint.core.GameLauncher;
-import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.Player;
@@ -31,6 +30,9 @@ import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 
 @Singleton
 public class RenderingManager {
@@ -39,7 +41,8 @@ public class RenderingManager {
     private MainMenuRenderer mainMenuRenderer;
     private UIManager uiManager;
     
-    @Inject private EntityManager entityManager;
+    private EntityManager entityManager;
+    private InputManager inputManager;
     
     public static RenderingResolutions currentResolution;
     public static int unScaledScreenWidth = 16*TilemapRenderer.tileSize;  //64 = 1024
@@ -48,6 +51,8 @@ public class RenderingManager {
     
     private static double screenStartX = 0;
     private static double screenStartY = 0;
+    private static double cursorX = 0;
+    private static double cursorY = 0;
     
     private int virtualResolutionHeight;
     private int virtualResolutionWidth;
@@ -57,7 +62,9 @@ public class RenderingManager {
     private TrueTypeFont largeVerdanaFont;
     private TrueTypeFont giganticVerdanaFont;
     
-    public RenderingManager() {
+    private Image cursor;
+    
+    public RenderingManager(){
         currentResolution = GameLauncher.gameSettings.resolution;
         mainMenuRenderer = new MainMenuRenderer();
         uiManager = new UIManager();
@@ -69,6 +76,7 @@ public class RenderingManager {
             virtualResolutionHeight = currentResolution.getHeight();
             virtualResolutionWidth = currentResolution.getWidth();
         }
+        
         
         
         
@@ -90,8 +98,9 @@ public class RenderingManager {
         
     }
     
-    public void configure(EntityManager entityManager,EventBus eventBus){
+    public void configure(EntityManager entityManager,EventBus eventBus, InputManager inputManager){
         this.entityManager = entityManager;
+        this.inputManager = inputManager;
         tileMapRenderer = new TilemapRenderer();
         eventBus.register(this);
         eventBus.register(uiManager);
@@ -192,6 +201,7 @@ public class RenderingManager {
         }
         //EFFECTS
         //UI
+        //graphics.scale(unScaledScreenWidth, unScaledScreenWidth);
         drawGamePlayUI(graphics, drawDebugInfo, cameraRotation);
     }
     private boolean needToDraw(GameObject object){
@@ -217,7 +227,8 @@ public class RenderingManager {
                 graphics.drawString("Player rectangle (x,y): " +(int)drawableObject.getCollideShape().getX()+"," +(int)drawableObject.getCollideShape().getY() , 10, 110);
                 graphics.drawString("Player rotation: " + (int)Math.floor(cameraRotation) , 10, 130);
             }
-            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 150);
+            graphics.drawString("Mouse coordinates (x,y): " + (int)Math.floor(inputManager.getInput().getAbsoluteMouseX()) + "," + (int)Math.floor(inputManager.getInput().getAbsoluteMouseY()) , 10, 150);
+            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 170);
         }
         
         
@@ -225,7 +236,7 @@ public class RenderingManager {
         
         drawTextEffect(uiManager.getNextConsoleText(), Color.black, Color.yellow, 30, virtualResolutionHeight - 60, 1, graphics, largeVerdanaFont);
         
-        
+        //cursor.drawCentered((float)inputManager.getInput().getAbsoluteMouseX(),(float)inputManager.getInput().getAbsoluteMouseY());
     }
     
     
@@ -247,6 +258,13 @@ public class RenderingManager {
         graphics.setBackground(Color.black);
         if(smallVerdanaFont == null){
             resetFonts();
+        }
+        if(cursor == null){
+            try {
+                cursor = new Image("resources/cursor.png");
+            } catch (SlickException ex) {
+                Logger.getLogger(RenderingManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
     }

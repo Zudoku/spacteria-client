@@ -18,6 +18,7 @@ import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 import fingerprint.states.menu.enums.MainMenuSelection;
+import org.newdawn.slick.Image;
 
 public class MainMenuState extends BasicGameState{
     private static final Logger logger = Logger.getLogger(MainMenuState.class.getName());
@@ -34,9 +35,11 @@ public class MainMenuState extends BasicGameState{
     }
     
     @Override
-    public void init(GameContainer arg0, StateBasedGame arg1)
+    public void init(GameContainer gc, StateBasedGame sbg)
             throws SlickException {
         selection = MainMenuSelection.PLAY;
+        Image img = new Image("resources/cursor2.png");
+        gc.setMouseCursor(img, 0,0);
     }
 
     @Override
