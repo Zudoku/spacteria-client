@@ -19,7 +19,5 @@ public class DeleteEntityEvent {
     public String getId() {
         return id;
     }
-    
-    
-    
+
 }

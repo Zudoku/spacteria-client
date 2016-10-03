@@ -14,8 +14,8 @@ public class GameObject {
     private double y;
     private double deltaX = 0;
     private double deltaY = 0;
-    public double displaySpeedX;
-    public double displaySpeedY;
+    public transient double  displaySpeedX;
+    public transient double displaySpeedY;
     
     @Inject protected transient EventBus eventBus;
     

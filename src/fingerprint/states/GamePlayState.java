@@ -16,7 +16,11 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
+import fingerprint.gameplay.objects.events.DeleteEntityEvent;
 import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.gameplay.objects.projectiles.DespawnProjectileEvent;
+import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
+import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.networking.NetworkEvents;
@@ -141,6 +145,20 @@ public class GamePlayState extends BasicGameState{
                 eventBus.post(gson.fromJson(args[0].toString(), CorrectPlayerPositionEvent.class));
             }
 
+        }).on(NetworkEvents.SERVER_PROJECTILE_SPAWNED, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                eventBus.post(gson.fromJson(args[0].toString(), NewProjectileSpawnedEvent.class));
+            }
+
+        }).on(NetworkEvents.SERVER_PROJECTILE_DESPAWNED, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                eventBus.post(gson.fromJson(args[0].toString(), DeleteEntityEvent.class));
+            }
+
         });
         
     }
@@ -156,6 +174,14 @@ public class GamePlayState extends BasicGameState{
     public void listenUpdatePositionEvent(UpdatePositionEvent event){
         try {
             mySocket.emit(NetworkEvents.CLIENT_UPDATE_POSITION, new JSONObject(gson.toJson(event, UpdatePositionEvent.class)));
+        } catch (JSONException ex) {
+            Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    @Subscribe
+    public void listenUpdatePositionEvent(SpawnProjectileEvent event){
+        try {
+            mySocket.emit(NetworkEvents.CLIENT_SPAWN_PROJECTILE, new JSONObject(gson.toJson(event, SpawnProjectileEvent.class)));
         } catch (JSONException ex) {
             Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
         }

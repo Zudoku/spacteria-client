@@ -5,6 +5,10 @@
  */
 package fingerprint.mainmenus.serverlist;
 
+import fingerprint.gameplay.objects.Enemy;
+import fingerprint.gameplay.objects.GameObject;
+import fingerprint.gameplay.objects.projectiles.Projectile;
+
 /**
  *
  * @author arska
@@ -55,6 +59,10 @@ public class MapDescription {
     public void setStartY(int startY) {
         this.startY = startY;
     }
+
+    
+    
+    
     
     
     

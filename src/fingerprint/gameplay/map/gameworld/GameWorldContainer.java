@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.gameplay.objects.CollisionManager;
+import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.player.DummyPlayer;
 import fingerprint.gameplay.objects.player.Player;
@@ -48,6 +49,9 @@ public class GameWorldContainer {
         collisionManager.setMap(roomDescription.getMapDescription().getFilename());
         for(DummyPlayer dp : roomDescription.getPlayers()){
             entityManager.addNewObject(dp.getId(),dp);
+        }
+        for(Enemy enemy : roomDescription.getEnemies()){
+            entityManager.addNewObject(java.util.UUID.randomUUID().toString(), enemy);
         }
         
     }

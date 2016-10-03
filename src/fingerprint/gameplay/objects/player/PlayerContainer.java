@@ -195,6 +195,7 @@ public class PlayerContainer {
         float projectileAngleInRadians = (float) angleBetweenTwoPointsWithFixedPoint(zeroPosition.getX(), zeroPosition.getY(), mousePosition.getX(), mousePosition.getY(), playerPosition.getX(), playerPosition.getY());
         float projectileAngle = (float) Math.toDegrees(projectileAngleInRadians) + 180f;
         projectileAngle += (float)angle;
+        projectileAngle  = projectileAngle % 360;
         
         double projectileStartX = this.currentPlayer.getX() + (playerCollisionWidth / 2);
         double projectileStartY = this.currentPlayer.getY() + (playerCollisionHeight / 2);
@@ -203,9 +204,10 @@ public class PlayerContainer {
         String guid = java.util.UUID.randomUUID().toString();
         Projectile createdProjectile = new Projectile(projectileAngle,projectileSpeed,projectileMaxDistance, projectileStartX,projectileStartY);
         createdProjectile.setGuid(guid);
+        createdProjectile.setTeam((byte) 2);
         entityManager.addNewObject(guid, createdProjectile);
         //Launch event to server
-        //eventBus.post(new SpawnProjectileEvent(createdProjectile));
+        eventBus.post(new SpawnProjectileEvent(createdProjectile));
         
         
         

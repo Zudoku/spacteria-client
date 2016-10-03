@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import com.google.inject.Singleton;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
 import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.networking.events.CorrectPlayerPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
@@ -98,6 +99,10 @@ public class EntityManager {
             handled.setX(event.getX());
             handled.setY(event.getY());
         }
+    }
+    @Subscribe
+    public void listenNewProjectileSpawnedEvent(NewProjectileSpawnedEvent event){
+        addNewObject(event.getProjectile().getGuid(), event.getProjectile());
     }
     
     @Subscribe

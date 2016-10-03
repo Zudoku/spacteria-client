@@ -1,6 +1,9 @@
 package fingerprint.gameplay.objects;
 
+import fingerprint.gameplay.objects.player.PlayerContainer;
 import java.math.BigDecimal;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
@@ -21,6 +24,15 @@ public class CollidingObject extends GameObject{
     public Shape getCollideShape() {
         return collideShape;
     }
+
+    @Override
+    public void draw(Graphics graphics) {
+        graphics.setColor(Color.gray);
+        graphics.fill(collideShape);
+        
+    }
+    
+    
     @Override
     public void move(int delta, CollisionManager collisionManager) {
         if(!needMove()){
