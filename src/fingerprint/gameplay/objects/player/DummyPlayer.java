@@ -6,12 +6,12 @@
 package fingerprint.gameplay.objects.player;
 
 import fingerprint.gameplay.objects.GameObject;
-import static fingerprint.rendering.RenderingManager.unScaledScreenHeight;
-import static fingerprint.rendering.RenderingManager.unScaledScreenWidth;
 import fingerprint.states.menu.enums.CharacterClass;
 import java.util.logging.Logger;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import static fingerprint.rendering.RenderingManager.unScaledGamePlayWidth;
+import static fingerprint.rendering.RenderingManager.unScaledGamePlayHeight;
 
 /**
  *

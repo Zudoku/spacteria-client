@@ -28,6 +28,7 @@ import fingerprint.networking.events.CorrectPlayerPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.networking.events.UpdatePositionEvent;
+import fingerprint.rendering.GamePlayRenderingInformation;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.InitGameInfoEvent;
@@ -69,7 +70,17 @@ public class GamePlayState extends BasicGameState{
     @Override
     public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
             throws SlickException {
-        renderingManager.drawGamePlay(graphics,debugInfo, worldContainer.getCameraAngle());
+        GamePlayRenderingInformation gri = new GamePlayRenderingInformation();
+        
+        gri.setCameraRotation(worldContainer.getCameraAngle());
+        gri.setMyName(worldContainer.getMyName());
+        gri.setLevel(worldContainer.getMyLevel());
+        gri.setExperience(worldContainer.getMyExp());
+        gri.setMyStats(worldContainer.getMyStats());
+        gri.setMapName(worldContainer.getMapName());
+        gri.setCharClass(worldContainer.getMyClass());
+        //worldContainer.
+        renderingManager.drawGamePlay(graphics,debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
     }
 

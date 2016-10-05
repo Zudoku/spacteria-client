@@ -14,7 +14,9 @@ import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.player.DummyPlayer;
 import fingerprint.gameplay.objects.player.Player;
 import fingerprint.gameplay.objects.player.PlayerContainer;
+import fingerprint.gameplay.objects.player.StatContainer;
 import fingerprint.mainmenus.serverlist.RoomDescription;
+import fingerprint.states.menu.enums.CharacterClass;
 
 
 public class GameWorldContainer {
@@ -55,6 +57,31 @@ public class GameWorldContainer {
         }
         
     }
+    public StatContainer getMyStats(){
+        return playerContainer.getCurrentPlayer().getStatManager().getStats();
+    }
+    
+    public String getMyName(){
+        return playerContainer.getCurrentPlayer().getCharactername();
+    }
+    
+    public int getMyLevel(){
+        return playerContainer.getCurrentPlayer().getLevel();
+    }
+    
+    public CharacterClass getMyClass(){
+        return playerContainer.getCurrentPlayer().getCharacterClass();
+    }
+    
+    public int getMyExp(){
+        return playerContainer.getCurrentPlayer().getExperience();
+    }
+    
+    public String getMapName(){
+        return world.getMapDescription().getFilename() + " - (" + world.getDifficulty() + ")";
+    }
+    
+    
     
     public double getCameraAngle(){
         return playerContainer.getAngle();

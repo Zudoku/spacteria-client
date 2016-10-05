@@ -45,7 +45,9 @@ public class RenderingManager {
     private InputManager inputManager;
     
     public static RenderingResolutions currentResolution;
-    public static int unScaledScreenWidth = 16*TilemapRenderer.tileSize;  //64 = 1024
+    public static int unScaledGamePlayWidth = 16*TilemapRenderer.tileSize;  //64 = 1024
+    public static int unScaledGamePlayHeight = 16*TilemapRenderer.tileSize; //64 = 1024
+    public static int unScaledScreenWidth = 20*TilemapRenderer.tileSize;  //64 = 1280
     public static int unScaledScreenHeight = 16*TilemapRenderer.tileSize; //64 = 1024
     public static Color FONT_BASE_COLOR = Color.red;
     
@@ -143,7 +145,7 @@ public class RenderingManager {
                 @Override
                 protected void createPoints() {
                     int startX = 100;
-                    int startY = RenderingManager.unScaledScreenHeight/2;
+                    int startY = RenderingManager.unScaledGamePlayHeight/2;
                     points = new float[]{startX  , startY -25 ,startX + 50 , startY -50 ,startX+50,startY};
                     
                     
@@ -164,8 +166,8 @@ public class RenderingManager {
                 
                 @Override
                 protected void createPoints() {
-                    int startX = RenderingManager.unScaledScreenWidth - 100;
-                    int startY = RenderingManager.unScaledScreenHeight/2;
+                    int startX = RenderingManager.unScaledGamePlayWidth - 100;
+                    int startY = RenderingManager.unScaledGamePlayHeight/2;
                     points = new float[]{startX  , startY -25 ,startX - 50 , startY -50 ,startX-50,startY};
                     
                     
@@ -175,11 +177,11 @@ public class RenderingManager {
             graphics.fill(triangle);
         }
     }
-    public void drawGamePlay(Graphics graphics,boolean drawDebugInfo, double cameraRotation){
+    public void drawGamePlay(Graphics graphics,boolean drawDebugInfo, GamePlayRenderingInformation gri){
         initDraw(graphics);
         //LIGHTING
         //MAP
-        graphics.rotate(unScaledScreenWidth / 2 , unScaledScreenHeight / 2, (float)cameraRotation);
+        graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, (float)gri.getCameraRotation());
         tileMapRenderer.draw(screenStartX, screenStartY);
         Set<GameObject> asd = entityManager.get(GameObject.class);
         //OBJECTS
@@ -196,22 +198,23 @@ public class RenderingManager {
         for(Player drawableObject : entityManager.get(Player.class)){
             
             drawableObject.draw(graphics);
-            graphics.rotate(unScaledScreenWidth / 2 , unScaledScreenHeight / 2, 360f -(float)cameraRotation);
+            graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, 360f -(float)gri.getCameraRotation());
             player = drawableObject;
         }
         //EFFECTS
         //UI
+        //graphics.setColor(FONT_BASE_COLOR);
         //graphics.scale(unScaledScreenWidth, unScaledScreenWidth);
-        drawGamePlayUI(graphics, drawDebugInfo, cameraRotation);
+        drawGamePlayUI(graphics, drawDebugInfo, gri);
     }
     private boolean needToDraw(GameObject object){
-        Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)virtualResolutionWidth,(float) virtualResolutionHeight);
+        Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)unScaledGamePlayWidth,(float) unScaledGamePlayHeight);
         Rectangle drawing = new Rectangle((float)object.getX(),(float)object.getY(),200f, 200f);
         return screen.intersects(drawing);
     }
     
     
-    private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo, double cameraRotation){
+    private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo, GamePlayRenderingInformation gri){
         if(drawDebugInfo){
             graphics.setColor(Color.black);
             graphics.fillRect(0, 0, 300, 200);
@@ -225,7 +228,7 @@ public class RenderingManager {
                 graphics.drawString("Player coordinates: " + drawableObject.getX() + "," + drawableObject.getY() + " (" + (int)Math.floor(drawableObject.getX()/64) + "," + (int)Math.floor(drawableObject.getY()/64) + ")", 10, 70);
                 graphics.drawString("Player speed (x,y): " + (int)drawableObject.displaySpeedX + "," + (int)drawableObject.displaySpeedY , 10, 90);
                 graphics.drawString("Player rectangle (x,y): " +(int)drawableObject.getCollideShape().getX()+"," +(int)drawableObject.getCollideShape().getY() , 10, 110);
-                graphics.drawString("Player rotation: " + (int)Math.floor(cameraRotation) , 10, 130);
+                graphics.drawString("Player rotation: " + (int)Math.floor(gri.getCameraRotation()) , 10, 130);
             }
             graphics.drawString("Mouse coordinates (x,y): " + (int)Math.floor(inputManager.getInput().getAbsoluteMouseX()) + "," + (int)Math.floor(inputManager.getInput().getAbsoluteMouseY()) , 10, 150);
             graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 170);
@@ -234,9 +237,71 @@ public class RenderingManager {
         
         //Draw the console
         
-        drawTextEffect(uiManager.getNextConsoleText(), Color.black, Color.yellow, 30, virtualResolutionHeight - 60, 1, graphics, largeVerdanaFont);
+        //drawTextEffect(uiManager.getNextConsoleText(), Color.black, Color.yellow, 30, virtualResolutionHeight - 60, 1, graphics, largeVerdanaFont);
         
-        //cursor.drawCentered((float)inputManager.getInput().getAbsoluteMouseX(),(float)inputManager.getInput().getAbsoluteMouseY());
+        //Draw the background for real UI
+        graphics.setColor(Color.darkGray);
+        graphics.fillRect(unScaledGamePlayWidth, 0, 4 * TilemapRenderer.tileSize, unScaledScreenHeight);
+        
+        //Draw minimap
+        graphics.setColor(Color.blue);
+        graphics.fillRect(unScaledGamePlayWidth, 0, 4 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize);
+        graphics.setColor(Color.gray);
+        graphics.setLineWidth(2);
+        graphics.drawRect(unScaledGamePlayWidth, 0, 4 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize);
+        //Draw map name
+        graphics.setLineWidth(1);
+        graphics.setColor(Color.white);
+        graphics.fillRect(unScaledGamePlayWidth, 4 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize, 20);
+        graphics.setColor(Color.black);
+        graphics.drawRect(unScaledGamePlayWidth, 4 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -1, 20);
+        graphics.setFont(smallVerdanaFont);
+        graphics.setColor(Color.black);
+        graphics.drawString(gri.getMapName(), unScaledGamePlayWidth + 4, 4 * TilemapRenderer.tileSize + 3);
+        //Draw character information
+
+        drawTextEffect(gri.getMyName(), Color.black, Color.yellow, unScaledGamePlayWidth + 10, 5 * TilemapRenderer.tileSize +10, 1, graphics, largeVerdanaFont);
+        graphics.setFont(smallVerdanaFont);
+        graphics.setColor(Color.black);
+        graphics.drawString("(" + gri.getCharClass().name() + ")", unScaledGamePlayWidth + 10, 5 * TilemapRenderer.tileSize +40);
+
+        //EXP
+        graphics.setColor(Color.magenta);
+        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -20, 20);
+        graphics.setColor(Color.black);
+        graphics.drawRect(unScaledGamePlayWidth +10, 6 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -21, 20);
+        graphics.setFont(smallVerdanaFont);
+        graphics.setColor(Color.black);
+        graphics.drawString("Level: " + gri.getLevel() + " Experience: " + gri.getExperience() + " / ???", unScaledGamePlayWidth + 14, 6 * TilemapRenderer.tileSize + 3);
+        //HP
+        graphics.setColor(Color.green);
+        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TilemapRenderer.tileSize +24, 4 * TilemapRenderer.tileSize -20, 20);
+        graphics.setColor(Color.black);
+        graphics.drawRect(unScaledGamePlayWidth +10, 6 * TilemapRenderer.tileSize +24, 4 * TilemapRenderer.tileSize -21, 20);
+        graphics.setFont(smallVerdanaFont);
+        graphics.setColor(Color.black);
+        graphics.drawString("Health: " + gri.getMyStats().getHealth()+ " / " + gri.getMyStats().getHealth() + "", unScaledGamePlayWidth + 14, 6 * TilemapRenderer.tileSize + 27);
+        
+        graphics.setColor(Color.gray);
+        graphics.fillRect(unScaledGamePlayWidth +10, 7 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -20, 100);
+        graphics.setColor(Color.black);
+        graphics.drawRect(unScaledGamePlayWidth +10, 7 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -21, 100);
+        
+        graphics.setFont(smallVerdanaFont);
+        graphics.setColor(Color.black);
+        //STATS
+        graphics.drawString("Strength: ", unScaledGamePlayWidth +14, 7 * TilemapRenderer.tileSize + 4);
+        graphics.drawString("" + gri.getMyStats().getStrength(), unScaledGamePlayWidth +88, 7 * TilemapRenderer.tileSize + 4);
+        graphics.drawString("Dexterity: ", unScaledGamePlayWidth +128, 7 * TilemapRenderer.tileSize + 4);
+        graphics.drawString("" + gri.getMyStats().getDexterity(), unScaledGamePlayWidth +210, 7 * TilemapRenderer.tileSize + 4);
+        graphics.drawString("Speed: ", unScaledGamePlayWidth +14, 7 * TilemapRenderer.tileSize + 20);
+        graphics.drawString("" + gri.getMyStats().getSpeed(), unScaledGamePlayWidth +88, 7 * TilemapRenderer.tileSize + 20);
+        graphics.drawString("Defence: ", unScaledGamePlayWidth +128, 7 * TilemapRenderer.tileSize + 20);
+        graphics.drawString("" + gri.getMyStats().getDefence(), unScaledGamePlayWidth +210, 7 * TilemapRenderer.tileSize + 20);
+        graphics.drawString("Vitality: ", unScaledGamePlayWidth +14, 7 * TilemapRenderer.tileSize + 36);
+        graphics.drawString("" + gri.getMyStats().getVitality(), unScaledGamePlayWidth +88, 7 * TilemapRenderer.tileSize + 36);
+        graphics.drawString("", unScaledGamePlayWidth +128, 7 * TilemapRenderer.tileSize + 36);
+        graphics.drawString("", unScaledGamePlayWidth +210, 7 * TilemapRenderer.tileSize + 36);
     }
     
     
@@ -276,7 +341,7 @@ public class RenderingManager {
     
     public static int calculateTextAllignCenterX(Graphics graphics,String title){
         int titleLenght = graphics.getFont().getWidth(title);
-        int place = RenderingManager.unScaledScreenWidth/2 - titleLenght/2;
+        int place = RenderingManager.unScaledGamePlayWidth/2 - titleLenght/2;
         
         return place;
     }

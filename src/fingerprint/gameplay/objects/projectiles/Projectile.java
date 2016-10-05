@@ -88,7 +88,17 @@ public class Projectile extends CollidingObject{
 
     @Override
     public void move(int delta, CollisionManager collisionManager) {
+        double deltaMovX = getX();
+        double deltaMovY = getY();
         super.move(delta, collisionManager);
+        deltaMovX -= getX();
+        deltaMovY -= getY();
+        
+        double diff = Math.abs(deltaMovX) + Math.abs(deltaMovY);
+        currentTravelDistance += diff;
+        if(maxTravelDistance < currentTravelDistance){
+            eventBus.post(new DeleteEntityEvent(guid));
+        }
     }
 
     @Override

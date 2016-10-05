@@ -162,8 +162,8 @@ public class PlayerContainer {
     
     
     public void updateCamera(){
-        int offsetX =  -(RenderingManager.unScaledScreenWidth/2 - playerCollisionWidth/2 - 1);
-        int offsetY =  -(RenderingManager.unScaledScreenHeight/2 - playerCollisionHeight/2 - 1);
+        int offsetX =  -(RenderingManager.unScaledGamePlayWidth/2 - playerCollisionWidth/2 - 1);
+        int offsetY =  -(RenderingManager.unScaledGamePlayHeight/2 - playerCollisionHeight/2 - 1);
         double x = currentPlayer.getX();
         double y = currentPlayer.getY();
         eventBus.post(new SetScreenStartCoordinatesEvent(x + offsetX, y + offsetY));
@@ -185,9 +185,9 @@ public class PlayerContainer {
         double mouseX = inputManager.getInput().getAbsoluteMouseX();
         double mouseY = inputManager.getInput().getAbsoluteMouseY();
         //Players position in screen
-        Point playerPosition = new Point(RenderingManager.unScaledScreenWidth / 2, RenderingManager.unScaledScreenHeight / 2);
+        Point playerPosition = new Point(RenderingManager.unScaledGamePlayWidth / 2, RenderingManager.unScaledGamePlayHeight / 2);
         //Angle 0 position
-        Point zeroPosition = new Point(RenderingManager.unScaledScreenWidth / 2,RenderingManager.unScaledScreenHeight);
+        Point zeroPosition = new Point(RenderingManager.unScaledGamePlayWidth / 2,RenderingManager.unScaledGamePlayHeight);
         //Mouse offset to player
         Point mousePosition = new Point((float) (mouseX), (float) (mouseY));
         
@@ -222,4 +222,10 @@ public class PlayerContainer {
     
         return angle1 - angle2; 
     }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+    
+    
 }
