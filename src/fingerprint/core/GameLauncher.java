@@ -55,7 +55,6 @@ public class GameLauncher extends StateBasedGame {
         eventBus.register(this);
     }
     public static void main(String[] arguments) {
-        
         GameSettingsProvider settingsLoader = new GameSettingsProvider();
         gameSettings = settingsLoader.loadGameSettings();
         if(gameSettings == null){

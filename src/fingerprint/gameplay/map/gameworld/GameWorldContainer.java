@@ -46,13 +46,15 @@ public class GameWorldContainer {
         entityManager.addNewObject(id,player);
         //eventBus.register(this);
     }
-    public void setCurrentRoom(RoomDescription roomDescription){
+    public void setCurrentRoom(RoomDescription roomDescription, String myID){
+        entityManager.clear(myID);
         world = roomDescription;
         collisionManager.setMap(roomDescription.getMapDescription().getFilename());
         for(DummyPlayer dp : roomDescription.getPlayers()){
             entityManager.addNewObject(dp.getId(),dp);
         }
         for(Enemy enemy : roomDescription.getEnemies()){
+            enemy.initialize();
             entityManager.addNewObject(java.util.UUID.randomUUID().toString(), enemy);
         }
         
@@ -79,6 +81,14 @@ public class GameWorldContainer {
     
     public String getMapName(){
         return world.getMapDescription().getFilename() + " - (" + world.getDifficulty() + ")";
+    }
+    
+    public void setPlayerCoords(double x, double y){
+        if(playerContainer.getCurrentPlayer() != null){
+            playerContainer.getCurrentPlayer().setX(x);
+            playerContainer.getCurrentPlayer().setY(y);
+        }
+        
     }
     
     

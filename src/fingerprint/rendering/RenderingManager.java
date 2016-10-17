@@ -22,6 +22,7 @@ import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.Player;
+import fingerprint.inout.FileUtil;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.serverlist.MapDescription;
 import fingerprint.mainmenus.serverlist.RoomDescription;
@@ -201,10 +202,12 @@ public class RenderingManager {
             graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, 360f -(float)gri.getCameraRotation());
             player = drawableObject;
         }
+        
         //EFFECTS
         //UI
         //graphics.setColor(FONT_BASE_COLOR);
         //graphics.scale(unScaledScreenWidth, unScaledScreenWidth);
+        //graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, (float)gri.getCameraRotation());
         drawGamePlayUI(graphics, drawDebugInfo, gri);
     }
     private boolean needToDraw(GameObject object){
@@ -215,6 +218,12 @@ public class RenderingManager {
     
     
     private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo, GamePlayRenderingInformation gri){
+        int MINI_PADDING = 4;
+        int SMALL_PADDING = 10;
+        int ITEM_PADDING = 56;
+        int TS = TilemapRenderer.tileSize;
+        
+        //TODO: MAGIC NUMBERS!
         if(drawDebugInfo){
             graphics.setColor(Color.black);
             graphics.fillRect(0, 0, 300, 200);
@@ -241,67 +250,135 @@ public class RenderingManager {
         
         //Draw the background for real UI
         graphics.setColor(Color.darkGray);
-        graphics.fillRect(unScaledGamePlayWidth, 0, 4 * TilemapRenderer.tileSize, unScaledScreenHeight);
+        graphics.fillRect(unScaledGamePlayWidth, 0, 4 * TS, unScaledScreenHeight);
         
         //Draw minimap
         graphics.setColor(Color.blue);
-        graphics.fillRect(unScaledGamePlayWidth, 0, 4 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize);
+        graphics.fillRect(unScaledGamePlayWidth, 0, 4 * TS, 4 * TS);
         graphics.setColor(Color.gray);
         graphics.setLineWidth(2);
-        graphics.drawRect(unScaledGamePlayWidth, 0, 4 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize);
+        graphics.drawRect(unScaledGamePlayWidth, 0, 4 * TS, 4 * TS);
         //Draw map name
         graphics.setLineWidth(1);
         graphics.setColor(Color.white);
-        graphics.fillRect(unScaledGamePlayWidth, 4 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize, 20);
+        graphics.fillRect(unScaledGamePlayWidth, 4 * TS, 4 * TS, 20);
         graphics.setColor(Color.black);
-        graphics.drawRect(unScaledGamePlayWidth, 4 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -1, 20);
+        graphics.drawRect(unScaledGamePlayWidth, 4 * TS, 4 * TS -1, 20);
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
-        graphics.drawString(gri.getMapName(), unScaledGamePlayWidth + 4, 4 * TilemapRenderer.tileSize + 3);
+        graphics.drawString(gri.getMapName(), unScaledGamePlayWidth + MINI_PADDING, 4 * TS + MINI_PADDING);
         //Draw character information
 
-        drawTextEffect(gri.getMyName(), Color.black, Color.yellow, unScaledGamePlayWidth + 10, 5 * TilemapRenderer.tileSize +10, 1, graphics, largeVerdanaFont);
+        drawTextEffect(gri.getMyName(), Color.black, Color.yellow, unScaledGamePlayWidth + 10, 5 * TS +10, 1, graphics, largeVerdanaFont);
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
-        graphics.drawString("(" + gri.getCharClass().name() + ")", unScaledGamePlayWidth + 10, 5 * TilemapRenderer.tileSize +40);
+        graphics.drawString("(" + gri.getCharClass().name() + ")", unScaledGamePlayWidth + 10, 5 * TS +40);
 
         //EXP
         graphics.setColor(Color.magenta);
-        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -20, 20);
+        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TS, 4 * TS -20, 20);
         graphics.setColor(Color.black);
-        graphics.drawRect(unScaledGamePlayWidth +10, 6 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -21, 20);
+        graphics.drawRect(unScaledGamePlayWidth +10, 6 * TS, 4 * TS -21, 20);
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
-        graphics.drawString("Level: " + gri.getLevel() + " Experience: " + gri.getExperience() + " / ???", unScaledGamePlayWidth + 14, 6 * TilemapRenderer.tileSize + 3);
+        graphics.drawString("Level: " + gri.getLevel() + " Experience: " + gri.getExperience() + " / ???", unScaledGamePlayWidth + 14, 6 * TS + 3);
         //HP
         graphics.setColor(Color.green);
-        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TilemapRenderer.tileSize +24, 4 * TilemapRenderer.tileSize -20, 20);
+        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TS +24, 4 * TS -20, 20);
         graphics.setColor(Color.black);
-        graphics.drawRect(unScaledGamePlayWidth +10, 6 * TilemapRenderer.tileSize +24, 4 * TilemapRenderer.tileSize -21, 20);
+        graphics.drawRect(unScaledGamePlayWidth +10, 6 * TS +24, 4 * TS -21, 20);
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
-        graphics.drawString("Health: " + gri.getMyStats().getHealth()+ " / " + gri.getMyStats().getHealth() + "", unScaledGamePlayWidth + 14, 6 * TilemapRenderer.tileSize + 27);
+        graphics.drawString("Health: " + gri.getMyStats().getHealth()+ " / " + gri.getMyStats().getHealth() + "", unScaledGamePlayWidth + 14, 6 * TS + 27);
         
         graphics.setColor(Color.gray);
-        graphics.fillRect(unScaledGamePlayWidth +10, 7 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -20, 100);
+        graphics.fillRect(unScaledGamePlayWidth +10, 7 * TS, 4 * TS -20, 100);
         graphics.setColor(Color.black);
-        graphics.drawRect(unScaledGamePlayWidth +10, 7 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -21, 100);
+        graphics.drawRect(unScaledGamePlayWidth +10, 7 * TS, 4 * TS -21, 100);
         
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
         //STATS
-        graphics.drawString("Strength: ", unScaledGamePlayWidth +14, 7 * TilemapRenderer.tileSize + 4);
-        graphics.drawString("" + gri.getMyStats().getStrength(), unScaledGamePlayWidth +88, 7 * TilemapRenderer.tileSize + 4);
-        graphics.drawString("Dexterity: ", unScaledGamePlayWidth +128, 7 * TilemapRenderer.tileSize + 4);
-        graphics.drawString("" + gri.getMyStats().getDexterity(), unScaledGamePlayWidth +210, 7 * TilemapRenderer.tileSize + 4);
-        graphics.drawString("Speed: ", unScaledGamePlayWidth +14, 7 * TilemapRenderer.tileSize + 20);
-        graphics.drawString("" + gri.getMyStats().getSpeed(), unScaledGamePlayWidth +88, 7 * TilemapRenderer.tileSize + 20);
-        graphics.drawString("Defence: ", unScaledGamePlayWidth +128, 7 * TilemapRenderer.tileSize + 20);
-        graphics.drawString("" + gri.getMyStats().getDefence(), unScaledGamePlayWidth +210, 7 * TilemapRenderer.tileSize + 20);
-        graphics.drawString("Vitality: ", unScaledGamePlayWidth +14, 7 * TilemapRenderer.tileSize + 36);
-        graphics.drawString("" + gri.getMyStats().getVitality(), unScaledGamePlayWidth +88, 7 * TilemapRenderer.tileSize + 36);
-        graphics.drawString("", unScaledGamePlayWidth +128, 7 * TilemapRenderer.tileSize + 36);
-        graphics.drawString("", unScaledGamePlayWidth +210, 7 * TilemapRenderer.tileSize + 36);
+        graphics.drawString("Strength: ", unScaledGamePlayWidth +14, 7 * TS + MINI_PADDING);
+        graphics.drawString("" + gri.getMyStats().getStrength(), unScaledGamePlayWidth +88, 7 * TS + MINI_PADDING);
+        graphics.drawString("Dexterity: ", unScaledGamePlayWidth +128, 7 * TS + 4);
+        graphics.drawString("" + gri.getMyStats().getDexterity(), unScaledGamePlayWidth +210, 7 * TS + MINI_PADDING);
+        graphics.drawString("Speed: ", unScaledGamePlayWidth +14, 7 * TS + MINI_PADDING + (1 * 16));
+        graphics.drawString("" + gri.getMyStats().getSpeed(), unScaledGamePlayWidth +88, 7 * TS + MINI_PADDING + (1 * 16));
+        graphics.drawString("Defence: ", unScaledGamePlayWidth +128, 7 * TS + MINI_PADDING + (1 * 16));
+        graphics.drawString("" + gri.getMyStats().getDefence(), unScaledGamePlayWidth +210, 7 * TS + MINI_PADDING + (1 * 16));
+        graphics.drawString("Vitality: ", unScaledGamePlayWidth +14, 7 * TS + MINI_PADDING + (2 * 16));
+        graphics.drawString("" + gri.getMyStats().getVitality(), unScaledGamePlayWidth +88, 7 * TS + MINI_PADDING + (2 * 16));
+        graphics.drawString("", unScaledGamePlayWidth +128, 7 * TS + MINI_PADDING + (2 * 16));
+        graphics.drawString("", unScaledGamePlayWidth +210, 7 * TS + MINI_PADDING + (2 * 16));
+        
+        //INVENTORY + EQUIP
+        
+        graphics.setColor(Color.gray);
+        graphics.fillRect(unScaledGamePlayWidth +SMALL_PADDING, 9 * TS, 4 * TS -20, 124);
+        graphics.setColor(Color.black);
+        graphics.drawRect(unScaledGamePlayWidth +SMALL_PADDING, 9 * TS, 4 * TS -21, 124);
+        
+        for(int t = 0; t < 4; t++){
+            
+            try {
+                graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9, 48, 48);
+                drawEquipment(t,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9);
+                graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING, 48, 48);
+                drawEquipment(t + 4,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING);
+            } catch (SlickException ex) {
+                Logger.getLogger(RenderingManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+        
+        graphics.setColor(Color.gray);
+        graphics.fillRect(unScaledGamePlayWidth +10, 11 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -20, 300);
+        graphics.setColor(Color.black);
+        graphics.drawRect(unScaledGamePlayWidth +10, 11 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -21, 300);
+        
+        for(int u = 0; u < 5; u++){
+            for(int o = 0; o < 4; o++){
+                graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * o), 11 * TS + 9 + (u * ITEM_PADDING), 48, 48);
+            }
+        }
+        
+    }
+    
+    private void drawEquipment(int position,float x, float y) throws SlickException{
+        Image image = null;
+        switch(position){
+            case 0:
+                image = new Image(FileUtil.UI_FILES_PATH + "/helmet.png");
+                break;
+            case 1:
+                image = new Image(FileUtil.UI_FILES_PATH + "/pants.png");
+                break;
+            case 2:
+                image = new Image(FileUtil.UI_FILES_PATH + "/shoulder.png");
+                break;
+            case 3:
+                image = new Image(FileUtil.UI_FILES_PATH + "/weapon.png");
+                break;
+            case 4:
+                image = new Image(FileUtil.UI_FILES_PATH + "/chest.png");
+                break;
+            case 5:
+                image = new Image(FileUtil.UI_FILES_PATH + "/boots.png");
+                break;
+            case 6:
+                image = new Image(FileUtil.UI_FILES_PATH + "/ring.png");
+                break;
+            case 7:
+                image = new Image(FileUtil.UI_FILES_PATH + "/relic.png");
+                break;
+                
+            default:
+                image = new Image(FileUtil.UI_FILES_PATH + "/helmet.png");
+                
+        }
+        
+        image.draw(x, y);
     }
     
     

@@ -25,4 +25,5 @@ public class NetworkEvents {
     public static final String SERVER_CORRECTPLAYERPOSITION = "correctplayerposition";
     public static final String SERVER_PROJECTILE_SPAWNED = "newprojectilespawned";
     public static final String SERVER_PROJECTILE_DESPAWNED = "despawnprojectile";
+    public static final String SERVER_REFRESH_ROOM_DESC = "refreshroomdesc";
 }

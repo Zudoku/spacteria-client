@@ -27,6 +27,7 @@ import fingerprint.networking.NetworkEvents;
 import fingerprint.networking.events.CorrectPlayerPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
+import fingerprint.networking.events.RefreshRoomDescEvent;
 import fingerprint.networking.events.UpdatePositionEvent;
 import fingerprint.rendering.GamePlayRenderingInformation;
 import fingerprint.rendering.RenderingManager;
@@ -101,31 +102,38 @@ public class GamePlayState extends BasicGameState{
     @Subscribe
     public void listenInitGameInfoEvent(InitGameInfoEvent event){
         myID = event.getMyID();
-        event.getMyCharacter().setX(event.getDescription().getMapDescription().getStartX());
-        event.getMyCharacter().setY(event.getDescription().getMapDescription().getStartY());
+
+        RoomDescription description = event.getDescription();
+        event.getMyCharacter().setX(description.getMapDescription().getStartX());
+        event.getMyCharacter().setY(description.getMapDescription().getStartY());
+        
+        mySocket = event.getSocket();
+        
+        changeRoom(description);
         worldContainer.setMyCharacter(event.getMyCharacter(),myID);
         
-        RoomDescription description = event.getDescription();
-        logger.log(Level.SEVERE, myID);
+        initializeSocketToGamePlayMode();
+    }
+    
+    private void changeRoom(RoomDescription description){
         DummyPlayer ourOwn = null;
         //Remove our own dummy
         for(DummyPlayer dp : description.getPlayers()){
-            logger.log(Level.SEVERE, dp.getId());
             if(dp.getId().substring(2).equals(myID)){
                 ourOwn = dp;
                 
             }
         }
-        mySocket = event.getSocket();
+        
         description.getPlayers().remove(ourOwn);
-        worldContainer.setCurrentRoom(event.getDescription());
+        
+        worldContainer.setCurrentRoom(description,myID);
+        worldContainer.setPlayerCoords(description.getMapDescription().getStartX(), description.getMapDescription().getStartY());
         try{
-            renderingManager.setMap(event.getDescription().getMapDescription());
+            renderingManager.setMap(description.getMapDescription());
         } catch(Exception e){
             logger.log(Level.SEVERE, null, e);
         }
-        
-        initializeSocketToGamePlayMode();
     }
     
     
@@ -168,6 +176,14 @@ public class GamePlayState extends BasicGameState{
             @Override
             public void call(Object... args) {
                 eventBus.post(gson.fromJson(args[0].toString(), DeleteEntityEvent.class));
+            }
+
+        }).on(NetworkEvents.SERVER_REFRESH_ROOM_DESC, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                RefreshRoomDescEvent event = gson.fromJson(args[0].toString(), RefreshRoomDescEvent.class);
+                changeRoom(event.getDesc());
             }
 
         });

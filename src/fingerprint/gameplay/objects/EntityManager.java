@@ -79,6 +79,15 @@ public class EntityManager {
         eventBus.register(this);
     }
     
+    public void clear(String myID){
+        GameObject player = getObjectWithID(myID);
+        idMap.clear();
+        if(player != null){
+            addNewObject(myID, player);
+        }
+        
+    }
+    
     @Subscribe
     public void listenPlayerJoinedEvent(PlayerJoinedEvent event){
         addNewObject(event.getPlayer().getId(), event.getPlayer());
