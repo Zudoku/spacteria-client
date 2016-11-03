@@ -33,6 +33,7 @@ public class Enemy extends GameObject{
     @Override
     public void draw(Graphics graphics) {
         double[] drawinCords = getDrawingCoordinates();
+        
         graphics.setColor(Color.black);
         graphics.fillRect((float)drawinCords[0] , (float)drawinCords[1], shape.getW(), shape.getH());
         graphics.setColor(Color.cyan);
