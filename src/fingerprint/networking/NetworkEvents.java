@@ -22,8 +22,9 @@ public class NetworkEvents {
     public static final String SERVER_JOINROOM = "joinroom";
     public static final String SERVER_PLAYERJOINEDMYGAME = "playerjoin";
     public static final String SERVER_PLAYERLEFTMYGAME = "playerleft";
-    public static final String SERVER_CORRECTPLAYERPOSITION = "correctplayerposition";
+    public static final String SERVER_CORRECTNPCPOSITION = "correctnpcposition";
     public static final String SERVER_PROJECTILE_SPAWNED = "newprojectilespawned";
     public static final String SERVER_PROJECTILE_DESPAWNED = "despawnprojectile";
     public static final String SERVER_REFRESH_ROOM_DESC = "refreshroomdesc";
+    //public static final String SERVER_UPDATE_NPC_POSITION= "updatenpcposition";
 }

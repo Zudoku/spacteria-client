@@ -19,7 +19,7 @@ public class Enemy extends GameObject{
     private String image;
     private String type;
     private StatContainer stats;
-    private String id;
+    private String hash;
     private Shape shape;
     
     public Enemy(double initX, double initY) {
@@ -45,6 +45,11 @@ public class Enemy extends GameObject{
         setX(shape.getPos().getX());
         setY(shape.getPos().getY());
     }
+
+    public String getHash() {
+        return hash;
+    }
+    
     
     
     

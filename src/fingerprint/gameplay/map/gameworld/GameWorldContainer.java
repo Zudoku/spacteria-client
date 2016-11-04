@@ -55,7 +55,7 @@ public class GameWorldContainer {
         }
         for(Enemy enemy : roomDescription.getEnemies()){
             enemy.initialize();
-            entityManager.addNewObject(java.util.UUID.randomUUID().toString(), enemy);
+            entityManager.addNewObject(enemy.getHash(), enemy);
         }
         
     }

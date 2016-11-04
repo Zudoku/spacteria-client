@@ -9,16 +9,16 @@ package fingerprint.networking.events;
  *
  * @author arska
  */
-public class CorrectPlayerPositionEvent {
+public class CorrectNPCPositionEvent {
     private String id;
-    private int x;
-    private int y;
+    private double x;
+    private double y;
 
-    public CorrectPlayerPositionEvent() {
+    public CorrectNPCPositionEvent() {
         
     }
 
-    public CorrectPlayerPositionEvent(String id, int x, int y) {
+    public CorrectNPCPositionEvent(String id, int x, int y) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -28,13 +28,15 @@ public class CorrectPlayerPositionEvent {
         return id;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
+
+    
 
     public void setId(String id) {
         this.id = id;

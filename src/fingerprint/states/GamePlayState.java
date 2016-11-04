@@ -24,7 +24,7 @@ import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.networking.NetworkEvents;
-import fingerprint.networking.events.CorrectPlayerPositionEvent;
+import fingerprint.networking.events.CorrectNPCPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.networking.events.RefreshRoomDescEvent;
@@ -157,11 +157,11 @@ public class GamePlayState extends BasicGameState{
                 eventBus.post(gson.fromJson(args[0].toString(), PlayerLeftEvent.class));
             }
 
-        }).on(NetworkEvents.SERVER_CORRECTPLAYERPOSITION, new Emitter.Listener() {
+        }).on(NetworkEvents.SERVER_CORRECTNPCPOSITION, new Emitter.Listener() {
 
             @Override
             public void call(Object... args) {
-                eventBus.post(gson.fromJson(args[0].toString(), CorrectPlayerPositionEvent.class));
+                eventBus.post(gson.fromJson(args[0].toString(), CorrectNPCPositionEvent.class));
             }
 
         }).on(NetworkEvents.SERVER_PROJECTILE_SPAWNED, new Emitter.Listener() {

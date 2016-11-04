@@ -14,7 +14,7 @@ import fingerprint.gameplay.objects.events.DeleteEntityEvent;
 import fingerprint.gameplay.objects.player.DummyPlayer;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
-import fingerprint.networking.events.CorrectPlayerPositionEvent;
+import fingerprint.networking.events.CorrectNPCPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.rendering.DisplayConsoleMessageEvent;
@@ -102,9 +102,9 @@ public class EntityManager {
     }
     
     @Subscribe
-    public void listenCorrectPlayerPositionEvent(CorrectPlayerPositionEvent event){
+    public void listenCorrectPlayerPositionEvent(CorrectNPCPositionEvent event){
         GameObject handled = getObjectWithID(event.getId());
-        if(handled instanceof DummyPlayer){
+        if(handled instanceof DummyPlayer || handled instanceof Enemy){
             handled.setX(event.getX());
             handled.setY(event.getY());
         }
