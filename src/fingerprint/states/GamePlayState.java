@@ -14,11 +14,9 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
-import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
 import fingerprint.gameplay.objects.player.DummyPlayer;
-import fingerprint.gameplay.objects.projectiles.DespawnProjectileEvent;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.inout.GameFileHandler;
@@ -127,7 +125,7 @@ public class GamePlayState extends BasicGameState{
         
         description.getPlayers().remove(ourOwn);
         
-        worldContainer.setCurrentRoom(description,myID);
+        worldContainer.setCurrentRoom(description, myID);
         worldContainer.setPlayerCoords(description.getMapDescription().getStartX(), description.getMapDescription().getStartY());
         try{
             renderingManager.setMap(description.getMapDescription());

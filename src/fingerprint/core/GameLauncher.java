@@ -30,6 +30,7 @@ import fingerprint.states.MainMenuState;
 import fingerprint.states.State_IDs;
 import fingerprint.states.CharacterCreationState;
 import fingerprint.states.CharacterSelectionState;
+import fingerprint.states.LoginState;
 import fingerprint.states.ServerListState;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
@@ -92,6 +93,9 @@ public class GameLauncher extends StateBasedGame {
     
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
+        LoginState loginState = new LoginState();
+        initState(loginState);
+        
         MainMenuState mainMenu = new MainMenuState();
         initState(mainMenu);
 
@@ -106,6 +110,8 @@ public class GameLauncher extends StateBasedGame {
         
         CharacterCreationState worldCreation = new CharacterCreationState();
         initState(worldCreation);
+        
+        
     }
     private void initState(BasicGameState state){
         injector.injectMembers(state);

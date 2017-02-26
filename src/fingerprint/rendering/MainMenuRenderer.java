@@ -81,6 +81,17 @@ public class MainMenuRenderer {
         }
         
     }
+    
+    public void drawLoginToGame(Graphics graphics,GameContainer container, TextField usernameField, TextField passwordField){
+        graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+        String titleText = "Login :)";
+        graphics.drawString(titleText, RenderingManager.calculateTextAllignCenterX(graphics, titleText), 100);
+        
+        usernameField.render(container, graphics);
+        passwordField.render(container, graphics);
+        
+    }
+    
     public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass selectedDifficulty,int selectedRow,int selectedColumn,TextField nameField,boolean drawBadFileName){
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
         String titleText = "Creating a new Character";

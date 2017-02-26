@@ -40,7 +40,7 @@ public class GameSettings {
     public void resetDefaultSettings(){
         fullScreen = false;
         borderless = false;
-        resolution = RenderingResolutions.RES_1024_1024;
+        resolution = RenderingResolutions.RES_1280_1024;
         frameCap = 60;
         vSync = true;
         

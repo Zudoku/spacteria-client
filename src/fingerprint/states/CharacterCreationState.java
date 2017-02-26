@@ -1,14 +1,11 @@
 package fingerprint.states;
 
 import java.awt.Font;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.TextField;
@@ -20,13 +17,12 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.inout.GameFileHandler;
-import fingerprint.mainmenus.CharacterCreationController;
+import fingerprint.mainmenus.GenericGridController;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
-import fingerprint.states.events.SelectCharacterEvent;
 import fingerprint.states.menu.enums.CharacterClass;
+import java.util.Arrays;
 
 public class CharacterCreationState extends BasicGameState{
     private static final Logger logger = Logger.getLogger(CharacterCreationState.class.getName());
@@ -35,7 +31,7 @@ public class CharacterCreationState extends BasicGameState{
     @Inject private EventBus eventBus;
     @Inject private GameFileHandler fileHandler;
     @Inject private InputManager inputManager;
-    private CharacterCreationController controller;
+    private GenericGridController controller;
     
     private TextField characterName;
     private CharacterClass selectedClass;
@@ -45,7 +41,7 @@ public class CharacterCreationState extends BasicGameState{
     private boolean drawBadFileNameText = false;
     
     public CharacterCreationState() {
-        controller = new CharacterCreationController();
+        controller = new GenericGridController(Arrays.asList(2,0,1), Arrays.asList(1));
     }
     
     @Override
@@ -75,7 +71,6 @@ public class CharacterCreationState extends BasicGameState{
         //TODO: redo everything
         
         //TEMPFIX
-        Input input = gc.getInput();
         if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
             menuPressed();
         }
@@ -90,6 +85,10 @@ public class CharacterCreationState extends BasicGameState{
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.LEFT,true)){
             controller.left();
+        }
+        if(inputManager.isKeyBindPressed(KeyBindAction.SKIP,true)){
+            controller.unlock();
+            controller.down();
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));

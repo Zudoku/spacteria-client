@@ -5,5 +5,6 @@ public enum KeyBindAction {
     EXIT,
     A,B,C,D,
     DEBUG_TOGGLE,
+    SKIP,
     MENU;
 }

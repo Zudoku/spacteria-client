@@ -114,6 +114,11 @@ public class RenderingManager {
         mainMenuRenderer.drawServerList(graphics, rooms, selection);
     }
     
+    public void drawLogin(Graphics graphics, GameContainer gameContainer, TextField username, TextField password) {
+        initDraw(graphics);
+        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password);
+    }
+    
     public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass difficulty,int row,int col,TextField filename,boolean drawBadFileName){
         initDraw(graphics);
         mainMenuRenderer.drawWorldCreation(graphics,container,difficulty,row,col,filename,drawBadFileName);
