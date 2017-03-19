@@ -6,6 +6,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.gui.TextField;
 
 import fingerprint.core.GameLauncher;
+import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
@@ -82,13 +83,37 @@ public class MainMenuRenderer {
         
     }
     
-    public void drawLoginToGame(Graphics graphics,GameContainer container, TextField usernameField, TextField passwordField){
+    public void drawLoginToGame(Graphics graphics,GameContainer container, TextField usernameField, TextField passwordField, GenericGridController controller){
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
-        String titleText = "Login :)";
-        graphics.drawString(titleText, RenderingManager.calculateTextAllignCenterX(graphics, titleText), 100);
+        String usernamelabelText = "Username";
+        if(controller.getSelectedRow() == 0) {
+            graphics.setColor(Color.white);   
+        } else {
+            graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+        }
+        graphics.drawString(usernamelabelText, 200, 500);
         
+        
+        String passwordlabelText = "Password";
+        if(controller.getSelectedRow() == 1) {
+            graphics.setColor(Color.white);
+        } else {
+            graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+        }
+        graphics.drawString(passwordlabelText, 200, 600);
+        
+        graphics.setColor(Color.lightGray);
         usernameField.render(container, graphics);
         passwordField.render(container, graphics);
+        
+        String loginLabelText = "Login";
+        if(controller.getSelectedRow() == 2) {
+            graphics.setColor(Color.white);
+        } else {
+            graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+        }
+        graphics.drawString(loginLabelText, 200, 800);
+        
         
     }
     

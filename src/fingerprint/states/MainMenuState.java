@@ -10,14 +10,19 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
+import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
+import fingerprint.states.events.GiveSocketInfoEvent;
+import fingerprint.states.events.InitGameInfoEvent;
 import fingerprint.states.menu.enums.MainMenuSelection;
+import io.socket.client.Socket;
 import org.newdawn.slick.Image;
 
 public class MainMenuState extends BasicGameState{
@@ -28,6 +33,7 @@ public class MainMenuState extends BasicGameState{
     @Inject private InputManager inputManager;
     
     private MainMenuSelection selection;
+    private Socket socket;
     
     public MainMenuState() {
         
@@ -102,6 +108,15 @@ public class MainMenuState extends BasicGameState{
             eventBus.post(new CloseProgramEvent(false, true));
             break;
         }
+    }
+    
+    @Subscribe
+    public void listenInitGameInfoEvent(GiveSocketInfoEvent event){
+        if(event.getState() != getID()) {
+            return;
+        }
+
+        this.socket = event.getSocket();
     }
 
     @Override

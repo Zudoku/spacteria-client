@@ -24,6 +24,7 @@ import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.Player;
 import fingerprint.inout.FileUtil;
 import fingerprint.mainmenus.CharacterInfoContainer;
+import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.MapDescription;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.map.TilemapRenderer;
@@ -114,9 +115,9 @@ public class RenderingManager {
         mainMenuRenderer.drawServerList(graphics, rooms, selection);
     }
     
-    public void drawLogin(Graphics graphics, GameContainer gameContainer, TextField username, TextField password) {
+    public void drawLogin(Graphics graphics, GameContainer gameContainer, TextField username, TextField password, GenericGridController controller) {
         initDraw(graphics);
-        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password);
+        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password, controller);
     }
     
     public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass difficulty,int row,int col,TextField filename,boolean drawBadFileName){

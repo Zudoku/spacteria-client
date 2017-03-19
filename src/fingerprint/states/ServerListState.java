@@ -57,7 +57,6 @@ public class ServerListState extends BasicGameState{
     
     private CharacterSaveFile myCharacter;
     
-    private boolean identified = false;
     private ServerListController controller;
     private List<RoomDescription> rooms = new ArrayList<>();
 
@@ -73,15 +72,11 @@ public class ServerListState extends BasicGameState{
     @Override
     public void init(GameContainer gc,final StateBasedGame sbg) throws SlickException {
         try {
-            socket = IO.socket("http://192.168.1.141:3590");
-            socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    
-                }
-
-            }).on(NetworkEvents.SERVER_DISPLAYROOMLIST, new Emitter.Listener() {
+            socket = IO.socket("http://192.168.1.141:3591");
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        socket.on(NetworkEvents.SERVER_DISPLAYROOMLIST, new Emitter.Listener() {
 
                 @Override
                 public void call(Object... args) {
@@ -123,19 +118,7 @@ public class ServerListState extends BasicGameState{
                     
                 }
 
-            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
-                }
-
             });
-            socket.connect();
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
         refreshGameList();
     }
 
@@ -205,7 +188,7 @@ public class ServerListState extends BasicGameState{
         socket.emit(NetworkEvents.CLIENT_IDENTIFY, identifyObject, new Ack() {
             @Override
             public void call(Object... args) {
-                identified = true;
+
             }
         });
     }
