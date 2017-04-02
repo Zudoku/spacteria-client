@@ -16,7 +16,7 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
-import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.inout.GameFileHandler;
@@ -114,9 +114,9 @@ public class GamePlayState extends BasicGameState{
     }
     
     private void changeRoom(RoomDescription description){
-        DummyPlayer ourOwn = null;
+        DummyCharacter ourOwn = null;
         //Remove our own dummy
-        for(DummyPlayer dp : description.getPlayers()){
+        for(DummyCharacter dp : description.getPlayers()){
             if(dp.getId().substring(2).equals(myID)){
                 ourOwn = dp;
                 
@@ -144,7 +144,7 @@ public class GamePlayState extends BasicGameState{
             @Override
             public void call(Object... args) {
                 String payload = args[0].toString();
-                PlayerJoinedEvent event = new PlayerJoinedEvent((DummyPlayer) gson.fromJson(payload, DummyPlayer.class));
+                PlayerJoinedEvent event = new PlayerJoinedEvent((DummyCharacter) gson.fromJson(payload, DummyCharacter.class));
                 eventBus.post(event);
             }
 

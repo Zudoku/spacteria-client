@@ -5,7 +5,7 @@
  */
 package fingerprint.networking.events;
 
-import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.gameplay.objects.player.DummyCharacter;
 
 /**
  *
@@ -13,13 +13,13 @@ import fingerprint.gameplay.objects.player.DummyPlayer;
  */
 public class PlayerJoinedEvent {
     
-    private DummyPlayer player;
+    private DummyCharacter player;
 
-    public PlayerJoinedEvent(DummyPlayer player) {
+    public PlayerJoinedEvent(DummyCharacter player) {
         this.player = player;
     }
 
-    public DummyPlayer getPlayer() {
+    public DummyCharacter getPlayer() {
         return player;
     }
     

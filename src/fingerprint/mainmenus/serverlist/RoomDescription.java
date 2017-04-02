@@ -7,7 +7,7 @@ package fingerprint.mainmenus.serverlist;
 
 import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.GameObject;
-import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class RoomDescription {
     private String name;
-    private List<DummyPlayer> players = new ArrayList<>();
+    private List<DummyCharacter> players = new ArrayList<>();
     private int difficulty = 1;
     private MapDescription mapDescription;
     private GameObject[] gameobjects;
@@ -71,14 +71,14 @@ public class RoomDescription {
     /**
      * @return the players
      */
-    public List<DummyPlayer> getPlayers() {
+    public List<DummyCharacter> getPlayers() {
         return players;
     }
 
     /**
      * @param players the players to set
      */
-    public void setPlayers(List<DummyPlayer> players) {
+    public void setPlayers(List<DummyCharacter> players) {
         this.players = players;
     }
 

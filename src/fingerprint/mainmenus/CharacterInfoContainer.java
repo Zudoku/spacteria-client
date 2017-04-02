@@ -1,6 +1,6 @@
 package fingerprint.mainmenus;
 
-import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.GCharacter;
 
 public class CharacterInfoContainer {
     private boolean moreLeft;
@@ -8,9 +8,8 @@ public class CharacterInfoContainer {
     
     private boolean isCreateNewCharDummy = false;
     
-    private String filename;
     
-    private Player playerData;
+    private GCharacter playerData;
 
     /**
      * @return the moreLeft
@@ -40,31 +39,18 @@ public class CharacterInfoContainer {
         this.moreRight = moreRight;
     }
 
-    /**
-     * @return the filename
-     */
-    public String getFilename() {
-        return filename;
-    }
-
-    /**
-     * @param filename the filename to set
-     */
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
 
     /**
      * @return the playerData
      */
-    public Player getPlayerData() {
+    public GCharacter getPlayerData() {
         return playerData;
     }
 
     /**
      * @param playerData the playerData to set
      */
-    public void setPlayerData(Player playerData) {
+    public void setPlayerData(GCharacter playerData) {
         this.playerData = playerData;
     }
 

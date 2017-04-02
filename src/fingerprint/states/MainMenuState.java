@@ -15,12 +15,10 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
-import fingerprint.states.events.InitGameInfoEvent;
 import fingerprint.states.menu.enums.MainMenuSelection;
 import io.socket.client.Socket;
 import org.newdawn.slick.Image;
@@ -85,6 +83,7 @@ public class MainMenuState extends BasicGameState{
     private void menuPressed(){
         switch(selection){
         case PLAY:
+            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.CHARACTER_SELECTION_ID));
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
             break;
             
@@ -118,6 +117,7 @@ public class MainMenuState extends BasicGameState{
 
         this.socket = event.getSocket();
     }
+    
 
     @Override
     public int getID() {

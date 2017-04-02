@@ -1,11 +1,11 @@
 package fingerprint.gameplay.map.gameworld;
 
-import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.GCharacter;
 
 public class CharacterSaveFile {
     
     private CharacterMetaData metaData;
-    private Player player;
+    private GCharacter player;
     
     public CharacterSaveFile() {
         
@@ -18,10 +18,10 @@ public class CharacterSaveFile {
         this.metaData = metaData;
     }
     
-    public Player getPlayer() {
+    public GCharacter getPlayer() {
         return player;
     }
-    public void setPlayer(Player player) {
+    public void setPlayer(GCharacter player) {
         this.player = player;
     }
 }

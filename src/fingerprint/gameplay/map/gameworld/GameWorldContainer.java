@@ -11,9 +11,9 @@ import fingerprint.controls.InputManager;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.EntityManager;
-import fingerprint.gameplay.objects.player.DummyPlayer;
-import fingerprint.gameplay.objects.player.Player;
-import fingerprint.gameplay.objects.player.PlayerContainer;
+import fingerprint.gameplay.objects.player.DummyCharacter;
+import fingerprint.gameplay.objects.player.GCharacter;
+import fingerprint.gameplay.objects.player.CharacterContainer;
 import fingerprint.gameplay.objects.player.StatContainer;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.states.menu.enums.CharacterClass;
@@ -25,11 +25,11 @@ public class GameWorldContainer {
     @Inject private EntityManager entityManager;
     @Inject private CollisionManager collisionManager;
     private RoomDescription world;
-    @Inject private PlayerContainer playerContainer;
+    @Inject private CharacterContainer playerContainer;
     @Inject private EventBus eventBus;
     
     public GameWorldContainer() {
-        playerContainer = new PlayerContainer();
+        playerContainer = new CharacterContainer();
 
         //eventBus.register(this);
         
@@ -41,7 +41,7 @@ public class GameWorldContainer {
         entityManager.updateEntities(delta,collisionManager);
 
     }
-    public void setMyCharacter(Player player, String id) {
+    public void setMyCharacter(GCharacter player, String id) {
         playerContainer.setCurrentPlayer(player);
         entityManager.addNewObject(id,player);
         //eventBus.register(this);
@@ -50,7 +50,7 @@ public class GameWorldContainer {
         entityManager.clear(myID);
         world = roomDescription;
         collisionManager.setMap(roomDescription.getMapDescription().getFilename());
-        for(DummyPlayer dp : roomDescription.getPlayers()){
+        for(DummyCharacter dp : roomDescription.getPlayers()){
             entityManager.addNewObject(dp.getId(),dp);
         }
         for(Enemy enemy : roomDescription.getEnemies()){
@@ -64,7 +64,7 @@ public class GameWorldContainer {
     }
     
     public String getMyName(){
-        return playerContainer.getCurrentPlayer().getCharactername();
+        return playerContainer.getCurrentPlayer().getName();
     }
     
     public int getMyLevel(){

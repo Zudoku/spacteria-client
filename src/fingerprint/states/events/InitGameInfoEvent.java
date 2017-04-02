@@ -5,7 +5,7 @@
  */
 package fingerprint.states.events;
 
-import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import io.socket.client.Socket;
 
@@ -15,11 +15,11 @@ import io.socket.client.Socket;
  */
 public class InitGameInfoEvent {
     private RoomDescription description;
-    private Player myCharacter;
+    private GCharacter myCharacter;
     private String myID;
     private Socket socket;
 
-    public InitGameInfoEvent(RoomDescription description, Player myCharacter, String myID, Socket socket) {
+    public InitGameInfoEvent(RoomDescription description, GCharacter myCharacter, String myID, Socket socket) {
         this.description = description;
         this.myCharacter = myCharacter;
         this.myID = myID;
@@ -34,11 +34,11 @@ public class InitGameInfoEvent {
         return description;
     }
 
-    public Player getMyCharacter() {
+    public GCharacter getMyCharacter() {
         return myCharacter;
     }
 
-    public void setMyCharacter(Player myCharacter) {
+    public void setMyCharacter(GCharacter myCharacter) {
         this.myCharacter = myCharacter;
     }
 

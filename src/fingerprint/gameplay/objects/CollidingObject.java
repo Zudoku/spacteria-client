@@ -1,6 +1,6 @@
 package fingerprint.gameplay.objects;
 
-import fingerprint.gameplay.objects.player.PlayerContainer;
+import fingerprint.gameplay.objects.player.CharacterContainer;
 import java.math.BigDecimal;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;

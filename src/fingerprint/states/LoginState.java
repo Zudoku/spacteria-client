@@ -12,13 +12,18 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
+import fingerprint.gameplay.objects.events.DeleteEntityEvent;
+import fingerprint.gameplay.objects.player.DummyCharacter;
+import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.mainmenus.GenericGridController;
-import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.networking.NetworkEvents;
+import fingerprint.networking.events.CorrectNPCPositionEvent;
+import fingerprint.networking.events.PlayerJoinedEvent;
+import fingerprint.networking.events.PlayerLeftEvent;
+import fingerprint.networking.events.RefreshRoomDescEvent;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
-import fingerprint.states.events.InitGameInfoEvent;
 import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -28,7 +33,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.newdawn.slick.Color;
@@ -59,12 +63,12 @@ public class LoginState  extends BasicGameState {
     
     private TextField usernameTextField;
     private TextField passwordTextField;
+    
+    private static final String serveraddrs = "http://192.168.1.141:3590";
 
     public LoginState() {
         controller = new GenericGridController(Arrays.asList(0,0,0), Arrays.asList(0,1));
     }
-    
-    
 
     @Override
     public int getID() {
@@ -84,9 +88,12 @@ public class LoginState  extends BasicGameState {
         passwordTextField.setBorderColor(Color.darkGray);
         passwordTextField.setText("1234567");
         
-        
+        initializeSocketToLoginMode();
+    }
+    
+    private void initializeSocketToLoginMode(){
         try {
-            socket = IO.socket("http://192.168.1.141:3590");
+            socket = IO.socket(serveraddrs);
             socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
                 @Override
@@ -98,7 +105,7 @@ public class LoginState  extends BasicGameState {
 
                 @Override
                 public void call(Object... args) {
-                    eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
+                    eventBus.post(new ChangeStateEvent(getID(), State_IDs.LOGIN_SCREEN_ID));
                 }
 
             }).on(NetworkEvents.SERVER_LOGIN_SUCCESS, new Emitter.Listener() {
@@ -107,9 +114,18 @@ public class LoginState  extends BasicGameState {
                 public void call(Object... args) {
                     eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.MAIN_MENU_ID));
                     eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
+                    cleanUpSocket();
+                }
+
+            }).on(NetworkEvents.SERVER_LOGIN_FAIL, new Emitter.Listener() {
+
+                @Override
+                public void call(Object... args) {
+                    logger.log(Level.SEVERE, Arrays.toString(args));
                 }
 
             });
+            
             socket.connect();
         } catch (URISyntaxException ex) {
             Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
@@ -129,7 +145,7 @@ public class LoginState  extends BasicGameState {
         
         if(inputManager.isKeyBindPressed(KeyBindAction.D,true) && controller.getSelectedRow() == 2){
             //Try to login to the game
-            //TODO:
+            identifyToServer();
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.UP,true)){
             controller.up();
@@ -184,6 +200,11 @@ public class LoginState  extends BasicGameState {
 
             }
         });
+    }
+    
+    private void cleanUpSocket() {
+        socket.off(NetworkEvents.SERVER_LOGIN_FAIL);
+        socket.off(NetworkEvents.SERVER_LOGIN_SUCCESS);
     }
 
 }

@@ -14,18 +14,36 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
+import fingerprint.gameplay.objects.events.DeleteEntityEvent;
+import fingerprint.gameplay.objects.player.DummyCharacter;
+import fingerprint.gameplay.objects.player.GCharacter;
+import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.inout.FileUtil;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.CharacterSelectionController;
+import fingerprint.mainmenus.serverlist.RoomDescription;
+import fingerprint.networking.NetworkEvents;
+import fingerprint.networking.events.CorrectNPCPositionEvent;
+import fingerprint.networking.events.PlayerJoinedEvent;
+import fingerprint.networking.events.PlayerLeftEvent;
+import fingerprint.networking.events.RefreshRoomDescEvent;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.GiveSocketInfoEvent;
 import fingerprint.states.events.SelectCharacterEvent;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class CharacterSelectionState extends BasicGameState {
     private static final Logger logger = Logger.getLogger(CharacterSelectionState.class.getName());
@@ -37,9 +55,11 @@ public class CharacterSelectionState extends BasicGameState {
     @Inject private EventBus eventBus;
     @Inject private GameFileHandler fileHandler;
     @Inject private InputManager inputManager;
+    @Inject private Gson gson;
     private CharacterSelectionController controller;
     
     private File[] savedChars;
+    private Socket socket;
     
     public CharacterSelectionState() {
         controller = new CharacterSelectionController();
@@ -53,24 +73,7 @@ public class CharacterSelectionState extends BasicGameState {
         availableChars.add(createNewWorld);
         currentSelectionChar = createNewWorld;
         
-        File dir = new File(FileUtil.CHARACTERS_PATH);
-        savedChars= dir.listFiles(new FilenameFilter() {
-            public boolean accept(File characterfile, String filename){ 
-                if(filename.contains(".character")){
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        } );
-        for(File file:savedChars){
-            CharacterInfoContainer gwic = new CharacterInfoContainer();
-            gwic.setFilename(GameFileHandler.removeFileExension(file.getName()));
-            //gwic.worldTitle = "World " + file.getName();
-            //gwic.worldTitle = GameFileHandler.removeFileExension(gwic.worldTitle);
-            availableChars.add(gwic);
-        }
-        controller.setFilesAmount(savedChars.length);
+        controller.setFilesAmount(0);
     }
 
     @Override
@@ -106,25 +109,74 @@ public class CharacterSelectionState extends BasicGameState {
     }
     public void selectCharacter(int characterIndex){
         if(controller.getSelection() == 0){
+            //TODO: FIX THIS 
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_CREATION_ID));
         }else{
-            File loadableSave = savedChars[controller.getSelection()-1];
-            
-            String filename = GameFileHandler.removeFileExension(loadableSave.getName());
-            CharacterSaveFile loadedGame = fileHandler.loadCharacterSaveFile(filename);
-            if(loadedGame == null){
-                logger.log(Level.WARNING,"File load was not successful");
-                return;
-            }
-            eventBus.post(new SelectCharacterEvent(loadedGame));
+            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.SERVERLIST_ID));
+            eventBus.post(new SelectCharacterEvent(currentSelectionChar.getPlayerData()));
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.SERVERLIST_ID));
+            cleanUpSocket();
         }
         
     }
 
+    @Subscribe
+    public void listenInitGameInfoEvent(GiveSocketInfoEvent event){
+        if(event.getState() != getID()) {
+            return;
+        }
+
+        this.socket = event.getSocket();
+        this.initializeSocketToCharacterSelectionMode();
+        this.requestForCharacters();
+    }
+    
+    
+    private void initializeSocketToCharacterSelectionMode() {
+        socket.on(NetworkEvents.SERVER_CHARACTERLIST, new Emitter.Listener() {
+
+                @Override
+                public void call(Object... args) {
+                    try {
+                        logger.log(Level.SEVERE, args[0].toString());
+                        JSONArray charsPayload =((JSONObject)args[0]).getJSONArray("chars");
+                        for(int y = 0; y < charsPayload.length(); y++){
+                            try {
+                                JSONObject charToAdd = charsPayload.getJSONObject(y);
+                                try{
+                                    GCharacter character = gson.fromJson(charToAdd.toString(), GCharacter.class);
+                                    CharacterInfoContainer cic = new CharacterInfoContainer();
+                                    cic.setPlayerData(character);
+                                    availableChars.add(cic);
+                                } catch(Exception e){
+                                    Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
+                                }
+                                
+                                
+                            } catch (JSONException ex) {
+                                Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        controller.setFilesAmount(availableChars.size() - 1);
+                    } catch (JSONException ex) {
+                        Logger.getLogger(CharacterSelectionState.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+        });
+    }
+    
+    private void requestForCharacters(){
+        socket.emit(NetworkEvents.CLIENT_CHARACTERLIST_REQUEST, "");
+    }
+    
     @Override
     public int getID() {
         return State_IDs.CHARACTER_SELECTION_ID;
+    }
+    
+    private void cleanUpSocket() {
+        socket.off(NetworkEvents.SERVER_CHARACTERLIST);
     }
 
 }

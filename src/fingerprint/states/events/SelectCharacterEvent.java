@@ -1,13 +1,13 @@
 package fingerprint.states.events;
 
-import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
+import fingerprint.gameplay.objects.player.GCharacter;
 
 public class SelectCharacterEvent {
-    private CharacterSaveFile characterInfo;
-    public SelectCharacterEvent(CharacterSaveFile world) {
+    private GCharacter characterInfo;
+    public SelectCharacterEvent(GCharacter world) {
         this.characterInfo = world;
     }
-    public CharacterSaveFile getCharacterInfo() {
+    public GCharacter getCharacterInfo() {
         return characterInfo;
     }
 }

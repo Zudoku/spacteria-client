@@ -9,7 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.GCharacter;
 
 
 public class CharacterSaveFileDeserializer implements JsonDeserializer<CharacterSaveFile>{
@@ -26,7 +26,7 @@ public class CharacterSaveFileDeserializer implements JsonDeserializer<Character
 
         //Player
         
-        Player player = jdc.deserialize(jo.get("player"), Player.class);
+        GCharacter player = jdc.deserialize(jo.get("player"), GCharacter.class);
         savedFile.setPlayer(player);
 
         return savedFile;

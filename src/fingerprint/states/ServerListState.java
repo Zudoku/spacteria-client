@@ -13,11 +13,13 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
+import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.mainmenus.serverlist.ServerListController;
 import fingerprint.networking.NetworkEvents;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.GiveSocketInfoEvent;
 import fingerprint.states.events.InitGameInfoEvent;
 import fingerprint.states.events.SaveAndExitWorldEvent;
 import fingerprint.states.events.SelectCharacterEvent;
@@ -55,7 +57,7 @@ public class ServerListState extends BasicGameState{
     @Inject private InputManager inputManager;
     @Inject private Gson gson;
     
-    private CharacterSaveFile myCharacter;
+    private GCharacter myCharacter;
     
     private ServerListController controller;
     private List<RoomDescription> rooms = new ArrayList<>();
@@ -71,11 +73,10 @@ public class ServerListState extends BasicGameState{
 
     @Override
     public void init(GameContainer gc,final StateBasedGame sbg) throws SlickException {
-        try {
-            socket = IO.socket("http://192.168.1.141:3591");
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+    }
+    
+    private void initializeSocketToServerListMode(){
         socket.on(NetworkEvents.SERVER_DISPLAYROOMLIST, new Emitter.Listener() {
 
                 @Override
@@ -110,7 +111,7 @@ public class ServerListState extends BasicGameState{
                     JSONObject payload = (JSONObject) args[0];
                     try{
                         RoomDescription roomDescription = gson.fromJson(payload.toString(), RoomDescription.class);
-                        eventBus.post(new InitGameInfoEvent(roomDescription, myCharacter.getPlayer(), socket.id(), socket));
+                        eventBus.post(new InitGameInfoEvent(roomDescription, myCharacter, socket.id(), socket));
                         eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
                     } catch(Exception e){
                         Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
@@ -119,7 +120,6 @@ public class ServerListState extends BasicGameState{
                 }
 
             });
-        refreshGameList();
     }
 
     @Override
@@ -146,6 +146,7 @@ public class ServerListState extends BasicGameState{
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
+            
         }
     }
     
@@ -164,32 +165,28 @@ public class ServerListState extends BasicGameState{
         }
     }
     
+    @Subscribe
+    public void listenInitGameInfoEvent(GiveSocketInfoEvent event){
+        if(event.getState() != getID()) {
+            return;
+        }
+
+        this.socket = event.getSocket();
+        this.initializeSocketToServerListMode();
+        this.refreshGameList();
+    }
+    
     private void refreshGameList(){
         socket.emit(NetworkEvents.CLIENT_REFRESHROOMLIST,"");
     }
     @Subscribe
     public void listenSelectCharacterEvent(SelectCharacterEvent event){
         myCharacter = event.getCharacterInfo();
-        identifyToServer();
     }
     
-    public void identifyToServer(){
-        JSONObject identifyObject = new JSONObject();
-        try {
-            identifyObject.put("type", "game-client");
-            GsonBuilder ga=new GsonBuilder();
-            Gson gson = ga.create();
-            JSONObject playerData = new JSONObject(gson.toJson(myCharacter.getPlayer()));
-            identifyObject.put("player", playerData);
-        } catch (JSONException ex) {
-            Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        socket.emit(NetworkEvents.CLIENT_IDENTIFY, identifyObject, new Ack() {
-            @Override
-            public void call(Object... args) {
-
-            }
-        });
+    private void cleanUpSocket() {
+        socket.off(NetworkEvents.SERVER_DISPLAYROOMLIST);
+        socket.off(NetworkEvents.SERVER_JOINROOM);
     }
+    
 }

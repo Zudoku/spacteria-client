@@ -22,7 +22,7 @@ import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
 import fingerprint.gameplay.map.gameworld.CharacterSaveFileDeserializer;
 import fingerprint.gameplay.map.gameworld.CharacterMetaData;
-import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.states.menu.enums.CharacterClass;
 
 @Singleton
@@ -46,8 +46,8 @@ public class GameFileHandler {
         
         CharacterSaveFile createdChar = new CharacterSaveFile();
         createdChar.setMetaData(metaData);
-        Player player = new Player();
-        player.setCharactername(filename);
+        GCharacter player = new GCharacter();
+        player.setName(filename);
         player.setCharacterClass(charClass);
         player.setLevel(1);
         player.setExperience(0);

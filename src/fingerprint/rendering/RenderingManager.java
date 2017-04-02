@@ -21,7 +21,7 @@ import fingerprint.controls.InputManager;
 import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
-import fingerprint.gameplay.objects.player.Player;
+import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.inout.FileUtil;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
@@ -133,7 +133,7 @@ public class RenderingManager {
         graphics.setColor(FONT_BASE_COLOR);
         
         if(!gwic.isIsCreateNewCharDummy()){
-            graphics.drawString(gwic.getFilename(),  calculateTextAllignCenterX(graphics, gwic.getFilename()), 100);
+            graphics.drawString(gwic.getPlayerData().getName(),  calculateTextAllignCenterX(graphics, gwic.getPlayerData().getName()), 100);
         } else {
             graphics.drawString("Create new Character",  calculateTextAllignCenterX(graphics, "Create new Character"), 100);
         }
@@ -193,7 +193,7 @@ public class RenderingManager {
         Set<GameObject> asd = entityManager.get(GameObject.class);
         //OBJECTS
         for(GameObject drawableObject : asd){
-            if(drawableObject instanceof Player){
+            if(drawableObject instanceof GCharacter){
                 continue;
             }
             if(needToDraw(drawableObject)){
@@ -201,8 +201,8 @@ public class RenderingManager {
             }
         }
         //PLAYER
-        Player player = null;
-        for(Player drawableObject : entityManager.get(Player.class)){
+        GCharacter player = null;
+        for(GCharacter drawableObject : entityManager.get(GCharacter.class)){
             
             drawableObject.draw(graphics);
             graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, 360f -(float)gri.getCameraRotation());
@@ -239,7 +239,7 @@ public class RenderingManager {
             graphics.setColor(Color.white);
             graphics.drawString("Memory used: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
             graphics.drawString("Screen coordinates: " + screenStartX + "," + screenStartY, 10, 50);
-            for(Player drawableObject : entityManager.get(Player.class)){
+            for(GCharacter drawableObject : entityManager.get(GCharacter.class)){
                 graphics.drawString("Player coordinates: " + drawableObject.getX() + "," + drawableObject.getY() + " (" + (int)Math.floor(drawableObject.getX()/64) + "," + (int)Math.floor(drawableObject.getY()/64) + ")", 10, 70);
                 graphics.drawString("Player speed (x,y): " + (int)drawableObject.displaySpeedX + "," + (int)drawableObject.displaySpeedY , 10, 90);
                 graphics.drawString("Player rectangle (x,y): " +(int)drawableObject.getCollideShape().getX()+"," +(int)drawableObject.getCollideShape().getY() , 10, 110);

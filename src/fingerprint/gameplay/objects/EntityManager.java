@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import com.google.inject.Singleton;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
-import fingerprint.gameplay.objects.player.DummyPlayer;
+import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.networking.events.CorrectNPCPositionEvent;
@@ -96,7 +96,7 @@ public class EntityManager {
     
     @Subscribe
     public void listenPlayerLeftEvent(PlayerLeftEvent event){
-        DummyPlayer player = (DummyPlayer) getObjectWithID(event.getId());
+        DummyCharacter player = (DummyCharacter) getObjectWithID(event.getId());
         eventBus.post(new DisplayConsoleMessageEvent("Player " + player.getCharactername() + " left game!", Color.yellow));
         removeObjectWithID(event.getId());
     }
@@ -104,7 +104,7 @@ public class EntityManager {
     @Subscribe
     public void listenCorrectPlayerPositionEvent(CorrectNPCPositionEvent event){
         GameObject handled = getObjectWithID(event.getId());
-        if(handled instanceof DummyPlayer || handled instanceof Enemy){
+        if(handled instanceof DummyCharacter || handled instanceof Enemy){
             handled.setX(event.getX());
             handled.setY(event.getY());
         }

@@ -17,8 +17,13 @@ public class NetworkEvents {
     public static final String CLIENT_IDENTIFY = "identify";
     public static final String CLIENT_UPDATE_POSITION = "updateposition";
     public static final String CLIENT_SPAWN_PROJECTILE = "spawnprojectile";
+    public static final String CLIENT_CHARACTERLIST_REQUEST = "characterlist";
+    public static final String CLIENT_CREATE_CHARACTER = "createcharacter";
+    public static final String CLIENT_LOAD_CHARACTER = "loadcharacter";
+    public static final String CLIENT_DELETE_CHARACTER = "deletecharacter";
     
     public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
+    public static final String SERVER_CHARACTERLIST = "displaycharacterlist";
     public static final String SERVER_JOINROOM = "joinroom";
     public static final String SERVER_PLAYERJOINEDMYGAME = "playerjoin";
     public static final String SERVER_PLAYERLEFTMYGAME = "playerleft";
