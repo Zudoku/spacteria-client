@@ -136,4 +136,35 @@ public class GCharacter extends CollidingObject{
         return statManager;
     }
 
+    public int getUserid() {
+        return userid;
+    }
+
+    public void setUserid(int userid) {
+        this.userid = userid;
+    }
+
+    public int getUniqueid() {
+        return uniqueid;
+    }
+
+    public void setUniqueid(int uniqueid) {
+        this.uniqueid = uniqueid;
+    }
+
+    public int getCclass() {
+        return cclass;
+    }
+
+    public void setCclass(int cclass) {
+        this.cclass = cclass;
+    }
+
+    public String getCreated() {
+        return created;
+    }
+
+    public void setCreated(String created) {
+        this.created = created;
+    }
 }

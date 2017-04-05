@@ -98,7 +98,7 @@ public class CharacterSelectionState extends BasicGameState {
             currentSelectionChar = availableChars.get(controller.getSelection());
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
-            selectCharacter(controller.getSelection());
+            selectCharacter();
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
@@ -107,15 +107,18 @@ public class CharacterSelectionState extends BasicGameState {
         currentSelectionChar.setMoreRight(controller.getMoreRight());
 
     }
-    public void selectCharacter(int characterIndex){
+    public void selectCharacter(){
         if(controller.getSelection() == 0){
             //TODO: FIX THIS 
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_CREATION_ID));
         }else{
-            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.SERVERLIST_ID));
-            eventBus.post(new SelectCharacterEvent(currentSelectionChar.getPlayerData()));
-            eventBus.post(new ChangeStateEvent(getID(), State_IDs.SERVERLIST_ID));
-            cleanUpSocket();
+            JSONObject payload = new JSONObject();
+            try {
+                payload.put("charID", currentSelectionChar.getPlayerData().getUniqueid());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            socket.emit(NetworkEvents.CLIENT_LOAD_CHARACTER, payload);
         }
         
     }
@@ -133,36 +136,36 @@ public class CharacterSelectionState extends BasicGameState {
     
     
     private void initializeSocketToCharacterSelectionMode() {
-        socket.on(NetworkEvents.SERVER_CHARACTERLIST, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
+        socket.on(NetworkEvents.SERVER_CHARACTERLIST, args -> {
+            try {
+                logger.log(Level.SEVERE, args[0].toString());
+                JSONArray charsPayload =((JSONObject)args[0]).getJSONArray("chars");
+                for(int y = 0; y < charsPayload.length(); y++){
                     try {
-                        logger.log(Level.SEVERE, args[0].toString());
-                        JSONArray charsPayload =((JSONObject)args[0]).getJSONArray("chars");
-                        for(int y = 0; y < charsPayload.length(); y++){
-                            try {
-                                JSONObject charToAdd = charsPayload.getJSONObject(y);
-                                try{
-                                    GCharacter character = gson.fromJson(charToAdd.toString(), GCharacter.class);
-                                    CharacterInfoContainer cic = new CharacterInfoContainer();
-                                    cic.setPlayerData(character);
-                                    availableChars.add(cic);
-                                } catch(Exception e){
-                                    Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
-                                }
-                                
-                                
-                            } catch (JSONException ex) {
-                                Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                        JSONObject charToAdd = charsPayload.getJSONObject(y);
+                        try{
+                            GCharacter character = gson.fromJson(charToAdd.toString(), GCharacter.class);
+                            CharacterInfoContainer cic = new CharacterInfoContainer();
+                            cic.setPlayerData(character);
+                            availableChars.add(cic);
+                        } catch(Exception e){
+                            Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
                         }
-                        controller.setFilesAmount(availableChars.size() - 1);
+
+
                     } catch (JSONException ex) {
-                        Logger.getLogger(CharacterSelectionState.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-
+                controller.setFilesAmount(availableChars.size() - 1);
+            } catch (JSONException ex) {
+                Logger.getLogger(CharacterSelectionState.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).on(NetworkEvents.SERVER_CHARACTERLOAD_SUCCESS, args -> {
+            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.SERVERLIST_ID));
+            eventBus.post(new SelectCharacterEvent(currentSelectionChar.getPlayerData()));
+            eventBus.post(new ChangeStateEvent(getID(), State_IDs.SERVERLIST_ID));
+            cleanUpSocket();
         });
     }
     

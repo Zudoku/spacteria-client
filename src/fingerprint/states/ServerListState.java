@@ -77,46 +77,37 @@ public class ServerListState extends BasicGameState{
     }
     
     private void initializeSocketToServerListMode(){
-        socket.on(NetworkEvents.SERVER_DISPLAYROOMLIST, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    //
-                    rooms.clear();
-                    JSONArray roomsPayload = (JSONArray)args[0];
-                    for(int y = 0; y < roomsPayload.length(); y++){
-                        try {
-                            JSONObject roomToAdd = roomsPayload.getJSONObject(y);
-                            try{
-                                RoomDescription description = gson.fromJson(roomToAdd.toString(), RoomDescription.class);
-                                rooms.add(description);
-                            } catch(Exception e){
-                                Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
-                            }
-                            
-                            
-                        } catch (JSONException ex) {
-                            Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                    controller.setRoomAmount(rooms.size());
-                    
-                }
-
-            }).on(NetworkEvents.SERVER_JOINROOM, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    //Go to gameplay state
-                    JSONObject payload = (JSONObject) args[0];
+        socket.on(NetworkEvents.SERVER_DISPLAYROOMLIST, args -> {
+            //
+            rooms.clear();
+            JSONArray roomsPayload = (JSONArray)args[0];
+            for(int y = 0; y < roomsPayload.length(); y++){
+                try {
+                    JSONObject roomToAdd = roomsPayload.getJSONObject(y);
                     try{
-                        RoomDescription roomDescription = gson.fromJson(payload.toString(), RoomDescription.class);
-                        eventBus.post(new InitGameInfoEvent(roomDescription, myCharacter, socket.id(), socket));
-                        eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
+                        RoomDescription description = gson.fromJson(roomToAdd.toString(), RoomDescription.class);
+                        rooms.add(description);
                     } catch(Exception e){
                         Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
                     }
-                    
+
+
+                } catch (JSONException ex) {
+                    Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            controller.setRoomAmount(rooms.size());
+
+        }).on(NetworkEvents.SERVER_JOINROOM, args -> {
+                //Go to gameplay state
+                JSONObject payload = (JSONObject) args[0];
+                try{
+                    RoomDescription roomDescription = gson.fromJson(payload.toString(), RoomDescription.class);
+                    eventBus.post(new InitGameInfoEvent(roomDescription, myCharacter, socket.id(), socket));
+                    eventBus.post(new ChangeStateEvent(getID(), State_IDs.GAME_PLAY_ID));
+                    cleanUpSocket();
+                } catch(Exception e){
+                    Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
                 }
 
             });

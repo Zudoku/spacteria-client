@@ -24,6 +24,7 @@ public class NetworkEvents {
     
     public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
     public static final String SERVER_CHARACTERLIST = "displaycharacterlist";
+    public static final String SERVER_CHARACTERLOAD_SUCCESS = "charloadsuccess";
     public static final String SERVER_JOINROOM = "joinroom";
     public static final String SERVER_PLAYERJOINEDMYGAME = "playerjoin";
     public static final String SERVER_PLAYERLEFTMYGAME = "playerleft";
