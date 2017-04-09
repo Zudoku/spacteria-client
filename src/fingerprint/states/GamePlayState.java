@@ -56,6 +56,8 @@ public class GamePlayState extends BasicGameState{
     private String myID = "";
     
     private Socket mySocket;
+
+    private boolean initialized = false;
     
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
@@ -69,6 +71,9 @@ public class GamePlayState extends BasicGameState{
     @Override
     public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
             throws SlickException {
+        if(!initialized){
+            return;
+        }
         GamePlayRenderingInformation gri = new GamePlayRenderingInformation();
         
         gri.setCameraRotation(worldContainer.getCameraAngle());
@@ -86,6 +91,9 @@ public class GamePlayState extends BasicGameState{
     @Override
     public void update(GameContainer gc, StateBasedGame caller, int delta)
             throws SlickException {
+        if(!initialized){
+            return;
+        }
         inputManager.setInput(gc.getInput());
         inputManager.update();
         worldContainer.updateWorld(inputManager,delta);
@@ -108,9 +116,12 @@ public class GamePlayState extends BasicGameState{
         mySocket = event.getSocket();
         
         changeRoom(description);
+        event.getMyCharacter().init();
         worldContainer.setMyCharacter(event.getMyCharacter(),myID);
+
         
         initializeSocketToGamePlayMode();
+        initialized = true;
     }
     
     private void changeRoom(RoomDescription description){
@@ -139,50 +150,22 @@ public class GamePlayState extends BasicGameState{
         mySocket.off(NetworkEvents.SERVER_DISPLAYROOMLIST);
         mySocket.off(NetworkEvents.SERVER_JOINROOM);
         
-        mySocket.on(NetworkEvents.SERVER_PLAYERJOINEDMYGAME, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                String payload = args[0].toString();
-                PlayerJoinedEvent event = new PlayerJoinedEvent((DummyCharacter) gson.fromJson(payload, DummyCharacter.class));
-                eventBus.post(event);
-            }
-
-        }).on(NetworkEvents.SERVER_PLAYERLEFTMYGAME, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                eventBus.post(gson.fromJson(args[0].toString(), PlayerLeftEvent.class));
-            }
-
-        }).on(NetworkEvents.SERVER_CORRECTNPCPOSITION, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                eventBus.post(gson.fromJson(args[0].toString(), CorrectNPCPositionEvent.class));
-            }
-
-        }).on(NetworkEvents.SERVER_PROJECTILE_SPAWNED, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                eventBus.post(gson.fromJson(args[0].toString(), NewProjectileSpawnedEvent.class));
-            }
-
-        }).on(NetworkEvents.SERVER_PROJECTILE_DESPAWNED, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                eventBus.post(gson.fromJson(args[0].toString(), DeleteEntityEvent.class));
-            }
-
-        }).on(NetworkEvents.SERVER_REFRESH_ROOM_DESC, new Emitter.Listener() {
-
-            @Override
-            public void call(Object... args) {
-                RefreshRoomDescEvent event = gson.fromJson(args[0].toString(), RefreshRoomDescEvent.class);
-                changeRoom(event.getDesc());
-            }
+        mySocket.on(NetworkEvents.SERVER_PLAYERJOINEDMYGAME, args -> {
+            String payload = args[0].toString();
+            PlayerJoinedEvent event = new PlayerJoinedEvent((DummyCharacter) gson.fromJson(payload, DummyCharacter.class));
+            eventBus.post(event);
+        }).on(NetworkEvents.SERVER_PLAYERLEFTMYGAME, args -> {
+            eventBus.post(gson.fromJson(args[0].toString(), PlayerLeftEvent.class));
+        }).on(NetworkEvents.SERVER_CORRECTNPCPOSITION, args -> {
+            eventBus.post(gson.fromJson(args[0].toString(), CorrectNPCPositionEvent.class));
+        }).on(NetworkEvents.SERVER_PROJECTILE_SPAWNED, args -> {
+            eventBus.post(gson.fromJson(args[0].toString(), NewProjectileSpawnedEvent.class));
+        }).on(NetworkEvents.SERVER_GAMEOBJECT_DESPAWNED, args -> {
+            eventBus.post(gson.fromJson(args[0].toString(), DeleteEntityEvent.class));
+        }).on(NetworkEvents.SERVER_REFRESH_ROOM_DESC, args -> {
+            RefreshRoomDescEvent event = gson.fromJson(args[0].toString(), RefreshRoomDescEvent.class);
+            changeRoom(event.getDesc());
+        }).on(NetworkEvents.SERVER_LOOTBAG_SPAWNED, args -> {
 
         });
         

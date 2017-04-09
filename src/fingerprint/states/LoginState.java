@@ -64,7 +64,7 @@ public class LoginState  extends BasicGameState {
     private TextField usernameTextField;
     private TextField passwordTextField;
     
-    private static final String serveraddrs = "http://192.168.1.141:3590";
+    private static final String serveraddrs = "http://127.0.0.1:3590";
 
     public LoginState() {
         controller = new GenericGridController(Arrays.asList(0,0,0), Arrays.asList(0,1));
