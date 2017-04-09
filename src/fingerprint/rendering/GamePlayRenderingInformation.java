@@ -5,6 +5,7 @@
  */
 package fingerprint.rendering;
 
+import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.StatContainer;
 import fingerprint.states.menu.enums.CharacterClass;
 
@@ -20,6 +21,7 @@ public class GamePlayRenderingInformation {
     private StatContainer myStats;
     private String mapName;
     private CharacterClass charClass;
+    private LootBag lootToRender;
     
     public GamePlayRenderingInformation() {
     }
@@ -79,6 +81,16 @@ public class GamePlayRenderingInformation {
     public void setCharClass(CharacterClass charClass) {
         this.charClass = charClass;
     }
+
+    public LootBag getLootToRender() {
+        return lootToRender;
+    }
+
+    public void setLootToRender(LootBag lootToRender) {
+        this.lootToRender = lootToRender;
+    }
+    
+    
     
     
     

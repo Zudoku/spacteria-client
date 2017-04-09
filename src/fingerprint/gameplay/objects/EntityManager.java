@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import com.google.inject.Singleton;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
+import fingerprint.gameplay.objects.events.NewLootBagSpawnedEvent;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
@@ -112,6 +113,11 @@ public class EntityManager {
     @Subscribe
     public void listenNewProjectileSpawnedEvent(NewProjectileSpawnedEvent event){
         addNewObject(event.getProjectile().getGuid(), event.getProjectile());
+    }
+    
+    @Subscribe
+    public void listenNewLootBagSpawnedEvent(NewLootBagSpawnedEvent event){
+        addNewObject(event.getGuid(), event.getLootbag());
     }
     
     @Subscribe

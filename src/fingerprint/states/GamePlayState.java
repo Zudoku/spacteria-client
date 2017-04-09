@@ -16,6 +16,8 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
+import fingerprint.gameplay.objects.events.NewLootBagSpawnedEvent;
+import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
@@ -166,7 +168,7 @@ public class GamePlayState extends BasicGameState{
             RefreshRoomDescEvent event = gson.fromJson(args[0].toString(), RefreshRoomDescEvent.class);
             changeRoom(event.getDesc());
         }).on(NetworkEvents.SERVER_LOOTBAG_SPAWNED, args -> {
-
+            eventBus.post(gson.fromJson(args[0].toString(), NewLootBagSpawnedEvent.class));
         });
         
     }

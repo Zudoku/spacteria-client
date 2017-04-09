@@ -7,14 +7,9 @@ package fingerprint.gameplay.objects.projectiles;
 
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.CollisionManager;
-import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 
 /**
