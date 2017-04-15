@@ -117,6 +117,7 @@ public class EntityManager {
     
     @Subscribe
     public void listenNewLootBagSpawnedEvent(NewLootBagSpawnedEvent event){
+        event.getLootbag().flushShape();
         addNewObject(event.getGuid(), event.getLootbag());
     }
     
@@ -144,6 +145,7 @@ public class EntityManager {
     }
     public void updateEntities(int delta, CollisionManager collisionManager){
         updateProjectiles(delta, collisionManager);
+        collisionManager.checkCollision();
     }
     
     private void updateProjectiles(int delta, CollisionManager collisionManager){

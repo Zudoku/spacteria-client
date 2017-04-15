@@ -2,6 +2,7 @@ package fingerprint.states;
 
 import java.util.logging.Logger;
 
+import fingerprint.gameplay.objects.events.RenderLootBagEvent;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -85,9 +86,12 @@ public class GamePlayState extends BasicGameState{
         gri.setMyStats(worldContainer.getMyStats());
         gri.setMapName(worldContainer.getMapName());
         gri.setCharClass(worldContainer.getMyClass());
+        gri.setLootToRender(worldContainer.getLootToRender());
         //worldContainer.
         renderingManager.drawGamePlay(graphics,debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
+
+        worldContainer.setLootToRender(null);
     }
 
     @Override
@@ -197,5 +201,10 @@ public class GamePlayState extends BasicGameState{
         }
     }
 
-
+    @Subscribe
+    public void listenRenderLootBagEvent(RenderLootBagEvent event){
+        if(worldContainer != null){
+            worldContainer.setLootToRender(event.getLootBag());
+        }
+    }
 }

@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.util.logging.Logger;
 
+import fingerprint.gameplay.items.GameItem;
+import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -348,7 +350,40 @@ public class RenderingManager {
                 graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * o), 11 * TS + 9 + (u * ITEM_PADDING), 48, 48);
             }
         }
-        
+
+        //LOOT INFORMATION
+        if(gri.getLootToRender() != null) {
+            graphics.setColor(Color.gray);
+            graphics.fillRect(unScaledGamePlayWidth -250, 14 * TS -20, 4 * TS -20, 120);
+            graphics.setColor(Color.black);
+            graphics.drawRect(unScaledGamePlayWidth -250, 14 * TS -20, 4 * TS -21, 120);
+
+            for(int u = 0; u < 2; u++){
+                for(int o = 0; o < 4; o++){
+                    int xPos = unScaledGamePlayWidth -241 + (ITEM_PADDING * o);
+                    int yPos =  14 * TS -11  + (u * ITEM_PADDING);
+                    graphics.drawRect(xPos, yPos, 48, 48);
+                    int lootIndex = (u * 4) + o;
+                    if(gri.getLootToRender().getItems().size() > lootIndex) {
+                        GameItemWrapper itemToRender = gri.getLootToRender().getItems().get(lootIndex);
+                        if(itemToRender.getUniqueid() == -1) {
+                            try { //coins
+                                drawEquipment(0, xPos, yPos);
+                            } catch (SlickException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            try {
+                                drawEquipment(itemToRender.getData().getItemtypeid(), xPos, yPos);
+                            } catch (SlickException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
     
     private void drawEquipment(int position,float x, float y) throws SlickException{

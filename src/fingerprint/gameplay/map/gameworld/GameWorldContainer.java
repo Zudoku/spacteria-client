@@ -11,6 +11,7 @@ import fingerprint.controls.InputManager;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.EntityManager;
+import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.gameplay.objects.player.CharacterContainer;
@@ -27,6 +28,8 @@ public class GameWorldContainer {
     private RoomDescription world;
     @Inject private CharacterContainer playerContainer;
     @Inject private EventBus eventBus;
+
+    private LootBag lootToRender;
     
     public GameWorldContainer() {
         playerContainer = new CharacterContainer();
@@ -90,9 +93,16 @@ public class GameWorldContainer {
         }
         
     }
-    
-    
-    
+
+
+    public LootBag getLootToRender() {
+        return lootToRender;
+    }
+
+    public void setLootToRender(LootBag lootToRender) {
+        this.lootToRender = lootToRender;
+    }
+
     public double getCameraAngle(){
         return playerContainer.getAngle();
     }

@@ -16,4 +16,16 @@ public class GameItemWrapper {
     private int uniqueid;
     private GameItem data;
     private int amount;
+
+    public GameItem getData() {
+        return data;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public int getUniqueid() {
+        return uniqueid;
+    }
 }

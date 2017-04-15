@@ -10,6 +10,9 @@ import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.GameObject;
 import java.util.ArrayList;
 import java.util.List;
+
+import fingerprint.gameplay.objects.events.RenderLootBagEvent;
+import fingerprint.gameplay.objects.player.GCharacter;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
@@ -32,6 +35,10 @@ public class LootBag extends CollidingObject {
         super(0, 0, new Rectangle(0,0,48,48));
     }
 
+    public void flushShape() {
+        this.collideShape = new Rectangle((float)getX(),(float) getY(), 48, 48);
+    }
+
     @Override
     public void draw(Graphics graphics) {
         double[] drawinCords = getDrawingCoordinates();
@@ -41,8 +48,16 @@ public class LootBag extends CollidingObject {
         graphics.setColor(Color.red);
         graphics.fillRect((float)drawinCords[0]+ 2, (float)drawinCords[1] + 2, getCollideShape().getWidth() -4, getCollideShape().getHeight()-4);
     }
-    
-    
-    
 
+
+    public List<GameItemWrapper> getItems() {
+        return items;
+    }
+
+    @Override
+    protected void onCollision(CollidingObject collidedWith) {
+        if(collidedWith instanceof GCharacter) {
+            eventBus.post(new RenderLootBagEvent(this));
+        }
+    }
 }
