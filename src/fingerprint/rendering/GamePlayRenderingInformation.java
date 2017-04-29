@@ -5,6 +5,7 @@
  */
 package fingerprint.rendering;
 
+import fingerprint.gameplay.items.Equipments;
 import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.StatContainer;
 import fingerprint.states.menu.enums.CharacterClass;
@@ -22,8 +23,17 @@ public class GamePlayRenderingInformation {
     private String mapName;
     private CharacterClass charClass;
     private LootBag lootToRender;
+    private Equipments equipmentToRender;
     
     public GamePlayRenderingInformation() {
+    }
+
+    public Equipments getEquipmentToRender() {
+        return equipmentToRender;
+    }
+
+    public void setEquipmentToRender(Equipments equipmentToRender) {
+        this.equipmentToRender = equipmentToRender;
     }
 
     public void setCameraRotation(double cameraRotation) {

@@ -20,6 +20,7 @@ public class GameItem {
     private boolean tradeable;
     private int rarity;
     private int sellvalue;
+    private int imageid;
 
     public GameItem() {
     }
@@ -149,7 +150,13 @@ public class GameItem {
     public void setSellvalue(int sellvalue) {
         this.sellvalue = sellvalue;
     }
-    
-    
 
+
+    public int getImageid() {
+        return imageid;
+    }
+
+    public void setImageid(int imageid) {
+        this.imageid = imageid;
+    }
 }

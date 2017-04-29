@@ -2,6 +2,7 @@ package fingerprint.gameplay.objects.player;
 
 import java.util.logging.Logger;
 
+import fingerprint.gameplay.items.Equipments;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
@@ -26,6 +27,7 @@ public class GCharacter extends CollidingObject{
     private transient CharacterSaveFile saveFile;
     private String name = "";
     private Inventory inventory;
+    private Equipments equipment;
     private CharacterClass characterClass;
     private transient StatManager statManager;
     
@@ -167,5 +169,13 @@ public class GCharacter extends CollidingObject{
 
     public void setCreated(String created) {
         this.created = created;
+    }
+
+    public Equipments getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(Equipments equipment) {
+        this.equipment = equipment;
     }
 }

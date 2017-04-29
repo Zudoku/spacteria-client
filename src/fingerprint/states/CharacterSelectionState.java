@@ -162,10 +162,16 @@ public class CharacterSelectionState extends BasicGameState {
                 Logger.getLogger(CharacterSelectionState.class.getName()).log(Level.SEVERE, null, ex);
             }
         }).on(NetworkEvents.SERVER_CHARACTERLOAD_SUCCESS, args -> {
-            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.SERVERLIST_ID));
-            eventBus.post(new SelectCharacterEvent(currentSelectionChar.getPlayerData()));
-            eventBus.post(new ChangeStateEvent(getID(), State_IDs.SERVERLIST_ID));
-            cleanUpSocket();
+            try {
+                JSONObject charToAdd = ((JSONObject) args[0]).getJSONObject("character");
+                GCharacter character = gson.fromJson(charToAdd.toString(), GCharacter.class);
+                eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.SERVERLIST_ID));
+                eventBus.post(new SelectCharacterEvent(character));
+                eventBus.post(new ChangeStateEvent(getID(), State_IDs.SERVERLIST_ID));
+                cleanUpSocket();
+            } catch (JSONException ex) {
+                logger.log(Level.SEVERE, null, ex);
+            }
         });
     }
     

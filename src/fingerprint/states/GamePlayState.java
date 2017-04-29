@@ -87,6 +87,7 @@ public class GamePlayState extends BasicGameState{
         gri.setMapName(worldContainer.getMapName());
         gri.setCharClass(worldContainer.getMyClass());
         gri.setLootToRender(worldContainer.getLootToRender());
+        gri.setEquipmentToRender(worldContainer.getCharacterEquipment());
         //worldContainer.
         renderingManager.drawGamePlay(graphics,debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);

@@ -8,6 +8,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
+import fingerprint.gameplay.items.Equipments;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.EntityManager;
@@ -105,6 +106,10 @@ public class GameWorldContainer {
 
     public double getCameraAngle(){
         return playerContainer.getAngle();
+    }
+
+    public Equipments getCharacterEquipment() {
+        return playerContainer.getCurrentPlayer().getEquipment();
     }
     
 

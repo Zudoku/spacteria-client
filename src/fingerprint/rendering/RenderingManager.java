@@ -13,6 +13,7 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
+import org.newdawn.slick.gui.MouseOverArea;
 import org.newdawn.slick.gui.TextField;
 
 import com.google.common.eventbus.EventBus;
@@ -69,7 +70,13 @@ public class RenderingManager {
     private TrueTypeFont giganticVerdanaFont;
     
     private Image cursor;
-    
+
+    private MouseOverArea[] inventoryMOA = new MouseOverArea[20];
+    private MouseOverArea[] equipmentMOA = new MouseOverArea[8];
+    private MouseOverArea[] lootbagMOA = new MouseOverArea[8];
+
+    private boolean gameplayMOAInitialized = false;
+
     public RenderingManager(){
         currentResolution = GameLauncher.gameSettings.resolution;
         mainMenuRenderer = new MainMenuRenderer();
@@ -82,10 +89,6 @@ public class RenderingManager {
             virtualResolutionHeight = currentResolution.getHeight();
             virtualResolutionWidth = currentResolution.getWidth();
         }
-        
-        
-        
-        
     }
     public void setMap(MapDescription map){
         tileMapRenderer.setMap(map.getFilename());
@@ -205,7 +208,6 @@ public class RenderingManager {
         //PLAYER
         GCharacter player = null;
         for(GCharacter drawableObject : entityManager.get(GCharacter.class)){
-            
             drawableObject.draw(graphics);
             graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, 360f -(float)gri.getCameraRotation());
             player = drawableObject;
@@ -230,6 +232,10 @@ public class RenderingManager {
         int SMALL_PADDING = 10;
         int ITEM_PADDING = 56;
         int TS = TilemapRenderer.tileSize;
+
+        if(!gameplayMOAInitialized) {
+            initGameplayMOA(x);
+        }
         
         //TODO: MAGIC NUMBERS!
         if(drawDebugInfo){
@@ -348,6 +354,8 @@ public class RenderingManager {
         for(int u = 0; u < 5; u++){
             for(int o = 0; o < 4; o++){
                 graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * o), 11 * TS + 9 + (u * ITEM_PADDING), 48, 48);
+                int index = o + 1 + u * 4;
+
             }
         }
 
@@ -367,11 +375,8 @@ public class RenderingManager {
                     if(gri.getLootToRender().getItems().size() > lootIndex) {
                         GameItemWrapper itemToRender = gri.getLootToRender().getItems().get(lootIndex);
                         if(itemToRender.getUniqueid() == -1) {
-                            try { //coins
-                                drawEquipment(0, xPos, yPos);
-                            } catch (SlickException e) {
-                                e.printStackTrace();
-                            }
+                            drawItem(1, xPos, yPos);
+                            //coins
                         } else {
                             try {
                                 drawEquipment(itemToRender.getData().getItemtypeid(), xPos, yPos);
@@ -420,6 +425,10 @@ public class RenderingManager {
         }
         
         image.draw(x, y);
+    }
+
+    private void drawItem(int imageid, float x, float y) {
+        uiManager.getItemImage(imageid).draw(x,y);
     }
     
     
