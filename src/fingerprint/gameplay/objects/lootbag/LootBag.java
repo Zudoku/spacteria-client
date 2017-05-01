@@ -24,6 +24,7 @@ import org.newdawn.slick.geom.Shape;
  */
 public class LootBag extends CollidingObject {
     private int quality;
+    private transient String guid;
     private List<GameItemWrapper> items = new ArrayList<>();
 
     public LootBag(int quality, double initX, double initY, Shape collidingShape) {
@@ -60,4 +61,14 @@ public class LootBag extends CollidingObject {
             eventBus.post(new RenderLootBagEvent(this));
         }
     }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+    
+    
 }

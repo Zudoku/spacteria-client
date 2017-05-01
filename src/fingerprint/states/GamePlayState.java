@@ -18,6 +18,7 @@ import fingerprint.controls.InputManager;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
 import fingerprint.gameplay.objects.events.NewLootBagSpawnedEvent;
+import fingerprint.gameplay.objects.events.gui.LootItemEvent;
 import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
@@ -32,6 +33,9 @@ import fingerprint.networking.events.RefreshRoomDescEvent;
 import fingerprint.networking.events.UpdatePositionEvent;
 import fingerprint.rendering.GamePlayRenderingInformation;
 import fingerprint.rendering.RenderingManager;
+import fingerprint.rendering.gui.EquipmentClickEvent;
+import fingerprint.rendering.gui.InventoryClickEvent;
+import fingerprint.rendering.gui.LootBagClickEvent;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.InitGameInfoEvent;
 import fingerprint.states.events.SaveAndExitWorldEvent;
@@ -89,10 +93,16 @@ public class GamePlayState extends BasicGameState{
         gri.setLootToRender(worldContainer.getLootToRender());
         gri.setEquipmentToRender(worldContainer.getCharacterEquipment());
         //worldContainer.
-        renderingManager.drawGamePlay(graphics,debugInfo, gri);
+        renderingManager.drawGamePlay(graphics, gc, debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
-
-        worldContainer.setLootToRender(null);
+        
+        if(!worldContainer.isThereWasLoot()) {
+            worldContainer.setLootToRender(null);
+        } else {
+            worldContainer.setThereWasLoot(false);
+        }
+        
+        
     }
 
     @Override
@@ -104,6 +114,8 @@ public class GamePlayState extends BasicGameState{
         inputManager.setInput(gc.getInput());
         inputManager.update();
         worldContainer.updateWorld(inputManager,delta);
+        
+        
     }
     
 
@@ -206,6 +218,33 @@ public class GamePlayState extends BasicGameState{
     public void listenRenderLootBagEvent(RenderLootBagEvent event){
         if(worldContainer != null){
             worldContainer.setLootToRender(event.getLootBag());
+            worldContainer.setThereWasLoot(true);
         }
+    }
+    
+    @Subscribe
+    public void listenLootBagClickEvent(LootBagClickEvent event) {
+        LootBag loot = worldContainer.getLootToRender();
+        if(loot != null) {
+            if(loot.getItems().size() > event.getIndex()) {
+                try {
+                    LootItemEvent payload = new LootItemEvent(event.getIndex(), loot.getGuid(), loot.getItems().get(event.getIndex()).getUniqueid(),
+                            loot.getItems().get(event.getIndex()).getAmount());
+                    mySocket.emit(NetworkEvents.CLIENT_LOOT_ITEM, new JSONObject(gson.toJson(payload, LootItemEvent.class)));
+                } catch (JSONException ex) {
+                    Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
+    @Subscribe
+    public void listenEquipmentClickEvent(EquipmentClickEvent event) {
+        
+    }
+    
+    @Subscribe
+    public void listenInventoryClickEvent(InventoryClickEvent event) {
+        
     }
 }

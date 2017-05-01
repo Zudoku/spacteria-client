@@ -118,6 +118,7 @@ public class EntityManager {
     @Subscribe
     public void listenNewLootBagSpawnedEvent(NewLootBagSpawnedEvent event){
         event.getLootbag().flushShape();
+        event.getLootbag().setGuid(event.getGuid());
         addNewObject(event.getGuid(), event.getLootbag());
     }
     

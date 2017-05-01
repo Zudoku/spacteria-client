@@ -21,6 +21,11 @@ public class NetworkEvents {
     public static final String CLIENT_CREATE_CHARACTER = "createcharacter";
     public static final String CLIENT_LOAD_CHARACTER = "loadcharacter";
     public static final String CLIENT_DELETE_CHARACTER = "deletecharacter";
+    public static final String CLIENT_LOOT_ITEM = "lootgameitem";
+    public static final String CLIENT_EQUIP_ITEM = "equipitem";
+    public static final String CLIENT_UNEQUIP_ITEM = "unequipitem";
+    public static final String CLIENT_DROP_ITEM = "dropitem";
+    public static final String CLIENT_MOVE_ITEM_IN_INVENTORY = "moveitemininventory";
     
     public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
     public static final String SERVER_CHARACTERLIST = "displaycharacterlist";
@@ -35,6 +40,7 @@ public class NetworkEvents {
     public static final String SERVER_REFRESH_ROOM_DESC = "refreshroomdesc";
     public static final String SERVER_LOGIN_SUCCESS = "loginsuccess";
     public static final String SERVER_LOGIN_FAIL = "loginfail";
+    public static final String SERVER_UPDATE_CHARACTER_STATUS = "updatecharacterstatus";
     
     //public static final String SERVER_UPDATE_NPC_POSITION= "updatenpcposition";
 }

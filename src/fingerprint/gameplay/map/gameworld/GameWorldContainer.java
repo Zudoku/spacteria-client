@@ -32,6 +32,8 @@ public class GameWorldContainer {
 
     private LootBag lootToRender;
     
+    private boolean thereWasLoot = false;
+    
     public GameWorldContainer() {
         playerContainer = new CharacterContainer();
 
@@ -111,6 +113,16 @@ public class GameWorldContainer {
     public Equipments getCharacterEquipment() {
         return playerContainer.getCurrentPlayer().getEquipment();
     }
+
+    public boolean isThereWasLoot() {
+        return thereWasLoot;
+    }
+
+    public void setThereWasLoot(boolean thereWasLoot) {
+        this.thereWasLoot = thereWasLoot;
+    }
+    
+    
     
 
 }

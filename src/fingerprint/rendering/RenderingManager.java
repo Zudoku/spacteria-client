@@ -30,6 +30,8 @@ import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.MapDescription;
 import fingerprint.mainmenus.serverlist.RoomDescription;
+import fingerprint.rendering.gui.DiffClickMOA;
+import fingerprint.rendering.gui.MOAType;
 import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
@@ -37,7 +39,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.MouseListener;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.gui.AbstractComponent;
+import org.newdawn.slick.gui.ComponentListener;
+import org.newdawn.slick.gui.GUIContext;
 
 @Singleton
 public class RenderingManager {
@@ -45,6 +51,7 @@ public class RenderingManager {
     private TilemapRenderer tileMapRenderer;
     private MainMenuRenderer mainMenuRenderer;
     private UIManager uiManager;
+    private EventBus eventBus;
     
     private EntityManager entityManager;
     private InputManager inputManager;
@@ -71,11 +78,12 @@ public class RenderingManager {
     
     private Image cursor;
 
-    private MouseOverArea[] inventoryMOA = new MouseOverArea[20];
-    private MouseOverArea[] equipmentMOA = new MouseOverArea[8];
-    private MouseOverArea[] lootbagMOA = new MouseOverArea[8];
+    private DiffClickMOA[] inventoryMOA = new DiffClickMOA[20];
+    private DiffClickMOA[] equipmentMOA = new DiffClickMOA[8];
+    private DiffClickMOA[] lootbagMOA = new DiffClickMOA[8];
 
     private boolean gameplayMOAInitialized = false;
+    
 
     public RenderingManager(){
         currentResolution = GameLauncher.gameSettings.resolution;
@@ -110,6 +118,7 @@ public class RenderingManager {
     public void configure(EntityManager entityManager,EventBus eventBus, InputManager inputManager){
         this.entityManager = entityManager;
         this.inputManager = inputManager;
+        this.eventBus = eventBus;
         tileMapRenderer = new TilemapRenderer();
         eventBus.register(this);
         eventBus.register(uiManager);
@@ -189,7 +198,7 @@ public class RenderingManager {
             graphics.fill(triangle);
         }
     }
-    public void drawGamePlay(Graphics graphics,boolean drawDebugInfo, GamePlayRenderingInformation gri){
+    public void drawGamePlay(Graphics graphics, GUIContext context, boolean drawDebugInfo, GamePlayRenderingInformation gri){
         initDraw(graphics);
         //LIGHTING
         //MAP
@@ -218,7 +227,7 @@ public class RenderingManager {
         //graphics.setColor(FONT_BASE_COLOR);
         //graphics.scale(unScaledScreenWidth, unScaledScreenWidth);
         //graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, (float)gri.getCameraRotation());
-        drawGamePlayUI(graphics, drawDebugInfo, gri);
+        drawGamePlayUI(graphics, context, drawDebugInfo, gri);
     }
     private boolean needToDraw(GameObject object){
         Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)unScaledGamePlayWidth,(float) unScaledGamePlayHeight);
@@ -227,14 +236,14 @@ public class RenderingManager {
     }
     
     
-    private void drawGamePlayUI(Graphics graphics,boolean drawDebugInfo, GamePlayRenderingInformation gri){
+    private void drawGamePlayUI(Graphics graphics, GUIContext context, boolean drawDebugInfo, GamePlayRenderingInformation gri){
         int MINI_PADDING = 4;
         int SMALL_PADDING = 10;
         int ITEM_PADDING = 56;
         int TS = TilemapRenderer.tileSize;
 
         if(!gameplayMOAInitialized) {
-            initGameplayMOA(x);
+            initGameplayMOA(context);
         }
         
         //TODO: MAGIC NUMBERS!
@@ -388,6 +397,17 @@ public class RenderingManager {
                 }
             }
         }
+        
+        for(int moaindex = 0; moaindex < 20; moaindex++){
+            if(moaindex < 8){
+                equipmentMOA[moaindex].render(context, graphics);
+                lootbagMOA[moaindex].render(context, graphics);
+            }
+            inventoryMOA[moaindex].render(context, graphics);
+            
+        }
+        
+        
 
     }
     
@@ -508,5 +528,53 @@ public class RenderingManager {
     public void listenSetScreenStartCoordinates(SetScreenStartCoordinatesEvent event){
         screenStartX = event.newX;
         screenStartY = event.newY;
+    }
+
+    private void initGameplayMOA(GUIContext context) {
+        // unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9
+        int ITEM_PADDING = 56;
+        int startX = unScaledGamePlayWidth +19;
+        int startY = 9 * TilemapRenderer.tileSize + 9;
+        // equipment
+        for(int index = 0; index < 8; index++){
+            int xi = index % 4;
+            int yi = (int) Math.floor(index / 4);
+            
+            
+            DiffClickMOA moa = new DiffClickMOA(context, uiManager.getItemImage(2), startX + (xi * ITEM_PADDING), startY + (yi * ITEM_PADDING),
+                    48, 48, eventBus, MOAType.EQUIPMENT, index);
+       
+            
+            equipmentMOA[index] = moa;
+        }
+        
+        
+        startY = 11 * TilemapRenderer.tileSize + 9;
+        // inventory
+        for(int index = 0; index < 20; index++){
+            int xi = index % 4;
+            int yi = (int) Math.floor(index / 4);
+            
+            
+            DiffClickMOA moa = new DiffClickMOA(context, uiManager.getItemImage(2), startX + (xi * ITEM_PADDING), startY + (yi * ITEM_PADDING),
+                    48, 48, eventBus, MOAType.INVENTORY, index);
+            
+            inventoryMOA[index] = moa;
+        }
+        
+        
+        startX = unScaledGamePlayWidth -241;
+        startY = 14 * TilemapRenderer.tileSize -11;
+        // lootbag
+        for(int index = 0; index < 8; index++){
+            int xi = index % 4;
+            int yi = (int) Math.floor(index / 4);
+            
+            
+            DiffClickMOA moa = new DiffClickMOA(context, uiManager.getItemImage(2), startX + (xi * ITEM_PADDING), startY + (yi * ITEM_PADDING),
+                    48, 48, eventBus, MOAType.LOOTBAG, index);
+            
+            lootbagMOA[index] = moa;
+        }
     }
 }
