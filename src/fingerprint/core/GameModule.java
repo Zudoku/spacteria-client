@@ -25,7 +25,7 @@ public class GameModule extends AbstractModule{
         entityManager = new EntityManager();
         renderingManager = new RenderingManager();
         eventBus = new EventBus("GameEventBus");
-        inputManager = new InputManager();
+        inputManager = new InputManager(eventBus);
         gson = new Gson();
     }
     

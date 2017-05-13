@@ -73,6 +73,7 @@ public class GamePlayState extends BasicGameState{
         eventBus.register(this);
         inputManager.setInput(gc.getInput());
         
+        
     }
 
     @Override
@@ -140,6 +141,7 @@ public class GamePlayState extends BasicGameState{
 
         
         initializeSocketToGamePlayMode();
+        inputManager.setUseGUIInputHandler(true);
         initialized = true;
     }
     

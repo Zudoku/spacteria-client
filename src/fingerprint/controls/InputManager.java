@@ -1,5 +1,6 @@
 package fingerprint.controls;
 
+import com.google.common.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,14 +23,20 @@ public class InputManager {
     private Map<KeyBindAction,Integer> keyboardKeyBinds = new HashMap<>();
     private Map<KeyBindAction,Integer> controllerKeyBinds = new HashMap<>();
     
+    private EventBus eventBus;
+    
     private boolean keyboardActive;
     private int CURRENT_CONTROLLER = 0;
     
     private Input input;
     private List<KeyBindAction> pressedKeyBinds = new ArrayList<>();
     
-    public InputManager() {
-        
+    private boolean useGUIInputHandler = false;
+    private GUIInputHandler guiInputHandler;
+    
+    public InputManager(EventBus eventBus) {
+        this.eventBus = eventBus;
+        guiInputHandler = new GUIInputHandler(eventBus);
     }
     public void update(){
         List<KeyBindAction> notPressed = new ArrayList<>();
@@ -40,6 +47,9 @@ public class InputManager {
         }
         for(KeyBindAction action : notPressed){
             pressedKeyBinds.remove(action);
+        }
+        if(useGUIInputHandler){
+            guiInputHandler.update(this);
         }
     }
     public boolean isKeyBindDown(KeyBindAction action,boolean press){
@@ -141,4 +151,14 @@ public class InputManager {
     public Map<KeyBindAction, Integer> getKeyboardKeyBinds() {
         return keyboardKeyBinds;
     }
+
+    public void setUseGUIInputHandler(boolean useGUIInputHandler) {
+        this.useGUIInputHandler = useGUIInputHandler;
+    }
+
+    public boolean isUseGUIInputHandler() {
+        return useGUIInputHandler;
+    }
+    
+    
 }
