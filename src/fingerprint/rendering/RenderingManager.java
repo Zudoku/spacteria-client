@@ -71,7 +71,6 @@ public class RenderingManager {
     private TrueTypeFont largeVerdanaFont;
     private TrueTypeFont giganticVerdanaFont;
     
-    private Image cursor;
     
     public RenderingManager(){
         currentResolution = GameLauncher.gameSettings.resolution;
@@ -328,12 +327,20 @@ public class RenderingManager {
         graphics.drawRect(unScaledGamePlayWidth +SMALL_PADDING, 9 * TS, 4 * TS -21, 124);
         
         for(int t = 0; t < 4; t++){
-            
             try {
                 graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9, 48, 48);
-                drawEquipment(t,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9);
+                if(gri.getEquipmentToRender().getItem(t) != null){
+                    drawItem(gri.getEquipmentToRender().getItem(t).getImageid(),unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9);
+                } else {
+                    drawEquipment(t,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9);
+                }
                 graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING, 48, 48);
-                drawEquipment(t + 4,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING);
+                if(gri.getEquipmentToRender().getItem(t + 4) != null){
+                    drawItem(gri.getEquipmentToRender().getItem(t + 4).getImageid(),unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING);
+                } else {
+                    drawEquipment(t + 4,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING);
+                }
+                
             } catch (SlickException ex) {
                 Logger.getLogger(RenderingManager.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -345,50 +352,63 @@ public class RenderingManager {
         graphics.setColor(Color.black);
         graphics.drawRect(unScaledGamePlayWidth +10, 11 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -21, 300);
         
-        for(int u = 0; u < 5; u++){
-            for(int o = 0; o < 4; o++){
-                graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * o), 11 * TS + 9 + (u * ITEM_PADDING), 48, 48);
+        
+        graphics.setFont(smallVerdanaFont);
+        for (int u = 0; u < 5; u++) {
+            for (int o = 0; o < 4; o++) {
+                int ix = unScaledGamePlayWidth + 19 + (ITEM_PADDING * o);
+                int iy = 11 * TS + 9 + (u * ITEM_PADDING);
+                graphics.setColor(Color.black);
+                graphics.drawRect(ix, iy, 48, 48);
                 int index = o + 1 + u * 4;
+                GameItemWrapper itemData = gri.getInventoryToRender().getItem(index);
+                if (itemData != null) {
+                    if (itemData.getUniqueid() == -1) {
+                        drawItem(1, ix, iy);
+                    } else {
+                        drawItem(itemData.getData().getImageid(), ix, iy);
+                    }
+                    graphics.setColor(Color.red);
+                    graphics.drawString(Integer.toString(itemData.getAmount()), ix + 2, iy);
+                }
 
             }
         }
 
         //LOOT INFORMATION
-        if(gri.getLootToRender() != null) {
+        if (gri.getLootToRender() != null) {
             graphics.setColor(Color.gray);
-            graphics.fillRect(unScaledGamePlayWidth -250, 14 * TS -20, 4 * TS -20, 120);
+            graphics.fillRect(unScaledGamePlayWidth - 250, 14 * TS - 20, 4 * TS - 20, 120);
             graphics.setColor(Color.black);
-            graphics.drawRect(unScaledGamePlayWidth -250, 14 * TS -20, 4 * TS -21, 120);
+            graphics.drawRect(unScaledGamePlayWidth - 250, 14 * TS - 20, 4 * TS - 21, 120);
 
-            for(int u = 0; u < 2; u++){
-                for(int o = 0; o < 4; o++){
-                    int xPos = unScaledGamePlayWidth -241 + (ITEM_PADDING * o);
-                    int yPos =  14 * TS -11  + (u * ITEM_PADDING);
+            for (int u = 0; u < 2; u++) {
+                for (int o = 0; o < 4; o++) {
+                    int xPos = unScaledGamePlayWidth - 241 + (ITEM_PADDING * o);
+                    int yPos = 14 * TS - 11 + (u * ITEM_PADDING);
+                    graphics.setColor(Color.black);
                     graphics.drawRect(xPos, yPos, 48, 48);
                     int lootIndex = (u * 4) + o;
-                    if(gri.getLootToRender().getItems().size() > lootIndex) {
+                    if (gri.getLootToRender().getItems().size() > lootIndex) {
                         GameItemWrapper itemToRender = gri.getLootToRender().getItems().get(lootIndex);
-                        if(itemToRender.getUniqueid() == -1) {
+                        if (itemToRender.getUniqueid() == -1) {
                             drawItem(1, xPos, yPos);
+
+                            graphics.setColor(Color.red);
+                            graphics.drawString(Integer.toString(itemToRender.getAmount()), xPos + 2, yPos);
                             //coins
                         } else {
-                            try {
-                                drawEquipment(itemToRender.getData().getItemtypeid(), xPos, yPos);
-                            } catch (SlickException e) {
-                                e.printStackTrace();
-                            }
+                            drawItem(itemToRender.getData().getImageid(), xPos, yPos);
+                            graphics.setColor(Color.red);
+                            graphics.drawString(Integer.toString(itemToRender.getAmount()), xPos + 2, yPos);
                         }
                     }
                 }
             }
         }
-        
-        
-        
-        
 
     }
-    
+
     private void drawEquipment(int position,float x, float y) throws SlickException{
         Image image = null;
         switch(position){
@@ -449,13 +469,7 @@ public class RenderingManager {
         if(smallVerdanaFont == null){
             resetFonts();
         }
-        if(cursor == null){
-            try {
-                cursor = new Image("resources/cursor.png");
-            } catch (SlickException ex) {
-                Logger.getLogger(RenderingManager.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        
         
     }
     

@@ -178,4 +178,14 @@ public class GCharacter extends CollidingObject{
     public void setEquipment(Equipments equipment) {
         this.equipment = equipment;
     }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    public void setStatManager(StatManager statManager) {
+        this.statManager = statManager;
+    }
+    
+    
 }

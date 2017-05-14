@@ -11,5 +11,10 @@ package fingerprint.gameplay.objects.events.gui;
  * @author arska
  */
 public class DropItemEvent {
+    private int slot;
 
+    public DropItemEvent(int slot) {
+        this.slot = slot;
+    }
+    
 }

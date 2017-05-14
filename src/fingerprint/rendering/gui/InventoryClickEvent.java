@@ -13,10 +13,12 @@ package fingerprint.rendering.gui;
 public class InventoryClickEvent {
     private boolean rightclick;
     private int index;
+    private int mousebutton;
 
-    public InventoryClickEvent(boolean rightclick, int index) {
+    public InventoryClickEvent(boolean rightclick, int index, int mousebutton) {
         this.rightclick = rightclick;
         this.index = index;
+        this.mousebutton = mousebutton;
     }
     
     public boolean isRightclick() {
@@ -26,6 +28,12 @@ public class InventoryClickEvent {
     public int getIndex() {
         return index;
     }
+
+    public int getMousebutton() {
+        return mousebutton;
+    }
+    
+    
     
     
 

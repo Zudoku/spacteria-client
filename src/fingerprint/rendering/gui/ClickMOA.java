@@ -45,11 +45,11 @@ public class ClickMOA {
 
             switch (moaType) {
                 case EQUIPMENT:
-                    eventbus.post(new EquipmentClickEvent(rightClick, index));
+                    eventbus.post(new EquipmentClickEvent(rightClick, index ));
                     break;
 
                 case INVENTORY:
-                    eventbus.post(new InventoryClickEvent(rightClick, index));
+                    eventbus.post(new InventoryClickEvent(rightClick, index + 1, button));
                     break;
 
                 case LOOTBAG:

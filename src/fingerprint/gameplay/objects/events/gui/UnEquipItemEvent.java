@@ -11,5 +11,11 @@ package fingerprint.gameplay.objects.events.gui;
  * @author arska
  */
 public class UnEquipItemEvent {
+    private int slot;
 
+    public UnEquipItemEvent(int slot) {
+        this.slot = slot;
+    }
+    
+    
 }

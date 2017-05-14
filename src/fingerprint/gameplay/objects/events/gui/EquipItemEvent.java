@@ -11,5 +11,11 @@ package fingerprint.gameplay.objects.events.gui;
  * @author arska
  */
 public class EquipItemEvent {
+    private int index;
 
+    public EquipItemEvent(int index) {
+        this.index = index;
+    }
+    
+    
 }

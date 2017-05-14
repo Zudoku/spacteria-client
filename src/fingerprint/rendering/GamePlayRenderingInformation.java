@@ -6,9 +6,12 @@
 package fingerprint.rendering;
 
 import fingerprint.gameplay.items.Equipments;
+import fingerprint.gameplay.items.Inventory;
+import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
 import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.StatContainer;
 import fingerprint.states.menu.enums.CharacterClass;
+import java.util.List;
 
 /**
  *
@@ -24,6 +27,7 @@ public class GamePlayRenderingInformation {
     private CharacterClass charClass;
     private LootBag lootToRender;
     private Equipments equipmentToRender;
+    private Inventory inventoryToRender;
     
     public GamePlayRenderingInformation() {
     }
@@ -99,12 +103,13 @@ public class GamePlayRenderingInformation {
     public void setLootToRender(LootBag lootToRender) {
         this.lootToRender = lootToRender;
     }
-    
-    
-    
-    
-    
-    
-    
+
+    public Inventory getInventoryToRender() {
+        return inventoryToRender;
+    }
+
+    public void setInventoryToRender(Inventory inventoryToRender) {
+        this.inventoryToRender = inventoryToRender;
+    }
     
 }

@@ -15,12 +15,20 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
+import fingerprint.gameplay.items.GameItem;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
+import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
+import fingerprint.gameplay.objects.events.ModifyLootBagEvent;
 import fingerprint.gameplay.objects.events.NewLootBagSpawnedEvent;
+import fingerprint.gameplay.objects.events.gui.DropItemEvent;
+import fingerprint.gameplay.objects.events.gui.EquipItemEvent;
 import fingerprint.gameplay.objects.events.gui.LootItemEvent;
+import fingerprint.gameplay.objects.events.gui.UnEquipItemEvent;
+import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
 import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
+import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.inout.GameFileHandler;
@@ -93,6 +101,7 @@ public class GamePlayState extends BasicGameState{
         gri.setCharClass(worldContainer.getMyClass());
         gri.setLootToRender(worldContainer.getLootToRender());
         gri.setEquipmentToRender(worldContainer.getCharacterEquipment());
+        gri.setInventoryToRender(worldContainer.getInventoryToRender());
         //worldContainer.
         renderingManager.drawGamePlay(graphics, gc, debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
@@ -188,6 +197,11 @@ public class GamePlayState extends BasicGameState{
             changeRoom(event.getDesc());
         }).on(NetworkEvents.SERVER_LOOTBAG_SPAWNED, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), NewLootBagSpawnedEvent.class));
+        }).on(NetworkEvents.SERVER_UPDATE_LOOTBAG_STATUS, args -> {
+            eventBus.post(gson.fromJson(args[0].toString(), ModifyLootBagEvent.class));
+        }).on(NetworkEvents.SERVER_UPDATE_CHARACTER_STATUS, args -> {
+            ModifyCharacterEvent event = gson.fromJson(args[0].toString(), ModifyCharacterEvent.class);
+            worldContainer.characterStatusUpdate(event);
         });
         
     }
@@ -242,11 +256,33 @@ public class GamePlayState extends BasicGameState{
     
     @Subscribe
     public void listenEquipmentClickEvent(EquipmentClickEvent event) {
+        GameItem item = worldContainer.getCharacterEquipment().getItem(event.getIndex());
+        if(item != null && event.isRightclick()) {
+            try {
+                mySocket.emit(NetworkEvents.CLIENT_UNEQUIP_ITEM, new JSONObject(gson.toJson(new UnEquipItemEvent(event.getIndex()), UnEquipItemEvent.class)));
+            } catch (JSONException ex) {
+                Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         
     }
     
     @Subscribe
     public void listenInventoryClickEvent(InventoryClickEvent event) {
-        
+        GameItemWrapper item = worldContainer.getInventoryToRender().getItem(event.getIndex());
+        if (item != null && event.isRightclick()) {
+            try {
+                mySocket.emit(NetworkEvents.CLIENT_EQUIP_ITEM, new JSONObject(gson.toJson(new EquipItemEvent(event.getIndex()), EquipItemEvent.class)));
+            } catch (JSONException ex) {
+                Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (item != null && event.getMousebutton() == 2) {
+            try {
+                mySocket.emit(NetworkEvents.CLIENT_DROP_ITEM, new JSONObject(gson.toJson(new DropItemEvent(event.getIndex()), DropItemEvent.class)));
+            } catch (JSONException ex) {
+                Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

@@ -9,9 +9,11 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.gameplay.items.Equipments;
+import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.EntityManager;
+import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
 import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.player.GCharacter;
@@ -122,7 +124,12 @@ public class GameWorldContainer {
         this.thereWasLoot = thereWasLoot;
     }
     
-    
+    public void characterStatusUpdate(ModifyCharacterEvent event) {
+        playerContainer.characterStatusUpdate(event);
+    }
+    public Inventory getInventoryToRender() {
+        return playerContainer.getCurrentPlayer().getInventory();
+    }
     
 
 }

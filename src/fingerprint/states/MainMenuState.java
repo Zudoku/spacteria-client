@@ -43,7 +43,8 @@ public class MainMenuState extends BasicGameState{
             throws SlickException {
         selection = MainMenuSelection.PLAY;
         Image img = new Image("resources/cursor2.png");
-        gc.setMouseCursor(img, 0,0);
+        gc.setMouseCursor(img, 16,16);
+        
     }
 
     @Override

@@ -69,6 +69,8 @@ public class LootBag extends CollidingObject {
     public String getGuid() {
         return guid;
     }
-    
-    
+
+    public void setItems(List<GameItemWrapper> items) {
+        this.items = items;
+    }
 }

@@ -9,6 +9,7 @@ import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.EntityManager;
+import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.networking.events.UpdatePositionEvent;
@@ -225,6 +226,15 @@ public class CharacterContainer {
 
     public GCharacter getCurrentPlayer() {
         return currentPlayer;
+    }
+
+    public void characterStatusUpdate(ModifyCharacterEvent event) {
+        GCharacter newStatus = event.getCharacter();
+        if(currentPlayer != null && currentPlayer.getUniqueid() == newStatus.getUniqueid()) {
+            currentPlayer.setEquipment(newStatus.getEquipment());
+            currentPlayer.setExperience(newStatus.getExperience());
+            currentPlayer.setInventory(newStatus.getInventory());
+        }
     }
     
     

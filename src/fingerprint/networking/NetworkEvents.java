@@ -41,6 +41,7 @@ public class NetworkEvents {
     public static final String SERVER_LOGIN_SUCCESS = "loginsuccess";
     public static final String SERVER_LOGIN_FAIL = "loginfail";
     public static final String SERVER_UPDATE_CHARACTER_STATUS = "updatecharacterstatus";
+    public static final String SERVER_UPDATE_LOOTBAG_STATUS = "updatelootbagstatus";
     
     //public static final String SERVER_UPDATE_NPC_POSITION= "updatenpcposition";
 }
