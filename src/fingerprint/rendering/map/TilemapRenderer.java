@@ -3,6 +3,7 @@ package fingerprint.rendering.map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fingerprint.inout.FileUtil;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.tiled.TiledMapPlus;
 
@@ -38,7 +39,7 @@ public class TilemapRenderer {
                 return;
             }else {
                 try {
-                    mapToRender = new TiledMapPlus("resources/" + filename);
+                    mapToRender = new TiledMapPlus(FileUtil.TILEDMAPS_PATH + "/" + filename + FileUtil.TILEDMAP_FILE_EXTENSION);
                 } catch (SlickException ex) {
                     logger.log(Level.SEVERE, null, ex);
                 }

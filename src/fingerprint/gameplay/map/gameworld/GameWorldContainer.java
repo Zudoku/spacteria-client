@@ -8,12 +8,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
+import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.items.Equipments;
 import fingerprint.gameplay.items.Inventory;
-import fingerprint.gameplay.objects.CollisionManager;
-import fingerprint.gameplay.objects.Enemy;
-import fingerprint.gameplay.objects.EntityManager;
+import fingerprint.gameplay.objects.*;
 import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
+import fingerprint.gameplay.objects.events.gui.EnterPortalEvent;
 import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.player.GCharacter;
@@ -33,9 +33,11 @@ public class GameWorldContainer {
     @Inject private EventBus eventBus;
 
     private LootBag lootToRender;
+    private Portal portalToRender;
     
     private boolean thereWasLoot = false;
-    
+    private boolean thereWasPortal = false;
+
     public GameWorldContainer() {
         playerContainer = new CharacterContainer();
 
@@ -47,8 +49,18 @@ public class GameWorldContainer {
         playerContainer.updateCamera();
         entityManager.updateProjectileDelta(delta);
         entityManager.updateEntities(delta,collisionManager);
+        interactUpdate(inputManager);
 
     }
+
+    private void interactUpdate(InputManager inputManager) {
+        if(inputManager.isKeyBindPressed(KeyBindAction.D, true )) {
+            if(portalToRender != null){
+                eventBus.post(new EnterPortalEvent(portalToRender.getHash(), portalToRender.getTo()));
+            }
+        }
+    }
+
     public void setMyCharacter(GCharacter player, String id) {
         playerContainer.setCurrentPlayer(player);
         entityManager.addNewObject(id,player);
@@ -65,6 +77,20 @@ public class GameWorldContainer {
             enemy.initialize();
             entityManager.addNewObject(enemy.getHash(), enemy);
         }
+        for(GGameObjectWrapper ggaow : roomDescription.getGameobjects()) {
+            GameObject actualGGAO = ggaow.getGObject();
+            if(actualGGAO instanceof Portal) {
+                Portal portalObj = (Portal) actualGGAO;
+                portalObj.initialize();
+                entityManager.addNewObject(ggaow.getHash(), portalObj);
+            }
+            if(actualGGAO instanceof LootBag) {
+                LootBag lootBagObj = (LootBag) actualGGAO;
+                lootBagObj.flushShape();
+                entityManager.addNewObject(ggaow.getHash(), lootBagObj);
+            }
+        }
+
         
     }
     public StatContainer getMyStats(){
@@ -130,6 +156,20 @@ public class GameWorldContainer {
     public Inventory getInventoryToRender() {
         return playerContainer.getCurrentPlayer().getInventory();
     }
-    
 
+    public Portal getPortalToRender() {
+        return portalToRender;
+    }
+
+    public void setPortalToRender(Portal portalToRender) {
+        this.portalToRender = portalToRender;
+    }
+
+    public void setThereWasPortal(boolean thereWasPortal) {
+        this.thereWasPortal = thereWasPortal;
+    }
+
+    public boolean isThereWasPortal() {
+        return thereWasPortal;
+    }
 }

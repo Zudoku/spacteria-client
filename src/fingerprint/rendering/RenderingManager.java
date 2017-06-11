@@ -273,7 +273,8 @@ public class RenderingManager {
         graphics.drawRect(unScaledGamePlayWidth, 4 * TS, 4 * TS -1, 20);
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
-        graphics.drawString(gri.getMapName(), unScaledGamePlayWidth + MINI_PADDING, 4 * TS + MINI_PADDING);
+        String interactText = (gri.getPortalToRender() == null) ? "" : (" Space to enter: " + gri.getPortalToRender().getTo());
+        graphics.drawString(gri.getMapName() + interactText, unScaledGamePlayWidth + MINI_PADDING, 4 * TS + MINI_PADDING);
         //Draw character information
 
         drawTextEffect(gri.getMyName(), Color.black, Color.yellow, unScaledGamePlayWidth + 10, 5 * TS +10, 1, graphics, largeVerdanaFont);

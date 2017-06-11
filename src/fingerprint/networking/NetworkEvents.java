@@ -26,6 +26,8 @@ public class NetworkEvents {
     public static final String CLIENT_UNEQUIP_ITEM = "unequipitem";
     public static final String CLIENT_DROP_ITEM = "dropitem";
     public static final String CLIENT_MOVE_ITEM_IN_INVENTORY = "moveitemininventory";
+    public static final String CLIENT_MAP_LOADED = "maploaded";
+    public static final String CLIENT_ENTER_PORTAL = "enterportal";
     
     public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
     public static final String SERVER_CHARACTERLIST = "displaycharacterlist";
@@ -42,6 +44,7 @@ public class NetworkEvents {
     public static final String SERVER_LOGIN_FAIL = "loginfail";
     public static final String SERVER_UPDATE_CHARACTER_STATUS = "updatecharacterstatus";
     public static final String SERVER_UPDATE_LOOTBAG_STATUS = "updatelootbagstatus";
+    public static final String SERVER_LOAD_NEW_MAP = "loadnewmap";
     
     //public static final String SERVER_UPDATE_NPC_POSITION= "updatenpcposition";
 }

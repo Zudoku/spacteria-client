@@ -69,6 +69,7 @@ public class EntityManager {
     }
     public <T extends GameObject> Set<T> get(Class<T> type) {
         HashSet<T> objects = new HashSet<T>();
+
         for (GameObject co : idMap.values()) {
             if (type.isInstance(co)) {
                 objects.add((T) co);

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fingerprint.inout.FileUtil;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
@@ -60,7 +61,7 @@ public class CollisionManager {
                 return true;
             }else {
                 try {
-                    map = new TiledMapPlus("resources/" + filename);
+                    map = new TiledMapPlus(FileUtil.TILEDMAPS_PATH + "/" + filename + FileUtil.TILEDMAP_FILE_EXTENSION);
                 } catch (SlickException ex) {
                     logger.log(Level.SEVERE, null, ex);
                 }

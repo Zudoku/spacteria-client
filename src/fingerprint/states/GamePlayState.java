@@ -2,7 +2,9 @@ package fingerprint.states;
 
 import java.util.logging.Logger;
 
-import fingerprint.gameplay.objects.events.RenderLootBagEvent;
+import fingerprint.gameplay.objects.events.*;
+import fingerprint.gameplay.objects.events.gui.*;
+import fingerprint.networking.events.*;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -17,28 +19,14 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.gameplay.items.GameItem;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
-import fingerprint.gameplay.objects.events.DeleteEntityEvent;
-import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
-import fingerprint.gameplay.objects.events.ModifyLootBagEvent;
-import fingerprint.gameplay.objects.events.NewLootBagSpawnedEvent;
-import fingerprint.gameplay.objects.events.gui.DropItemEvent;
-import fingerprint.gameplay.objects.events.gui.EquipItemEvent;
-import fingerprint.gameplay.objects.events.gui.LootItemEvent;
-import fingerprint.gameplay.objects.events.gui.UnEquipItemEvent;
 import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
 import fingerprint.gameplay.objects.lootbag.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
-import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.networking.NetworkEvents;
-import fingerprint.networking.events.CorrectNPCPositionEvent;
-import fingerprint.networking.events.PlayerJoinedEvent;
-import fingerprint.networking.events.PlayerLeftEvent;
-import fingerprint.networking.events.RefreshRoomDescEvent;
-import fingerprint.networking.events.UpdatePositionEvent;
 import fingerprint.rendering.GamePlayRenderingInformation;
 import fingerprint.rendering.RenderingManager;
 import fingerprint.rendering.gui.EquipmentClickEvent;
@@ -48,7 +36,7 @@ import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.InitGameInfoEvent;
 import fingerprint.states.events.SaveAndExitWorldEvent;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
+
 import java.util.logging.Level;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,6 +90,7 @@ public class GamePlayState extends BasicGameState{
         gri.setLootToRender(worldContainer.getLootToRender());
         gri.setEquipmentToRender(worldContainer.getCharacterEquipment());
         gri.setInventoryToRender(worldContainer.getInventoryToRender());
+        gri.setPortalToRender(worldContainer.getPortalToRender());
         //worldContainer.
         renderingManager.drawGamePlay(graphics, gc, debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
@@ -110,6 +99,12 @@ public class GamePlayState extends BasicGameState{
             worldContainer.setLootToRender(null);
         } else {
             worldContainer.setThereWasLoot(false);
+        }
+
+        if(!worldContainer.isThereWasPortal()) {
+            worldContainer.setPortalToRender(null);
+        } else {
+            worldContainer.setThereWasPortal(false);
         }
         
         
@@ -148,17 +143,18 @@ public class GamePlayState extends BasicGameState{
         event.getMyCharacter().init();
         worldContainer.setMyCharacter(event.getMyCharacter(),myID);
 
+
         
         initializeSocketToGamePlayMode();
         inputManager.setUseGUIInputHandler(true);
         initialized = true;
     }
     
-    private void changeRoom(RoomDescription description){
+    private void  changeRoom(RoomDescription description){
         DummyCharacter ourOwn = null;
         //Remove our own dummy
         for(DummyCharacter dp : description.getPlayers()){
-            if(dp.getId().substring(2).equals(myID)){
+            if(dp.getId().equals(myID)){
                 ourOwn = dp;
                 
             }
@@ -193,8 +189,12 @@ public class GamePlayState extends BasicGameState{
         }).on(NetworkEvents.SERVER_GAMEOBJECT_DESPAWNED, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), DeleteEntityEvent.class));
         }).on(NetworkEvents.SERVER_REFRESH_ROOM_DESC, args -> {
-            RefreshRoomDescEvent event = gson.fromJson(args[0].toString(), RefreshRoomDescEvent.class);
-            changeRoom(event.getDesc());
+            try {
+                RefreshRoomDescEvent event = gson.fromJson(args[0].toString(), RefreshRoomDescEvent.class);
+                changeRoom(event.getDesc()); }
+            catch (Exception e) {
+                System.out.println(e);
+            }
         }).on(NetworkEvents.SERVER_LOOTBAG_SPAWNED, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), NewLootBagSpawnedEvent.class));
         }).on(NetworkEvents.SERVER_UPDATE_LOOTBAG_STATUS, args -> {
@@ -202,13 +202,17 @@ public class GamePlayState extends BasicGameState{
         }).on(NetworkEvents.SERVER_UPDATE_CHARACTER_STATUS, args -> {
             ModifyCharacterEvent event = gson.fromJson(args[0].toString(), ModifyCharacterEvent.class);
             worldContainer.characterStatusUpdate(event);
+        }).on(NetworkEvents.SERVER_LOAD_NEW_MAP, args -> {
+            LoadNewMapEvent event = gson.fromJson(args[0].toString(), LoadNewMapEvent.class);
+            gameFileHandler.saveTilemapFile(event);
+            mySocket.emit(NetworkEvents.CLIENT_MAP_LOADED, new JSONObject());
         });
         
     }
     
     @Subscribe
     public void listenSaveAndExitWorldEvent(SaveAndExitWorldEvent event){
-        gameFileHandler.saveCharacterFile(null);
+        gameFileHandler.saveTilemapFile(null);
         
         eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
     }
@@ -237,6 +241,15 @@ public class GamePlayState extends BasicGameState{
             worldContainer.setThereWasLoot(true);
         }
     }
+
+
+    @Subscribe
+    public void listenRenderPortalEvent(RenderEnterPortalEvent event){
+        if(worldContainer != null){
+            worldContainer.setPortalToRender(event.getPortal());
+            worldContainer.setThereWasPortal(true);
+        }
+    }
     
     @Subscribe
     public void listenLootBagClickEvent(LootBagClickEvent event) {
@@ -251,6 +264,15 @@ public class GamePlayState extends BasicGameState{
                     Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        }
+    }
+
+    @Subscribe
+    public void listenEnterPortalEvent(EnterPortalEvent event) {
+        try {
+            mySocket.emit(NetworkEvents.CLIENT_ENTER_PORTAL, new JSONObject(gson.toJson(event, EnterPortalEvent.class)));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
     
