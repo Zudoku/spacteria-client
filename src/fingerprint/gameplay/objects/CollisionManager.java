@@ -82,6 +82,9 @@ public class CollisionManager {
 
         for (int[][] arrayPos : arrayPoints) {
             int tileID = map.getTileId(arrayPos[0][0], arrayPos[1][0], 0);
+            if(arrayPos[0][0] >= map.getWidth() || arrayPos[1][0] >= map.getHeight()) {
+                return true;
+            }
             if (blockingTiles.contains((Integer) tileID)) {
                 int rectangleX = arrayPos[0][0] * TilemapRenderer.tileSize;
                 int rectangleY = arrayPos[1][0] * TilemapRenderer.tileSize;
