@@ -26,15 +26,19 @@ public class CollisionManager {
 
     private EntityManager entityManager;
     
-    private List<Integer> blockingTiles;
+    private List<Integer> blockingTiles = new ArrayList<>(Arrays.asList(new Integer[]{
+        1,2
+    }));
+    
+    
     private String filename = "";
 
     
     @Inject
     public CollisionManager(EntityManager entityManager) {
-        Integer[] blocking = new Integer[]{1,2};
         
-        this.blockingTiles = new ArrayList<>(Arrays.asList(blocking));
+        
+        
         this.entityManager = entityManager;
     }
     
@@ -81,10 +85,10 @@ public class CollisionManager {
         }
 
         for (int[][] arrayPos : arrayPoints) {
-            int tileID = map.getTileId(arrayPos[0][0], arrayPos[1][0], 0);
-            if(arrayPos[0][0] >= map.getWidth() || arrayPos[1][0] >= map.getHeight()) {
+            if(arrayPos[0][0] >= map.getWidth() || arrayPos[1][0] >= map.getHeight() || arrayPos[0][0] < 0 || arrayPos[1][0] < 0) {
                 return true;
             }
+            int tileID = map.getTileId(arrayPos[0][0], arrayPos[1][0], 0);
             if (blockingTiles.contains((Integer) tileID)) {
                 int rectangleX = arrayPos[0][0] * TilemapRenderer.tileSize;
                 int rectangleY = arrayPos[1][0] * TilemapRenderer.tileSize;

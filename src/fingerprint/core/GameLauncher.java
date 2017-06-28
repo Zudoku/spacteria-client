@@ -89,6 +89,7 @@ public class GameLauncher extends StateBasedGame {
         app.setAlwaysRender(true);
         app.setTargetFrameRate(appliedSettings.frameCap);
         app.setVSync(appliedSettings.vSync);
+        
     }
     
     @Override

@@ -63,8 +63,8 @@ public class LoginState  extends BasicGameState {
     
     private TextField usernameTextField;
     private TextField passwordTextField;
-    //private static final String serveraddrs = "http://192.168.1.141:3590";
-    private static final String serveraddrs = "http://127.0.0.1:3590";
+    private static final String serveraddrs = "http://192.168.1.141:3590";
+    //private static final String serveraddrs = "http://127.0.0.1:3590";
 
     public LoginState() {
         controller = new GenericGridController(Arrays.asList(0,0,0), Arrays.asList(0,1));
@@ -156,6 +156,14 @@ public class LoginState  extends BasicGameState {
         if(inputManager.isKeyBindPressed(KeyBindAction.SKIP,true)){
             controller.unlock();
             controller.down();
+        }
+        
+        if(inputManager.isKeyBindPressed(KeyBindAction.DEBUG_TOGGLE, true)) {
+            socket.disconnect();
+            socket.close();
+            initializeSocketToLoginMode();
+            System.out.println("Refreshing socket!!!");
+            usernameTextField.setTextColor(Color.magenta);
         }
         
         checkIfFileInputClose();

@@ -81,7 +81,7 @@ public class GamePlayState extends BasicGameState{
         GamePlayRenderingInformation gri = new GamePlayRenderingInformation();
         
         gri.setCameraRotation(worldContainer.getCameraAngle());
-        gri.setMyName(worldContainer.getMyName());
+        gri.setMyName(worldContainer.getMyName() );
         gri.setLevel(worldContainer.getMyLevel());
         gri.setExperience(worldContainer.getMyExp());
         gri.setMyStats(worldContainer.getMyStats());

@@ -229,6 +229,7 @@ public class RenderingManager {
         int ITEM_PADDING = 56;
         int TS = TilemapRenderer.tileSize;
 
+        graphics.setBackground(Color.cyan);
         
         //TODO: MAGIC NUMBERS!
         if(drawDebugInfo){
@@ -274,7 +275,7 @@ public class RenderingManager {
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
         String interactText = (gri.getPortalToRender() == null) ? "" : (" Space to enter: " + gri.getPortalToRender().getTo());
-        graphics.drawString(gri.getMapName() + interactText, unScaledGamePlayWidth + MINI_PADDING, 4 * TS + MINI_PADDING);
+        graphics.drawString(interactText, unScaledGamePlayWidth + MINI_PADDING, 4 * TS + MINI_PADDING);
         //Draw character information
 
         drawTextEffect(gri.getMyName(), Color.black, Color.yellow, unScaledGamePlayWidth + 10, 5 * TS +10, 1, graphics, largeVerdanaFont);

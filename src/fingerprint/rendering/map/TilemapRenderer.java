@@ -11,7 +11,7 @@ import org.newdawn.slick.tiled.TiledMapPlus;
 public class TilemapRenderer {
     private static final Logger logger = Logger.getLogger(TilemapRenderer.class.getName());
     
-    public static final int tilesDrawn = 16 + 6;
+    public static final int tilesDrawn = 16 + 7;
     public static final int tileSize = 64;
     
     public static String spriteSheetPath = "resources/tilemap.png";
