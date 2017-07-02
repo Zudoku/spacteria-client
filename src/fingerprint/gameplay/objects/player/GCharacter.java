@@ -39,7 +39,7 @@ public class GCharacter extends CollidingObject{
     }
     
     public void init(){
-        statManager = new StatManager(characterClass, level);
+        statManager = new StatManager(characterClass);
         collideToTerrain = true;
         this.characterClass = CharacterClass.values()[cclass];
     }

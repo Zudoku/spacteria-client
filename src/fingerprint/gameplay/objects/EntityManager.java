@@ -2,10 +2,8 @@ package fingerprint.gameplay.objects;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,10 +67,18 @@ public class EntityManager {
     }
     public <T extends GameObject> Set<T> get(Class<T> type) {
         HashSet<T> objects = new HashSet<T>();
-
-        for (GameObject co : idMap.values()) {
-            if (type.isInstance(co)) {
-                objects.add((T) co);
+        try {
+            for (GameObject co : idMap.values()) {
+                if (type.isInstance(co)) {
+                    objects.add((T) co);
+                }
+            }
+        } catch(ConcurrentModificationException e) {
+            try {
+                Thread.sleep(10L);
+                return get(type);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
             }
         }
         return objects;

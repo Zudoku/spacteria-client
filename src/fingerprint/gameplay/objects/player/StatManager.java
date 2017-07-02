@@ -14,29 +14,20 @@ import fingerprint.states.menu.enums.CharacterClass;
 public class StatManager {
 
     private transient CharacterClass characterClass;
-    private transient int level;
+    private transient StatContainer stats;
 
-    public StatManager(CharacterClass characterClass, int level) {
+    public StatManager(CharacterClass characterClass) {
         this.characterClass = characterClass;
-        this.level = level;
+        stats = new StatContainer(1,1,1,1,1,100);
     }
     
     
     public StatContainer getStats(){
-        int health = 100 + level * characterClass.getBaseHealth();
-        int dexterity = 100 + level * characterClass.getBaseDexterity();
-        int strength = 100 + level * characterClass.getBaseStrength();
-        int vitality = 100 + level * characterClass.getBaseVitality();
-        int defence = 100 + level * characterClass.getBaseDefence();
-        int speed = 100;
-        
-        
-        
-        return new StatContainer(health, vitality, strength, dexterity, defence, speed);
+        return stats;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setStats(StatContainer stats) {
+        this.stats = stats;
     }
 
     public void setCharacterClass(CharacterClass characterClass) {

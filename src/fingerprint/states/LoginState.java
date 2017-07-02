@@ -63,8 +63,8 @@ public class LoginState  extends BasicGameState {
     
     private TextField usernameTextField;
     private TextField passwordTextField;
-    private static final String serveraddrs = "http://192.168.1.141:3590";
-    //private static final String serveraddrs = "http://127.0.0.1:3590";
+    //private static final String serveraddrs = "http://192.168.1.141:3590";
+    private static final String serveraddrs = "http://127.0.0.1:3590";
 
     public LoginState() {
         controller = new GenericGridController(Arrays.asList(0,0,0), Arrays.asList(0,1));
@@ -93,7 +93,10 @@ public class LoginState  extends BasicGameState {
     
     private void initializeSocketToLoginMode(){
         try {
-            socket = IO.socket(serveraddrs);
+            IO.Options options = new IO.Options();
+
+            socket = IO.socket(serveraddrs, options);
+
             socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
                 @Override
