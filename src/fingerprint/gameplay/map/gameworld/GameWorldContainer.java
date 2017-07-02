@@ -1,6 +1,5 @@
 package fingerprint.gameplay.map.gameworld;
 
-import java.util.Collection;
 import java.util.logging.Logger;
 
 
@@ -77,7 +76,7 @@ public class GameWorldContainer {
             enemy.initialize();
             entityManager.addNewObject(enemy.getHash(), enemy);
         }
-        for(GGameObjectWrapper ggaow : roomDescription.getGameobjects()) {
+        for(GameObjectWrapper ggaow : roomDescription.getGameobjects()) {
             GameObject actualGGAO = ggaow.getGObject();
             if(actualGGAO instanceof Portal) {
                 Portal portalObj = (Portal) actualGGAO;

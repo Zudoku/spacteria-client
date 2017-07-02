@@ -5,10 +5,8 @@
  */
 package fingerprint.mainmenus.serverlist;
 
-import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.Enemy;
-import fingerprint.gameplay.objects.GGameObjectWrapper;
-import fingerprint.gameplay.objects.GameObject;
+import fingerprint.gameplay.objects.GameObjectWrapper;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import java.util.ArrayList;
@@ -23,7 +21,7 @@ public class RoomDescription {
     private List<DummyCharacter> players = new ArrayList<>();
     private int difficulty = 1;
     private MapDescription mapDescription;
-    private GGameObjectWrapper[] gameobjects;
+    private GameObjectWrapper[] gameobjects;
     private Enemy[] enemies;
     private Projectile[] projectiles;
 
@@ -88,7 +86,7 @@ public class RoomDescription {
         return enemies;
     }
 
-    public GGameObjectWrapper[] getGameobjects() {
+    public GameObjectWrapper[] getGameobjects() {
         return gameobjects;
     }
 
@@ -100,7 +98,7 @@ public class RoomDescription {
         this.enemies = enemies;
     }
 
-    public void setGameobjects(GGameObjectWrapper[] gameobjects) {
+    public void setGameobjects(GameObjectWrapper[] gameobjects) {
         this.gameobjects = gameobjects;
     }
 

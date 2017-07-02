@@ -2,7 +2,7 @@ package fingerprint.gameplay.objects;
 
 import fingerprint.gameplay.objects.lootbag.LootBag;
 
-public class GGameObjectWrapper {
+public class GameObjectWrapper {
     private int type;
     private int x;
     private int y;

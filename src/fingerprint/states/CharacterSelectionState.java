@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import fingerprint.gameplay.objects.player.StatContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -165,6 +166,11 @@ public class CharacterSelectionState extends BasicGameState {
             try {
                 JSONObject charToAdd = ((JSONObject) args[0]).getJSONObject("character");
                 GCharacter character = gson.fromJson(charToAdd.toString(), GCharacter.class);
+                JSONObject statsToAdd = ((JSONObject) args[0]).getJSONObject("stats");
+                StatContainer stats = gson.fromJson(statsToAdd.toString(), StatContainer.class);
+
+                character.getStatManager().setStats(stats);
+
                 eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.SERVERLIST_ID));
                 eventBus.post(new SelectCharacterEvent(character));
                 eventBus.post(new ChangeStateEvent(getID(), State_IDs.SERVERLIST_ID));

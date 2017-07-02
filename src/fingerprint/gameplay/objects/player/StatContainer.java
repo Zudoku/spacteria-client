@@ -12,6 +12,7 @@ package fingerprint.gameplay.objects.player;
 public class StatContainer {
     
     private int health;
+    private int maxhealth;
     
     private int vitality;
     private int strength;
@@ -19,13 +20,14 @@ public class StatContainer {
     private int defence;
     private int speed;
 
-    public StatContainer(int health, int vitality, int strength, int dexterity, int defence, int speed) {
+    public StatContainer(int health, int vitality, int strength, int dexterity, int defence, int speed, int maxhealth) {
         this.health = health;
         this.vitality = vitality;
         this.strength = strength;
         this.dexterity = dexterity;
         this.defence = defence;
         this.speed = speed;
+        this.maxhealth = maxhealth;
     }
 
     public int getDefence() {
@@ -51,6 +53,17 @@ public class StatContainer {
     public int getSpeed() {
         return speed;
     }
-    
-    
+
+    public int getMaxhealth() {
+        return maxhealth;
+    }
+
+    public int[] getExpRequirements() {
+        return new int[]{
+                800, 2600, 4100, 7200, 10000,
+                14800, 20400, 29000, 43000, 67600,
+                90800, 145600, 210800, 306100, 454000,
+                515000, 575800, 644400, 770000, 1200000
+        };
+    }
 }

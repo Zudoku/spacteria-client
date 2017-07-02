@@ -284,21 +284,32 @@ public class RenderingManager {
         graphics.drawString("(" + gri.getCharClass().name() + ")", unScaledGamePlayWidth + 10, 5 * TS +40);
 
         //EXP
+
+        double xppercent = (double) gri.getExperience() / (double) gri.getMyStats().getExpRequirements()[gri.getLevel() - 1];
+        int xppurplewidth = (int) (xppercent * (4 * TS -20));
+        if(gri.getExperience() < 0){
+            xppurplewidth = 0;
+        }
         graphics.setColor(Color.magenta);
-        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TS, 4 * TS -20, 20);
+        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TS,xppurplewidth, 20);
         graphics.setColor(Color.black);
         graphics.drawRect(unScaledGamePlayWidth +10, 6 * TS, 4 * TS -21, 20);
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
-        graphics.drawString("Level: " + gri.getLevel() + " Experience: " + gri.getExperience() + " / ???", unScaledGamePlayWidth + 14, 6 * TS + 3);
+        graphics.drawString("Level: " + gri.getLevel() + " Experience: " + gri.getExperience() + " / " + gri.getMyStats().getExpRequirements()[gri.getLevel() - 1], unScaledGamePlayWidth + 14, 6 * TS + 3);
         //HP
         graphics.setColor(Color.green);
-        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TS +24, 4 * TS -20, 20);
+        double percent = (double) gri.getMyStats().getHealth() / (double) gri.getMyStats().getMaxhealth();
+        int hpgreenwidth = (int) (percent * (4 * TS -20));
+        if(gri.getMyStats().getHealth() < 0){
+            hpgreenwidth = 0;
+        }
+        graphics.fillRect(unScaledGamePlayWidth +10, 6 * TS +24, hpgreenwidth, 20);
         graphics.setColor(Color.black);
         graphics.drawRect(unScaledGamePlayWidth +10, 6 * TS +24, 4 * TS -21, 20);
         graphics.setFont(smallVerdanaFont);
         graphics.setColor(Color.black);
-        graphics.drawString("Health: " + gri.getMyStats().getHealth()+ " / " + gri.getMyStats().getHealth() + "", unScaledGamePlayWidth + 14, 6 * TS + 27);
+        graphics.drawString("Health: " + gri.getMyStats().getHealth()+ " / " + gri.getMyStats().getMaxhealth() + "", unScaledGamePlayWidth + 14, 6 * TS + 27);
         
         graphics.setColor(Color.gray);
         graphics.fillRect(unScaledGamePlayWidth +10, 7 * TS, 4 * TS -20, 100);

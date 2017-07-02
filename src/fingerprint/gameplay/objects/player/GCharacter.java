@@ -36,12 +36,13 @@ public class GCharacter extends CollidingObject{
     public GCharacter() {
         super(0,0, new Rectangle(0,0, CharacterContainer.playerCollisionWidth,CharacterContainer.playerCollisionHeight));
         collideToTerrain = true;
+        statManager = new StatManager(CharacterClass.KNIGHT);
     }
     
     public void init(){
-        statManager = new StatManager(characterClass);
         collideToTerrain = true;
         this.characterClass = CharacterClass.values()[cclass];
+        statManager.setCharacterClass(characterClass);
     }
     
     public GCharacter(double initX, double initY) {

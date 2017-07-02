@@ -18,7 +18,7 @@ public class StatManager {
 
     public StatManager(CharacterClass characterClass) {
         this.characterClass = characterClass;
-        stats = new StatContainer(1,1,1,1,1,100);
+        stats = new StatContainer(1,1,1,1,1,100,1);
     }
     
     
