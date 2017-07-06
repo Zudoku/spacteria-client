@@ -22,6 +22,8 @@ public class GameItem {
     private int sellvalue;
     private int imageid;
 
+    private GameItemAttribute[] attributes;
+
     public GameItem() {
     }
 
@@ -158,5 +160,13 @@ public class GameItem {
 
     public void setImageid(int imageid) {
         this.imageid = imageid;
+    }
+
+    public GameItemAttribute[] getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(GameItemAttribute[] attributes) {
+        this.attributes = attributes;
     }
 }

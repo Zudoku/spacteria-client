@@ -1,8 +1,6 @@
 package fingerprint.rendering;
 
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
+import org.newdawn.slick.*;
 import org.newdawn.slick.gui.TextField;
 
 import fingerprint.core.GameLauncher;
@@ -84,6 +82,13 @@ public class MainMenuRenderer {
     }
     
     public void drawLoginToGame(Graphics graphics,GameContainer container, TextField usernameField, TextField passwordField, GenericGridController controller){
+        try {
+            Image logo = new Image("resources/UI/spacterialogo.png");
+            logo.drawCentered(RenderingManager.unScaledScreenWidth / 2, 250);
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
+
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
         String usernamelabelText = "Username";
         if(controller.getSelectedRow() == 0) {

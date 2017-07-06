@@ -96,5 +96,17 @@ public class GUIInputHandler {
             }
         }
 
+        // Hover
+        int mx = inputManager.getInput().getMouseX();
+        int my = inputManager.getInput().getMouseY();
+        for (int moaindex = 0; moaindex < 20; moaindex++) {
+
+            if (moaindex < 8) {
+                equipmentMOA[moaindex].mouseHover(mx, my);
+                lootbagMOA[moaindex].mouseHover(mx, my);
+            }
+            inventoryMOA[moaindex].mouseHover(mx, my);
+
+        }
     }
 }

@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.util.logging.Logger;
 
+import fingerprint.gameplay.items.*;
 import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -418,6 +419,49 @@ public class RenderingManager {
                     }
                 }
             }
+        }
+
+        if(gri.getHoverGameItem() != null) {
+            GameItem i = gri.getHoverGameItem();
+            int mx = inputManager.getInput().getMouseX() - 300;
+            int my = inputManager.getInput().getMouseY() - 130;
+
+            graphics.setColor(Color.darkGray);
+            graphics.fillRect(mx, my, 200, 260);
+            graphics.setColor(Color.black);
+            graphics.drawRect(mx, my, 200, 260);
+
+            ItemRarity rarity = ItemRarity.values()[i.getRarity() - 1];
+
+            graphics.setColor(rarity.getColor());
+            graphics.drawString(i.getDisplayname(), mx + 6, my + 14);
+            graphics.drawString(i.getDisplayname(), mx + 7, my + 14);
+            graphics.drawString(rarity.getName(), mx + 6, my + 28);
+
+            graphics.setColor(Color.white);
+            graphics.drawString(ItemType.values()[i.getItemtypeid() - 1].getText(), mx + 6, my + 42);
+
+            Color usableColor = i.getLevelreq() >= gri.getLevel() ? Color.white : Color.red;
+            graphics.setColor(usableColor);
+            graphics.drawString("Level requirement: " + i.getLevelreq(), mx + 6, my + 56);
+
+            graphics.setColor(Color.yellow);
+            graphics.drawString(i.getSellvalue() + " gold", mx + 6, my + 70);
+
+            graphics.setColor(Color.white);
+            graphics.drawString(i.isStackable() ? "Stackable" : "Single", mx + 6, my + 84);
+            graphics.drawString(i.isTradeable() ? "Tradeable" : "Untradeable", mx + 6, my + 98);
+
+            graphics.setColor(Color.green);
+            int index = 0;
+            for(GameItemAttribute attr : i.getAttributes()) {
+                graphics.drawString(attr.toString(), mx + 6, my + 112 + (index * 14));
+                index++;
+            }
+
+            graphics.setColor(Color.lightGray);
+            graphics.drawString(i.getDescription(), mx + 6, my + 246);
+
         }
 
     }

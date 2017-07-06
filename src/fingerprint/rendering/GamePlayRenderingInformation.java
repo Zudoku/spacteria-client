@@ -6,6 +6,7 @@
 package fingerprint.rendering;
 
 import fingerprint.gameplay.items.Equipments;
+import fingerprint.gameplay.items.GameItem;
 import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.objects.Portal;
 import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
@@ -30,6 +31,7 @@ public class GamePlayRenderingInformation {
     private Equipments equipmentToRender;
     private Inventory inventoryToRender;
     private Portal portalToRender;
+    private GameItem hoverGameItem;
     
     public GamePlayRenderingInformation() {
     }
@@ -121,5 +123,13 @@ public class GamePlayRenderingInformation {
 
     public void setPortalToRender(Portal portalToRender) {
         this.portalToRender = portalToRender;
+    }
+
+    public GameItem getHoverGameItem() {
+        return hoverGameItem;
+    }
+
+    public void setHoverGameItem(GameItem hoverGameItem) {
+        this.hoverGameItem = hoverGameItem;
     }
 }

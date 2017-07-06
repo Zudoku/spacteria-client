@@ -59,7 +59,13 @@ public class ClickMOA {
         }
 
     }
-        
+
+    public void mouseHover(int mx, int my) {
+        if (inside(mx, my)) {
+            eventbus.post(new RenderItemDescriptionEvent(index, moaType));
+        }
+
+    }
         private boolean inside(int mx, int my){
             if( mx < x || mx > x + width || my < y || my > y + height) {
                 return false;

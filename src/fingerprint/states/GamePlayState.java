@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import fingerprint.gameplay.objects.events.*;
 import fingerprint.gameplay.objects.events.gui.*;
 import fingerprint.networking.events.*;
+import fingerprint.rendering.gui.RenderItemDescriptionEvent;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -61,6 +62,8 @@ public class GamePlayState extends BasicGameState{
     private Socket mySocket;
 
     private boolean initialized = false;
+
+    private GameItem itemToRenderHover = null;
     
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
@@ -91,6 +94,7 @@ public class GamePlayState extends BasicGameState{
         gri.setEquipmentToRender(worldContainer.getCharacterEquipment());
         gri.setInventoryToRender(worldContainer.getInventoryToRender());
         gri.setPortalToRender(worldContainer.getPortalToRender());
+        gri.setHoverGameItem(itemToRenderHover);
         //worldContainer.
         renderingManager.drawGamePlay(graphics, gc, debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
@@ -107,7 +111,7 @@ public class GamePlayState extends BasicGameState{
             worldContainer.setThereWasPortal(false);
         }
         
-        
+        itemToRenderHover = null;
     }
 
     @Override
@@ -305,6 +309,33 @@ public class GamePlayState extends BasicGameState{
             } catch (JSONException ex) {
                 Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    @Subscribe
+    public void listenRenderItemDescriptionEvent(RenderItemDescriptionEvent event) {
+
+        GameItemWrapper wrapper;
+        switch (event.getFrom()) {
+            case EQUIPMENT:
+                itemToRenderHover = worldContainer.getCharacterEquipment().getItem(event.getIndex());
+                break;
+
+            case LOOTBAG:
+                if(worldContainer.getLootToRender() != null) {
+                    wrapper = worldContainer.getLootToRender().getItems().get(event.getIndex());
+                    if (wrapper != null) {
+                        itemToRenderHover = wrapper.getData();
+                    }
+                }
+                break;
+
+            case INVENTORY:
+                wrapper = worldContainer.getInventoryToRender().getItem(event.getIndex() + 1);
+                if (wrapper != null) {
+                    itemToRenderHover = wrapper.getData();
+                }
+                break;
         }
     }
 }

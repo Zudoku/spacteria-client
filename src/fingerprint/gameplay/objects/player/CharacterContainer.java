@@ -234,6 +234,8 @@ public class CharacterContainer {
             currentPlayer.setEquipment(newStatus.getEquipment());
             currentPlayer.setExperience(newStatus.getExperience());
             currentPlayer.setInventory(newStatus.getInventory());
+            currentPlayer.setLevel(newStatus.getLevel());
+
 
             if(event.getStats() != null) {
                 currentPlayer.getStatManager().setStats(event.getStats());
