@@ -186,7 +186,7 @@ public class CharacterContainer {
         double mouseX = inputManager.getInput().getAbsoluteMouseX();
         double mouseY = inputManager.getInput().getAbsoluteMouseY();
         //Players position in screen
-        Point playerPosition = new Point(RenderingManager.unScaledGamePlayWidth / 2, RenderingManager.unScaledGamePlayHeight / 2);
+        Point playerPosition = new Point((RenderingManager.unScaledGamePlayWidth / 2), (RenderingManager.unScaledGamePlayHeight / 2));
         //Angle 0 position
         Point zeroPosition = new Point(RenderingManager.unScaledGamePlayWidth / 2,RenderingManager.unScaledGamePlayHeight);
         //Mouse offset to player
@@ -200,7 +200,7 @@ public class CharacterContainer {
         
         double projectileStartX = this.currentPlayer.getX() + (playerCollisionWidth / 2);
         double projectileStartY = this.currentPlayer.getY() + (playerCollisionHeight / 2);
-        double projectileSpeed = 100d;
+        double projectileSpeed = 130d;
         double projectileMaxDistance = 200d;
         String guid = java.util.UUID.randomUUID().toString();
         Projectile createdProjectile = new Projectile(projectileAngle,projectileSpeed,projectileMaxDistance, projectileStartX,projectileStartY);

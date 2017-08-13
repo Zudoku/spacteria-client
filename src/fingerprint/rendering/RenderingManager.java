@@ -29,8 +29,6 @@ import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.MapDescription;
 import fingerprint.mainmenus.serverlist.RoomDescription;
-import fingerprint.rendering.gui.ClickMOA;
-import fingerprint.rendering.gui.MOAType;
 import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
@@ -218,9 +216,20 @@ public class RenderingManager {
         drawGamePlayUI(graphics, context, drawDebugInfo, gri);
     }
     private boolean needToDraw(GameObject object){
-        Rectangle screen = new Rectangle((float)screenStartX,(float)screenStartY, (float)unScaledGamePlayWidth,(float) unScaledGamePlayHeight);
-        Rectangle drawing = new Rectangle((float)object.getX(),(float)object.getY(),200f, 200f);
-        return screen.intersects(drawing);
+        
+        final int SCREENBUFFER = 400;
+        final int DRAWINGBUFFER = 100;
+        
+        float needToDrawScreenX = (float)Math.max(screenStartX - SCREENBUFFER, 0f);
+        float needToDrawScreenY = (float)Math.max(screenStartY - SCREENBUFFER, 0f);
+        
+        float needToDrawDrawingX = (float)Math.max(object.getX() - DRAWINGBUFFER, 0f);
+        float needToDrawDrawingY = (float)Math.max(object.getY() - DRAWINGBUFFER, 0f);
+        
+        Rectangle screen = new Rectangle(needToDrawScreenX, needToDrawScreenY, (float)unScaledGamePlayWidth + (2 * SCREENBUFFER),(float) unScaledGamePlayHeight + (2 * SCREENBUFFER));
+        Rectangle drawing = new Rectangle(needToDrawDrawingX, needToDrawDrawingY, 2 * DRAWINGBUFFER, 2 * DRAWINGBUFFER);
+        
+        return screen.intersects(drawing); 
     }
     
     
