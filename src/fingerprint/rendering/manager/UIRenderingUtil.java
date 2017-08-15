@@ -2,39 +2,26 @@ package fingerprint.rendering.manager;
 
 
 
-import fingerprint.rendering.gui.event.DisplayConsoleMessageEvent;
 import fingerprint.inout.FileUtil;
+import java.awt.Font;
 import org.newdawn.slick.Color;
 
-import com.google.common.eventbus.Subscribe;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
+import org.newdawn.slick.TrueTypeFont;
 
 public class UIRenderingUtil {
     
-    private String nextConsoleText = "Testing a longer console message";
-    private Color textColor = Color.black;
-    private SpriteSheet items;
+    private static SpriteSheet items;
     
-    
-    public UIRenderingUtil() {
+    public static TrueTypeFont smallVerdanaFont;
+    public static TrueTypeFont mediumVerdanaFont;
+    public static TrueTypeFont largeVerdanaFont;
+    public static TrueTypeFont giganticVerdanaFont;
 
-    }
-    
-    public String getNextConsoleText() {
-        return nextConsoleText;
-    }
-    
-    @Subscribe
-    public void listenDisplayConsoleMessageEvent(DisplayConsoleMessageEvent event){
-        nextConsoleText = event.getText();
-        textColor = event.getColor();
-
-
-    }
-
-    public Image getItemImage(int imageid) {
+    public static final Image getItemImage(int imageid) {
 
         if( items == null) {
             try {
@@ -48,6 +35,75 @@ public class UIRenderingUtil {
         int x = (imageid - 1) % 10;
         int y = (int)Math.floor((imageid - 1) / 10);
         return items.getSprite(x, y);
+    }
+    public static final void drawTextEffect(String text, Color color1, Color color2, int x, int y, int sizeDiff, Graphics graphics, TrueTypeFont font){
+        graphics.setColor(color1);
+        graphics.setFont(font);
+        graphics.drawString(text, x, y - sizeDiff);
+        graphics.drawString(text, x, y + sizeDiff);
+        graphics.drawString(text, x + sizeDiff, y);
+        graphics.drawString(text, x - sizeDiff, y);
+        graphics.setColor(color2);
+        graphics.drawString(text, x, y);
+    }
+    
+    public static final void drawItem(int imageid, float x, float y) {
+        getItemImage(imageid).draw(x,y);
+    }
+    
+    public static final void drawEquipmentSymbol(int position,float x, float y) throws SlickException{
+        Image image = null;
+        switch(position){
+            case 0:
+                image = new Image(FileUtil.UI_FILES_PATH + "/helmet.png");
+                break;
+            case 1:
+                image = new Image(FileUtil.UI_FILES_PATH + "/pants.png");
+                break;
+            case 2:
+                image = new Image(FileUtil.UI_FILES_PATH + "/shoulder.png");
+                break;
+            case 3:
+                image = new Image(FileUtil.UI_FILES_PATH + "/weapon.png");
+                break;
+            case 4:
+                image = new Image(FileUtil.UI_FILES_PATH + "/chest.png");
+                break;
+            case 5:
+                image = new Image(FileUtil.UI_FILES_PATH + "/boots.png");
+                break;
+            case 6:
+                image = new Image(FileUtil.UI_FILES_PATH + "/ring.png");
+                break;
+            case 7:
+                image = new Image(FileUtil.UI_FILES_PATH + "/relic.png");
+                break;
+                
+            default:
+                image = new Image(FileUtil.UI_FILES_PATH + "/helmet.png");
+                
+        }
+        
+        image.draw(x, y);
+    }
+    
+    public static final int calculateTextAllignCenterX(Graphics graphics,String title){
+        int titleLenght = graphics.getFont().getWidth(title);
+        int place = RenderingManager.unScaledGamePlayWidth/2 - titleLenght/2;
+        
+        return place;
+    }
+    
+    public static final void resetFonts(){
+        Font font = new Font("Verdana", Font.PLAIN, 10);
+        smallVerdanaFont = new TrueTypeFont(font, true);
+        font = new Font("Verdana", Font.PLAIN, 18);
+        mediumVerdanaFont = new TrueTypeFont(font, true);
+        font = new Font("Verdana", Font.PLAIN, 25);
+        largeVerdanaFont = new TrueTypeFont(font, true);
+        font = new Font("Verdana", Font.PLAIN, 35);
+        giganticVerdanaFont = new TrueTypeFont(font, true);
+        
     }
 
 }

@@ -12,16 +12,10 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.gameplay.objects.events.DeleteEntityEvent;
-import fingerprint.gameplay.objects.player.DummyCharacter;
-import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.networking.NetworkEvents;
-import fingerprint.networking.events.CorrectNPCPositionEvent;
-import fingerprint.networking.events.PlayerJoinedEvent;
-import fingerprint.networking.events.PlayerLeftEvent;
-import fingerprint.networking.events.RefreshRoomDescEvent;
 import fingerprint.rendering.manager.RenderingManager;
+import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
 import io.socket.client.Ack;
@@ -65,9 +59,12 @@ public class LoginState  extends BasicGameState {
     private TextField passwordTextField;
     private static final String serveraddrs = "http://192.168.1.141:3590";
     //private static final String serveraddrs = "http://127.0.0.1:3590";
+    
+    private String lastMessageFromServer = "";
+    public static String SOCKETSTATUS;
 
     public LoginState() {
-        controller = new GenericGridController(Arrays.asList(0,0,0), Arrays.asList(0,1));
+        controller = new GenericGridController(Arrays.asList(0,0), Arrays.asList(0,1));
     }
 
     @Override
@@ -97,20 +94,27 @@ public class LoginState  extends BasicGameState {
 
             socket = IO.socket(serveraddrs, options);
 
-            socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    
-                }
-
-            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    eventBus.post(new ChangeStateEvent(getID(), State_IDs.LOGIN_SCREEN_ID));
-                }
-
+            socket.on(Socket.EVENT_CONNECT, (Object... args) -> {
+                SOCKETSTATUS = "CONNECTED";
+            }).on(Socket.EVENT_DISCONNECT, (Object... args) -> {
+                eventBus.post(new ChangeStateEvent(getID(), State_IDs.LOGIN_SCREEN_ID));
+                SOCKETSTATUS = "NO CONNECTION (S)";
+            }).on(Socket.EVENT_CONNECTING, (Object... args) -> {
+                SOCKETSTATUS = "TRYING TO CONNECT";
+            }).on(Socket.EVENT_CONNECT_ERROR, (Object... args) -> {
+                SOCKETSTATUS = "NO CONNECTION (E)";
+            }).on(Socket.EVENT_CONNECT_TIMEOUT, (Object... args) -> {
+                SOCKETSTATUS = "NO CONNECTION (T)";
+            }).on(Socket.EVENT_RECONNECT, (Object... args) -> {
+                SOCKETSTATUS = "CONNECTED";
+            }).on(Socket.EVENT_RECONNECTING, (Object... args) -> {
+                SOCKETSTATUS = "TRYING TO CONNECT";
+            }).on(Socket.EVENT_RECONNECT_ATTEMPT, (Object... args) -> {
+                SOCKETSTATUS = "TRYING TO CONNECT";
+            }).on(Socket.EVENT_RECONNECT_ERROR, (Object... args) -> {
+                SOCKETSTATUS = "NO CONNECTION (RE)";
+            }).on(Socket.EVENT_RECONNECT_FAILED, (Object... args) -> {
+                SOCKETSTATUS = "NO CONNECTION (RF)";
             }).on(NetworkEvents.SERVER_LOGIN_SUCCESS, new Emitter.Listener() {
 
                 @Override
@@ -124,7 +128,14 @@ public class LoginState  extends BasicGameState {
 
                 @Override
                 public void call(Object... args) {
-                    logger.log(Level.SEVERE, Arrays.toString(args));
+                    try {
+                        JSONObject payload = (JSONObject) args[0];
+                        String reason = payload.getString("reason");
+                        lastMessageFromServer = reason;
+                        logger.log(Level.SEVERE, Arrays.toString(args));
+                    } catch (JSONException ex) {
+                        Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
             });
@@ -138,7 +149,8 @@ public class LoginState  extends BasicGameState {
 
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics grphcs) throws SlickException {
-        renderingManager.drawLogin(grphcs, gc, usernameTextField, passwordTextField, controller);
+        ConnectionRenderingInformation info = new ConnectionRenderingInformation(socket, serveraddrs, lastMessageFromServer, SOCKETSTATUS);
+        renderingManager.drawLogin(grphcs, gc, usernameTextField, passwordTextField, controller, info);
     }
 
     @Override
@@ -146,7 +158,7 @@ public class LoginState  extends BasicGameState {
         inputManager.setInput(gc.getInput());
         inputManager.update();
         
-        if(inputManager.isKeyBindPressed(KeyBindAction.D,true) && controller.getSelectedRow() == 2){
+        if(inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
             //Try to login to the game
             identifyToServer();
         }

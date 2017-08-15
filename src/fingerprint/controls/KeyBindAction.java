@@ -7,4 +7,5 @@ public enum KeyBindAction {
     DEBUG_TOGGLE,
     SKIP,
     MENU;
+    
 }

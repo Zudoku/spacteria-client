@@ -37,7 +37,7 @@ import fingerprint.states.events.CloseProgramEvent;
 
 public class GameLauncher extends StateBasedGame {
     private static final Logger logger = Logger.getLogger(GameLauncher.class.getName());
-    public static final int GAME_VERSION = 2;
+    public static final int GAME_VERSION = 3;
     public static final String PROGRAM_STATE = "DEV";
     public static final String PROGRAM_NAME = "Project Fingerprint Version "+GAME_VERSION + " " + PROGRAM_STATE;
     

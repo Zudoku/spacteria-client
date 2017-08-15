@@ -5,11 +5,18 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.gui.TextField;
 
 import fingerprint.core.GameLauncher;
+import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.RoomDescription;
+import static fingerprint.rendering.manager.RenderingManager.FONT_BASE_COLOR;
+import fingerprint.rendering.manager.UIRenderingUtil;
+import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
+import io.socket.client.IO;
 import java.util.List;
+import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.geom.Transform;
 
 public class MainMenuRenderer {
     
@@ -25,8 +32,8 @@ public class MainMenuRenderer {
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
         String titleText = "Select a room to join or make your own";
         String roomsText = rooms.size() + " Rooms available";
-        graphics.drawString(titleText, RenderingManager.calculateTextAllignCenterX(graphics, titleText), 100);
-        graphics.drawString(roomsText, RenderingManager.calculateTextAllignCenterX(graphics, roomsText), 150);
+        graphics.drawString(titleText, UIRenderingUtil.calculateTextAllignCenterX(graphics, titleText), 100);
+        graphics.drawString(roomsText, UIRenderingUtil.calculateTextAllignCenterX(graphics, roomsText), 150);
         for(int i = 0; i < rooms.size() + 1; i++){
             RoomDescription drawed = null;
             String roomString = "";
@@ -40,10 +47,10 @@ public class MainMenuRenderer {
                 graphics.setColor(Color.pink);
             }
             
-            graphics.drawString(roomString,RenderingManager.calculateTextAllignCenterX(graphics, roomString), MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i);
+            graphics.drawString(roomString, UIRenderingUtil.calculateTextAllignCenterX(graphics, roomString), MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i);
             if(selection == i){
                 graphics.setColor(Color.cyan);
-                int selX= RenderingManager.calculateTextAllignCenterX(graphics, roomString) -17;
+                int selX= UIRenderingUtil.calculateTextAllignCenterX(graphics, roomString) -17;
                 int selY = MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i-4;
                 int width = graphics.getFont().getWidth(roomString)+30;
                 int height = 25;
@@ -59,8 +66,7 @@ public class MainMenuRenderer {
     public void drawMainMenu(Graphics graphics, MainMenuSelection selection) {
         //PLACEHOLDER MENU
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
-        String titleText = GameLauncher.PROGRAM_NAME;
-        graphics.drawString(titleText, RenderingManager.calculateTextAllignCenterX(graphics, titleText), 100);
+        
         //draw a menu item
         MainMenuSelection[] enumValues = MainMenuSelection.values();
         for(int i = 0; i < enumValues.length; i++){
@@ -68,13 +74,14 @@ public class MainMenuRenderer {
             if(selection == drawed){
                 graphics.setColor(Color.pink);
             }
-            graphics.drawString(drawed.toString(),RenderingManager.calculateTextAllignCenterX(graphics, drawed.toString()), MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i);
+            UIRenderingUtil.drawTextEffect(drawed.toString(), Color.lightGray, Color.black, 20, MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i, 2, graphics, UIRenderingUtil.giganticVerdanaFont);
+            //graphics.drawString(drawed.toString(),UIRenderingUtil.calculateTextAllignCenterX(graphics, drawed.toString()), MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i);
             if(selection == drawed){
                 graphics.setColor(Color.cyan);
-                int selX= RenderingManager.calculateTextAllignCenterX(graphics, drawed.toString()) -17;
+                int selX= 5;
                 int selY = MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i-4;
                 int width = graphics.getFont().getWidth(drawed.toString())+30;
-                int height = 25;
+                int height = 54;
                 graphics.drawRect(selX,selY, width, height);
             }
             graphics.setColor(RenderingManager.FONT_BASE_COLOR);
@@ -82,7 +89,8 @@ public class MainMenuRenderer {
         
     }
     
-    public void drawLoginToGame(Graphics graphics,GameContainer container, TextField usernameField, TextField passwordField, GenericGridController controller){
+    public void drawLoginToGame(Graphics graphics,GameContainer container, TextField usernameField,
+            TextField passwordField, GenericGridController controller, ConnectionRenderingInformation connectionInformation){
         try {
             Image logo = new Image("resources/UI/spacterialogo.png");
             logo.drawCentered(RenderingManager.unScaledScreenWidth / 2, 250);
@@ -90,35 +98,65 @@ public class MainMenuRenderer {
             e.printStackTrace();
         }
 
-        graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+        Color usernameTextColor = null;
         String usernamelabelText = "Username";
         if(controller.getSelectedRow() == 0) {
-            graphics.setColor(Color.white);   
+            usernameTextColor = Color.lightGray;   
         } else {
-            graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+            usernameTextColor = Color.darkGray;
         }
-        graphics.drawString(usernamelabelText, 200, 500);
+        //graphics.drawString(usernamelabelText, 200, 500);
+        UIRenderingUtil.drawTextEffect(usernamelabelText, Color.lightGray, Color.black, 200, 496, 2, graphics, UIRenderingUtil.mediumVerdanaFont);
         
-        
+        Color passwordTextColor = null;
         String passwordlabelText = "Password";
         if(controller.getSelectedRow() == 1) {
-            graphics.setColor(Color.white);
+            passwordTextColor = Color.lightGray;
         } else {
-            graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+            passwordTextColor = Color.darkGray;
         }
-        graphics.drawString(passwordlabelText, 200, 600);
+        //graphics.drawString(passwordlabelText, 200, 600);
+        UIRenderingUtil.drawTextEffect(passwordlabelText, Color.lightGray, Color.black, 200, 596, 2, graphics, UIRenderingUtil.mediumVerdanaFont);
         
-        graphics.setColor(Color.lightGray);
+        graphics.setColor(usernameTextColor);
         usernameField.render(container, graphics);
+        graphics.setColor(passwordTextColor);
         passwordField.render(container, graphics);
         
-        String loginLabelText = "Login";
-        if(controller.getSelectedRow() == 2) {
-            graphics.setColor(Color.white);
-        } else {
-            graphics.setColor(RenderingManager.FONT_BASE_COLOR);
-        }
-        graphics.drawString(loginLabelText, 200, 800);
+        graphics.setFont(UIRenderingUtil.mediumVerdanaFont);
+        graphics.setColor(Color.white);
+        
+        graphics.drawString(connectionInformation.getLastMessage(), 600, 580);
+        
+        graphics.setFont(UIRenderingUtil.smallVerdanaFont);
+        graphics.setColor(Color.white);
+        
+        graphics.drawString("Socket ID: " + connectionInformation.getSocket().id(), 5, RenderingManager.unScaledScreenHeight - 60);
+        graphics.drawString("Server status: " + connectionInformation.getStatus(), 5, RenderingManager.unScaledScreenHeight - 40);
+        graphics.drawString("Server: " + connectionInformation.getHost(), 5, RenderingManager.unScaledScreenHeight - 20);
+        
+        graphics.drawString("Version: " + GameLauncher.GAME_VERSION, RenderingManager.unScaledScreenWidth - 80, 5);
+        
+        //Draw changelog
+        
+        graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 180);
+        graphics.drawString("CHANGELOG (VERSION 0000 - 00.00.2017):", RenderingManager.unScaledScreenWidth - 280, 504);
+        graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22);
+        
+        graphics.drawString("- Changed X Y and Z to be F and in the", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 1);
+        graphics.drawString("process B changed.", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 2);
+        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 3);
+        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 4);
+        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 5);
+        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 6);
+        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 7);
+        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 8);
+        
+        
+        
+        graphics.drawString("Community Discord: discord.gg/zcYCrcY", RenderingManager.unScaledScreenWidth - 280, RenderingManager.unScaledScreenHeight - 34);
+        graphics.drawString("BitBucket: bitbucket.org/Arap/project-fingerprint", RenderingManager.unScaledScreenWidth - 280, RenderingManager.unScaledScreenHeight - 20);
+        
         
         
     }
@@ -126,7 +164,7 @@ public class MainMenuRenderer {
     public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass selectedDifficulty,int selectedRow,int selectedColumn,TextField nameField,boolean drawBadFileName){
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
         String titleText = "Creating a new Character";
-        graphics.drawString(titleText, RenderingManager.calculateTextAllignCenterX(graphics, titleText), 100);
+        graphics.drawString(titleText, UIRenderingUtil.calculateTextAllignCenterX(graphics, titleText), 100);
         
         String chooseDifficultyText = "Select Class:";
         graphics.drawString(chooseDifficultyText, 200, 400);
@@ -192,5 +230,61 @@ public class MainMenuRenderer {
             }
         }
         
+    }
+
+    public void drawCharSelection(Graphics graphics, CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars) {
+        graphics.setColor(FONT_BASE_COLOR);
+        
+        if(!gwic.isIsCreateNewCharDummy()){
+            graphics.drawString(gwic.getPlayerData().getName(),  UIRenderingUtil.calculateTextAllignCenterX(graphics, gwic.getPlayerData().getName()), 100);
+        } else {
+            graphics.drawString("Create new Character",  UIRenderingUtil.calculateTextAllignCenterX(graphics, "Create new Character"), 100);
+        }
+        
+        
+        if(gwic.isMoreLeft()){
+            
+            Shape triangle = new Shape() {
+                
+                @Override
+                public Shape transform(Transform arg0) {
+                    // TODO Auto-generated method stub
+                    return this;
+                }
+                
+                @Override
+                protected void createPoints() {
+                    int startX = 100;
+                    int startY = RenderingManager.unScaledGamePlayHeight/2;
+                    points = new float[]{startX  , startY -25 ,startX + 50 , startY -50 ,startX+50,startY};
+                    
+                    
+                    
+                }
+            };
+            graphics.fill(triangle);
+        }
+        if(gwic.isMoreRight()){
+            
+            Shape triangle = new Shape() {
+                
+                @Override
+                public Shape transform(Transform arg0) {
+                    // TODO Auto-generated method stub
+                    return this;
+                }
+                
+                @Override
+                protected void createPoints() {
+                    int startX = RenderingManager.unScaledGamePlayWidth - 100;
+                    int startY = RenderingManager.unScaledGamePlayHeight/2;
+                    points = new float[]{startX  , startY -25 ,startX - 50 , startY -50 ,startX-50,startY};
+                    
+                    
+                    
+                }
+            };
+            graphics.fill(triangle);
+        }
     }
 }

@@ -34,6 +34,7 @@ import fingerprint.mainmenus.serverlist.MapDescription;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.staterenderers.MainMenuRenderer;
 import fingerprint.rendering.map.TilemapRenderer;
+import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
 import java.util.List;
@@ -69,12 +70,6 @@ public class RenderingManager {
     private int virtualResolutionHeight;
     private int virtualResolutionWidth;
     
-    private TrueTypeFont smallVerdanaFont;
-    private TrueTypeFont mediumVerdanaFont;
-    private TrueTypeFont largeVerdanaFont;
-    private TrueTypeFont giganticVerdanaFont;
-    
-    
     public RenderingManager(){
         currentResolution = GameLauncher.gameSettings.resolution;
         mainMenuRenderer = new MainMenuRenderer();
@@ -93,17 +88,7 @@ public class RenderingManager {
         
     }
     
-    private void resetFonts(){
-        Font font = new Font("Verdana", Font.PLAIN, 10);
-        smallVerdanaFont = new TrueTypeFont(font, true);
-        font = new Font("Verdana", Font.PLAIN, 18);
-        mediumVerdanaFont = new TrueTypeFont(font, true);
-        font = new Font("Verdana", Font.PLAIN, 25);
-        largeVerdanaFont = new TrueTypeFont(font, true);
-        font = new Font("Verdana", Font.PLAIN, 35);
-        giganticVerdanaFont = new TrueTypeFont(font, true);
-        
-    }
+    
     
     public void configure(EntityManager entityManager,EventBus eventBus, InputManager inputManager){
         this.entityManager = entityManager;
@@ -119,9 +104,11 @@ public class RenderingManager {
         mainMenuRenderer.drawServerList(graphics, rooms, selection);
     }
     
-    public void drawLogin(Graphics graphics, GameContainer gameContainer, TextField username, TextField password, GenericGridController controller) {
+    public void drawLogin(Graphics graphics, GameContainer gameContainer, 
+            TextField username, TextField password, GenericGridController controller,
+            ConnectionRenderingInformation connectionInformation) {
         initDraw(graphics);
-        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password, controller);
+        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password, controller, connectionInformation);
     }
     
     public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass difficulty,int row,int col,TextField filename,boolean drawBadFileName){
@@ -132,61 +119,9 @@ public class RenderingManager {
         initDraw(graphics);
         mainMenuRenderer.drawMainMenu(graphics, selection);
     }
-    public void drawWorldSelection(Graphics graphics,CharacterInfoContainer gwic){
+    public void drawWorldSelection(Graphics graphics,CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars){
         initDraw(graphics);
-        graphics.setColor(FONT_BASE_COLOR);
-        
-        if(!gwic.isIsCreateNewCharDummy()){
-            graphics.drawString(gwic.getPlayerData().getName(),  calculateTextAllignCenterX(graphics, gwic.getPlayerData().getName()), 100);
-        } else {
-            graphics.drawString("Create new Character",  calculateTextAllignCenterX(graphics, "Create new Character"), 100);
-        }
-        
-        
-        if(gwic.isMoreLeft()){
-            
-            Shape triangle = new Shape() {
-                
-                @Override
-                public Shape transform(Transform arg0) {
-                    // TODO Auto-generated method stub
-                    return this;
-                }
-                
-                @Override
-                protected void createPoints() {
-                    int startX = 100;
-                    int startY = RenderingManager.unScaledGamePlayHeight/2;
-                    points = new float[]{startX  , startY -25 ,startX + 50 , startY -50 ,startX+50,startY};
-                    
-                    
-                    
-                }
-            };
-            graphics.fill(triangle);
-        }
-        if(gwic.isMoreRight()){
-            
-            Shape triangle = new Shape() {
-                
-                @Override
-                public Shape transform(Transform arg0) {
-                    // TODO Auto-generated method stub
-                    return this;
-                }
-                
-                @Override
-                protected void createPoints() {
-                    int startX = RenderingManager.unScaledGamePlayWidth - 100;
-                    int startY = RenderingManager.unScaledGamePlayHeight/2;
-                    points = new float[]{startX  , startY -25 ,startX - 50 , startY -50 ,startX-50,startY};
-                    
-                    
-                    
-                }
-            };
-            graphics.fill(triangle);
-        }
+        mainMenuRenderer.drawCharSelection(graphics, gwic, availableChars);
     }
     public void drawGamePlay(Graphics graphics, GUIContext context, boolean drawDebugInfo, GamePlayRenderingInformation gri){
         initDraw(graphics);
@@ -251,7 +186,7 @@ public class RenderingManager {
             graphics.fillRect(0, 0, 300, 200);
             
             
-            graphics.setFont(smallVerdanaFont);
+            graphics.setFont(UIRenderingUtil.smallVerdanaFont);
             graphics.setColor(Color.white);
             graphics.drawString("Memory used: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
             graphics.drawString("Screen coordinates: " + screenStartX + "," + screenStartY, 10, 50);
@@ -286,14 +221,14 @@ public class RenderingManager {
         graphics.fillRect(unScaledGamePlayWidth, 4 * TS, 4 * TS, 20);
         graphics.setColor(Color.black);
         graphics.drawRect(unScaledGamePlayWidth, 4 * TS, 4 * TS -1, 20);
-        graphics.setFont(smallVerdanaFont);
+        graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.black);
         String interactText = (gri.getPortalToRender() == null) ? "" : (" Space to enter: " + gri.getPortalToRender().getTo());
         graphics.drawString(interactText, unScaledGamePlayWidth + MINI_PADDING, 4 * TS + MINI_PADDING);
         //Draw character information
 
-        drawTextEffect(gri.getMyName(), Color.black, Color.yellow, unScaledGamePlayWidth + 10, 5 * TS +10, 1, graphics, largeVerdanaFont);
-        graphics.setFont(smallVerdanaFont);
+        UIRenderingUtil.drawTextEffect(gri.getMyName(), Color.black, Color.yellow, unScaledGamePlayWidth + 10, 5 * TS +10, 1, graphics, UIRenderingUtil.largeVerdanaFont);
+        graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.black);
         graphics.drawString("(" + gri.getCharClass().name() + ")", unScaledGamePlayWidth + 10, 5 * TS +40);
 
@@ -308,7 +243,7 @@ public class RenderingManager {
         graphics.fillRect(unScaledGamePlayWidth +10, 6 * TS,xppurplewidth, 20);
         graphics.setColor(Color.black);
         graphics.drawRect(unScaledGamePlayWidth +10, 6 * TS, 4 * TS -21, 20);
-        graphics.setFont(smallVerdanaFont);
+        graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.black);
         graphics.drawString("Level: " + gri.getLevel() + " Experience: " + gri.getExperience() + " / " + gri.getMyStats().getExpRequirements()[gri.getLevel() - 1], unScaledGamePlayWidth + 14, 6 * TS + 3);
         //HP
@@ -321,7 +256,7 @@ public class RenderingManager {
         graphics.fillRect(unScaledGamePlayWidth +10, 6 * TS +24, hpgreenwidth, 20);
         graphics.setColor(Color.black);
         graphics.drawRect(unScaledGamePlayWidth +10, 6 * TS +24, 4 * TS -21, 20);
-        graphics.setFont(smallVerdanaFont);
+        graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.black);
         graphics.drawString("Health: " + gri.getMyStats().getHealth()+ " / " + gri.getMyStats().getMaxhealth() + "", unScaledGamePlayWidth + 14, 6 * TS + 27);
         
@@ -330,7 +265,7 @@ public class RenderingManager {
         graphics.setColor(Color.black);
         graphics.drawRect(unScaledGamePlayWidth +10, 7 * TS, 4 * TS -21, 100);
         
-        graphics.setFont(smallVerdanaFont);
+        graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.black);
         //STATS
         graphics.drawString("Strength: ", unScaledGamePlayWidth +14, 7 * TS + MINI_PADDING);
@@ -357,15 +292,15 @@ public class RenderingManager {
             try {
                 graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9, 48, 48);
                 if(gri.getEquipmentToRender().getItem(t) != null){
-                    drawItem(gri.getEquipmentToRender().getItem(t).getImageid(),unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9);
+                    UIRenderingUtil.drawItem(gri.getEquipmentToRender().getItem(t).getImageid(),unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9);
                 } else {
-                    drawEquipment(t,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9);
+                    UIRenderingUtil.drawEquipmentSymbol(t,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9);
                 }
                 graphics.drawRect(unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING, 48, 48);
                 if(gri.getEquipmentToRender().getItem(t + 4) != null){
-                    drawItem(gri.getEquipmentToRender().getItem(t + 4).getImageid(),unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING);
+                    UIRenderingUtil.drawItem(gri.getEquipmentToRender().getItem(t + 4).getImageid(),unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING);
                 } else {
-                    drawEquipment(t + 4,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING);
+                    UIRenderingUtil.drawEquipmentSymbol(t + 4,unScaledGamePlayWidth +19 + (ITEM_PADDING * t), 9 * TS + 9 + ITEM_PADDING);
                 }
                 
             } catch (SlickException ex) {
@@ -380,7 +315,7 @@ public class RenderingManager {
         graphics.drawRect(unScaledGamePlayWidth +10, 11 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -21, 300);
         
         
-        graphics.setFont(smallVerdanaFont);
+        graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         for (int u = 0; u < 5; u++) {
             for (int o = 0; o < 4; o++) {
                 int ix = unScaledGamePlayWidth + 19 + (ITEM_PADDING * o);
@@ -391,9 +326,9 @@ public class RenderingManager {
                 GameItemWrapper itemData = gri.getInventoryToRender().getItem(index);
                 if (itemData != null) {
                     if (itemData.getUniqueid() == -1) {
-                        drawItem(1, ix, iy);
+                        UIRenderingUtil.drawItem(1, ix, iy);
                     } else {
-                        drawItem(itemData.getData().getImageid(), ix, iy);
+                        UIRenderingUtil.drawItem(itemData.getData().getImageid(), ix, iy);
                     }
                     graphics.setColor(Color.red);
                     graphics.drawString(Integer.toString(itemData.getAmount()), ix + 2, iy);
@@ -419,13 +354,13 @@ public class RenderingManager {
                     if (gri.getLootToRender().getItems().size() > lootIndex) {
                         GameItemWrapper itemToRender = gri.getLootToRender().getItems().get(lootIndex);
                         if (itemToRender.getUniqueid() == -1) {
-                            drawItem(1, xPos, yPos);
+                            UIRenderingUtil.drawItem(1, xPos, yPos);
 
                             graphics.setColor(Color.red);
                             graphics.drawString(Integer.toString(itemToRender.getAmount()), xPos + 2, yPos);
                             //coins
                         } else {
-                            drawItem(itemToRender.getData().getImageid(), xPos, yPos);
+                            UIRenderingUtil.drawItem(itemToRender.getData().getImageid(), xPos, yPos);
                             graphics.setColor(Color.red);
                             graphics.drawString(Integer.toString(itemToRender.getAmount()), xPos + 2, yPos);
                         }
@@ -478,92 +413,21 @@ public class RenderingManager {
         }
 
     }
-
-    private void drawEquipment(int position,float x, float y) throws SlickException{
-        Image image = null;
-        switch(position){
-            case 0:
-                image = new Image(FileUtil.UI_FILES_PATH + "/helmet.png");
-                break;
-            case 1:
-                image = new Image(FileUtil.UI_FILES_PATH + "/pants.png");
-                break;
-            case 2:
-                image = new Image(FileUtil.UI_FILES_PATH + "/shoulder.png");
-                break;
-            case 3:
-                image = new Image(FileUtil.UI_FILES_PATH + "/weapon.png");
-                break;
-            case 4:
-                image = new Image(FileUtil.UI_FILES_PATH + "/chest.png");
-                break;
-            case 5:
-                image = new Image(FileUtil.UI_FILES_PATH + "/boots.png");
-                break;
-            case 6:
-                image = new Image(FileUtil.UI_FILES_PATH + "/ring.png");
-                break;
-            case 7:
-                image = new Image(FileUtil.UI_FILES_PATH + "/relic.png");
-                break;
-                
-            default:
-                image = new Image(FileUtil.UI_FILES_PATH + "/helmet.png");
-                
-        }
-        
-        image.draw(x, y);
-    }
-
-    private void drawItem(int imageid, float x, float y) {
-        uiManager.getItemImage(imageid).draw(x,y);
-    }
-    
-    
-    private void drawTextEffect(String text, Color color1, Color color2, int x, int y, int sizeDiff, Graphics graphics, TrueTypeFont font){
-        graphics.setColor(color1);
-        graphics.setFont(font);
-        graphics.drawString(text, x, y - sizeDiff);
-        graphics.drawString(text, x, y + sizeDiff);
-        graphics.drawString(text, x + sizeDiff, y);
-        graphics.drawString(text, x - sizeDiff, y);
-        graphics.setColor(color2);
-        graphics.drawString(text, x, y);
-    }
-    
-    
     
     private void initDraw(Graphics graphics){
         graphics.scale((float) ((double)virtualResolutionWidth/(double)unScaledScreenWidth),(float)((double)virtualResolutionHeight/(double)unScaledScreenHeight));
         graphics.setBackground(Color.black);
-        if(smallVerdanaFont == null){
-            resetFonts();
+        if(UIRenderingUtil.smallVerdanaFont == null){
+            UIRenderingUtil.resetFonts();
         }
         
         
     }
     
-    
-    
-    
-    
-    
-    public static int calculateTextAllignCenterX(Graphics graphics,String title){
-        int titleLenght = graphics.getFont().getWidth(title);
-        int place = RenderingManager.unScaledGamePlayWidth/2 - titleLenght/2;
-        
-        return place;
-    }
-    
-    
-    
-    
-    
-    
     public void drawCharacterCreation(Graphics graphics) {
         initDraw(graphics);
         graphics.setColor(FONT_BASE_COLOR);
-        graphics.drawString("CHARACTER CREATION SCREEN",  calculateTextAllignCenterX(graphics,"CHARACTER CREATION SCREEN" ), 100);
+        graphics.drawString("CHARACTER CREATION SCREEN",  UIRenderingUtil.calculateTextAllignCenterX(graphics,"CHARACTER CREATION SCREEN" ), 100);
     }
     
     public void setScreenStartX(double screenX) {

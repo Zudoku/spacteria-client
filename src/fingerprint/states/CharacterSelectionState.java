@@ -1,7 +1,6 @@
 package fingerprint.states;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,27 +20,16 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
-import fingerprint.gameplay.objects.events.DeleteEntityEvent;
-import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.player.GCharacter;
-import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
-import fingerprint.inout.FileUtil;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.CharacterSelectionController;
-import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.networking.NetworkEvents;
-import fingerprint.networking.events.CorrectNPCPositionEvent;
-import fingerprint.networking.events.PlayerJoinedEvent;
-import fingerprint.networking.events.PlayerLeftEvent;
-import fingerprint.networking.events.RefreshRoomDescEvent;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
 import fingerprint.states.events.SelectCharacterEvent;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,7 +69,7 @@ public class CharacterSelectionState extends BasicGameState {
     public void render(GameContainer arg0, StateBasedGame caller, Graphics graphics)
             throws SlickException {
         
-        renderingManager.drawWorldSelection(graphics,currentSelectionChar);
+        renderingManager.drawWorldSelection(graphics,currentSelectionChar, availableChars);
 
     }
 
