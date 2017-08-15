@@ -74,6 +74,10 @@ public class CollisionManager {
         List<int[][]> arrayPoints = new ArrayList<>();
         for(int i = 0; i < collider.getPointCount() ; i ++){
             float[] point = collider.getPoint(i);
+            //
+            if(point[0] < 0 || point[1] < 0) {
+                return true;
+            }
             int arrayPosX = (int)Math.floor(((int)Math.floor(point[0]))/TilemapRenderer.tileSize);
             int arrayPosY = (int)Math.floor(((int)Math.floor(point[1]))/TilemapRenderer.tileSize);
             int[][] arrayPos = new int[2][1];

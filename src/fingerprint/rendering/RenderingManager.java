@@ -433,7 +433,7 @@ public class RenderingManager {
         if(gri.getHoverGameItem() != null) {
             GameItem i = gri.getHoverGameItem();
             int mx = inputManager.getInput().getMouseX() - 300;
-            int my = inputManager.getInput().getMouseY() - 130;
+            int my = inputManager.getInput().getMouseY() - 150;
 
             graphics.setColor(Color.darkGray);
             graphics.fillRect(mx, my, 200, 260);
