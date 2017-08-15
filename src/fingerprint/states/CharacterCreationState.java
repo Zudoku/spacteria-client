@@ -19,7 +19,7 @@ import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.GenericGridController;
-import fingerprint.rendering.RenderingManager;
+import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.menu.enums.CharacterClass;
 import java.util.Arrays;

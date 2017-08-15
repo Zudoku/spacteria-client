@@ -13,8 +13,8 @@ import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.networking.events.UpdatePositionEvent;
-import fingerprint.rendering.RenderingManager;
-import fingerprint.rendering.SetScreenStartCoordinatesEvent;
+import fingerprint.rendering.manager.RenderingManager;
+import fingerprint.rendering.gui.event.SetScreenStartCoordinatesEvent;
 import fingerprint.states.events.SaveAndExitWorldEvent;
 import org.newdawn.slick.geom.Point;
 

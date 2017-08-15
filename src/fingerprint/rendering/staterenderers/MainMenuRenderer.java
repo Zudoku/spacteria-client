@@ -1,5 +1,6 @@
-package fingerprint.rendering;
+package fingerprint.rendering.staterenderers;
 
+import fingerprint.rendering.manager.RenderingManager;
 import org.newdawn.slick.*;
 import org.newdawn.slick.gui.TextField;
 

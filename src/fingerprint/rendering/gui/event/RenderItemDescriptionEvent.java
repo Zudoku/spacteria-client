@@ -1,4 +1,6 @@
-package fingerprint.rendering.gui;
+package fingerprint.rendering.gui.event;
+
+import fingerprint.rendering.gui.MOAType;
 
 public class RenderItemDescriptionEvent {
     private int index;

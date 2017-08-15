@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import fingerprint.core.GameLauncher;
 import org.newdawn.slick.Graphics;
 
-import fingerprint.rendering.RenderingManager;
+import fingerprint.rendering.manager.RenderingManager;
 
 
 public class GameObject {

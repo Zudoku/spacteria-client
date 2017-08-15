@@ -24,7 +24,7 @@ import com.google.inject.Injector;
 
 import fingerprint.inout.GameSettings;
 import fingerprint.inout.GameSettingsProvider;
-import fingerprint.rendering.RenderingResolutions;
+import fingerprint.rendering.util.RenderingResolutions;
 import fingerprint.states.GamePlayState;
 import fingerprint.states.MainMenuState;
 import fingerprint.states.State_IDs;

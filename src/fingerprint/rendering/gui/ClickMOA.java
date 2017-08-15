@@ -6,12 +6,11 @@
 
 package fingerprint.rendering.gui;
 
+import fingerprint.rendering.gui.event.InventoryClickEvent;
+import fingerprint.rendering.gui.event.RenderItemDescriptionEvent;
+import fingerprint.rendering.gui.event.EquipmentClickEvent;
+import fingerprint.rendering.gui.event.LootBagClickEvent;
 import com.google.common.eventbus.EventBus;
-import java.util.Timer;
-import java.util.TimerTask;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.gui.GUIContext;
-import org.newdawn.slick.gui.MouseOverArea;
 
 /**
  * Created Apr 29, 2017

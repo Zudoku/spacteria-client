@@ -10,8 +10,8 @@ import fingerprint.states.menu.enums.CharacterClass;
 import java.util.logging.Logger;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import static fingerprint.rendering.RenderingManager.unScaledGamePlayWidth;
-import static fingerprint.rendering.RenderingManager.unScaledGamePlayHeight;
+import static fingerprint.rendering.manager.RenderingManager.unScaledGamePlayWidth;
+import static fingerprint.rendering.manager.RenderingManager.unScaledGamePlayHeight;
 
 /**
  *

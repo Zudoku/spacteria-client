@@ -10,7 +10,7 @@ import com.google.inject.Provides;
 import fingerprint.controls.InputManager;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.inout.GameSettings;
-import fingerprint.rendering.RenderingManager;
+import fingerprint.rendering.manager.RenderingManager;
 
 
 public class GameModule extends AbstractModule{

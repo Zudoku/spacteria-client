@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fingerprint.rendering;
+package fingerprint.rendering.util;
 
 import fingerprint.gameplay.items.Equipments;
 import fingerprint.gameplay.items.GameItem;

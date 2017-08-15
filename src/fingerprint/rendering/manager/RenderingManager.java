@@ -1,5 +1,8 @@
-package fingerprint.rendering;
+package fingerprint.rendering.manager;
 
+import fingerprint.rendering.gui.event.SetScreenStartCoordinatesEvent;
+import fingerprint.rendering.util.RenderingResolutions;
+import fingerprint.rendering.util.GamePlayRenderingInformation;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.logging.Logger;
@@ -29,6 +32,7 @@ import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.MapDescription;
 import fingerprint.mainmenus.serverlist.RoomDescription;
+import fingerprint.rendering.staterenderers.MainMenuRenderer;
 import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
@@ -44,7 +48,7 @@ public class RenderingManager {
     private static final Logger logger = Logger.getLogger(RenderingManager.class.getName());
     private TilemapRenderer tileMapRenderer;
     private MainMenuRenderer mainMenuRenderer;
-    private UIManager uiManager;
+    private UIRenderingUtil uiManager;
     private EventBus eventBus;
     
     private EntityManager entityManager;
@@ -74,7 +78,7 @@ public class RenderingManager {
     public RenderingManager(){
         currentResolution = GameLauncher.gameSettings.resolution;
         mainMenuRenderer = new MainMenuRenderer();
-        uiManager = new UIManager();
+        uiManager = new UIRenderingUtil();
         if(currentResolution == RenderingResolutions.IDENTIFY_SCREEN){
             Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
             virtualResolutionHeight = (int)dimension.getHeight();

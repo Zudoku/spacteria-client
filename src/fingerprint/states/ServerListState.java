@@ -15,7 +15,7 @@ import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.mainmenus.serverlist.ServerListController;
 import fingerprint.networking.NetworkEvents;
-import fingerprint.rendering.RenderingManager;
+import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
 import fingerprint.states.events.InitGameInfoEvent;

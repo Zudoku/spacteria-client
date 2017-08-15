@@ -5,7 +5,7 @@ import java.util.Map;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.rendering.RenderingResolutions;
+import fingerprint.rendering.util.RenderingResolutions;
 
 public class GameSettings {
     /**

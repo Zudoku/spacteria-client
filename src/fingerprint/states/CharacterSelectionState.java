@@ -36,7 +36,7 @@ import fingerprint.networking.events.CorrectNPCPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.networking.events.RefreshRoomDescEvent;
-import fingerprint.rendering.RenderingManager;
+import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
 import fingerprint.states.events.SelectCharacterEvent;

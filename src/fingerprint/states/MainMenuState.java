@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.rendering.RenderingManager;
+import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
@@ -92,7 +92,7 @@ public class MainMenuState extends BasicGameState{
             
             break;
             
-        case TUTORIAL:
+        case INFORMATION:
             
             break;
             

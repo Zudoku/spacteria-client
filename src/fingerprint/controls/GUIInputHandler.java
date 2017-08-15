@@ -7,7 +7,7 @@
 package fingerprint.controls;
 
 import com.google.common.eventbus.EventBus;
-import static fingerprint.rendering.RenderingManager.unScaledGamePlayWidth;
+import static fingerprint.rendering.manager.RenderingManager.unScaledGamePlayWidth;
 import fingerprint.rendering.gui.ClickMOA;
 import fingerprint.rendering.gui.MOAType;
 import fingerprint.rendering.map.TilemapRenderer;

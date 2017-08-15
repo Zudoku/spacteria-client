@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package fingerprint.rendering.gui;
+package fingerprint.rendering.gui.event;
 
 /**
  * Created Apr 29, 2017

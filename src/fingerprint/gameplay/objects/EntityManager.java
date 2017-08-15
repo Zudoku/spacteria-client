@@ -18,7 +18,7 @@ import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.networking.events.CorrectNPCPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
-import fingerprint.rendering.DisplayConsoleMessageEvent;
+import fingerprint.rendering.gui.event.DisplayConsoleMessageEvent;
 import org.newdawn.slick.Color;
 
 @Singleton
