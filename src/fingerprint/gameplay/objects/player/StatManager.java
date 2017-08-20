@@ -33,5 +33,10 @@ public class StatManager {
     public void setCharacterClass(CharacterClass characterClass) {
         this.characterClass = characterClass;
     }
+
+    public CharacterClass getCharacterClass() {
+        return characterClass;
+    }
+    
     
 }

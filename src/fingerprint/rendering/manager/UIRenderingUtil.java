@@ -89,7 +89,7 @@ public class UIRenderingUtil {
     
     public static final int calculateTextAllignCenterX(Graphics graphics,String title){
         int titleLenght = graphics.getFont().getWidth(title);
-        int place = RenderingManager.unScaledGamePlayWidth/2 - titleLenght/2;
+        int place = RenderingManager.unScaledScreenWidth/2 - titleLenght/2;
         
         return place;
     }

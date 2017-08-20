@@ -13,6 +13,7 @@ import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.mainmenus.serverlist.RoomDescription;
+import fingerprint.mainmenus.serverlist.RoomListContainer;
 import fingerprint.mainmenus.serverlist.ServerListController;
 import fingerprint.networking.NetworkEvents;
 import fingerprint.rendering.manager.RenderingManager;
@@ -73,22 +74,12 @@ public class ServerListState extends BasicGameState{
         socket.on(NetworkEvents.SERVER_DISPLAYROOMLIST, args -> {
             //
             rooms.clear();
-            JSONArray roomsPayload = (JSONArray)args[0];
-            for(int y = 0; y < roomsPayload.length(); y++){
-                try {
-                    JSONObject roomToAdd = roomsPayload.getJSONObject(y);
-                    try{
-                        RoomDescription description = gson.fromJson(roomToAdd.toString(), RoomDescription.class);
-                        rooms.add(description);
-                    } catch(Exception e){
-                        Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
-                    }
-
-
-                } catch (JSONException ex) {
-                    Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            JSONObject roomsPayload = (JSONObject)args[0];
+            RoomListContainer roomContainer = gson.fromJson(roomsPayload.toString(), RoomListContainer.class);
+            for(RoomDescription desc : roomContainer.getRoomlist()) {
+                rooms.add(desc);
             }
+            
             controller.setRoomAmount(rooms.size());
 
         }).on(NetworkEvents.SERVER_JOINROOM, args -> {

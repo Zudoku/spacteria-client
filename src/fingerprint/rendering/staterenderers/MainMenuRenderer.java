@@ -14,6 +14,7 @@ import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
 import io.socket.client.IO;
+import java.util.Arrays;
 import java.util.List;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
@@ -29,11 +30,17 @@ public class MainMenuRenderer {
     }
     
     public void drawServerList(Graphics graphics, List<RoomDescription> rooms, int selection){
-        graphics.setColor(RenderingManager.FONT_BASE_COLOR);
         String titleText = "Select a room to join or make your own";
         String roomsText = rooms.size() + " Rooms available";
+        
+        graphics.setColor(Color.white);
+        graphics.setFont(UIRenderingUtil.largeVerdanaFont);
+        
         graphics.drawString(titleText, UIRenderingUtil.calculateTextAllignCenterX(graphics, titleText), 100);
         graphics.drawString(roomsText, UIRenderingUtil.calculateTextAllignCenterX(graphics, roomsText), 150);
+        
+        graphics.setColor(Color.white);
+        
         for(int i = 0; i < rooms.size() + 1; i++){
             RoomDescription drawed = null;
             String roomString = "";
@@ -41,7 +48,7 @@ public class MainMenuRenderer {
                 roomString = "Make a new room";
             } else {
                 drawed =  rooms.get(i - 1);
-                roomString = drawed.getName() +" [" + drawed.getDifficulty() + "] (" + drawed.getPlayers() + ")";
+                roomString = drawed.getName() +"  -  {" + drawed.getDifficulty() + "}  -  " + Arrays.toString(drawed.getPlayers().toArray()) + "";
             }
             if(selection == i){
                 graphics.setColor(Color.pink);
@@ -53,10 +60,10 @@ public class MainMenuRenderer {
                 int selX= UIRenderingUtil.calculateTextAllignCenterX(graphics, roomString) -17;
                 int selY = MAINMENU_MENUITEM_STARTDRAWING_Y+MAINMENU_MENUITEM_PADDING*i-4;
                 int width = graphics.getFont().getWidth(roomString)+30;
-                int height = 25;
+                int height = 40;
                 graphics.drawRect(selX,selY, width, height);
             }
-            graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+            graphics.setColor(Color.white);
         }
         
         
@@ -233,12 +240,51 @@ public class MainMenuRenderer {
     }
 
     public void drawCharSelection(Graphics graphics, CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars) {
-        graphics.setColor(FONT_BASE_COLOR);
+        
+        UIRenderingUtil.drawTextEffect("Characters:", Color.lightGray, Color.black, 14, 60, 2, graphics, UIRenderingUtil.largeVerdanaFont);
+        
+        graphics.setColor(Color.white);
+        
+        
+        
+        //Draw select char box
+        graphics.drawRect(10f, 100f, 200, 50);
+        
+        int charIndex = 0;
+        for(CharacterInfoContainer infoContainer : availableChars) {
+            if(infoContainer == gwic) {
+                graphics.setColor(Color.cyan);
+            } else {
+                graphics.setColor(Color.white);
+            }
+            graphics.drawRect(10f, 100f + (60f * charIndex), 200, 50);
+            graphics.setColor(Color.white);
+            graphics.setFont(UIRenderingUtil.smallVerdanaFont);
+            if(infoContainer.isIsCreateNewCharDummy()){
+                graphics.drawString("Create new character", 14f, 120f + (60f * charIndex));
+            } else {
+                graphics.drawString(infoContainer.getPlayerData().getName(),14f, 104f + (60f * charIndex));
+                //a hack to get around things not loaded yet
+                String descriptionString = "Level: " + infoContainer.getPlayerData().getLevel() + "   " + infoContainer.getPlayerData().getStatManager().getCharacterClass();
+                graphics.drawString(descriptionString,14f, 126f + (60f * charIndex));
+            }
+            
+            charIndex++;
+        }
+        
+        graphics.setColor(Color.white);
+        graphics.setFont(UIRenderingUtil.giganticVerdanaFont);
         
         if(!gwic.isIsCreateNewCharDummy()){
-            graphics.drawString(gwic.getPlayerData().getName(),  UIRenderingUtil.calculateTextAllignCenterX(graphics, gwic.getPlayerData().getName()), 100);
+            graphics.drawString(gwic.getPlayerData().getName(), 650, 100);
+            graphics.setFont(UIRenderingUtil.smallVerdanaFont);
+            graphics.drawRect(440, RenderingManager.unScaledScreenHeight / 2 + 100, 600, 200);
+            
+            UIRenderingUtil.drawTextEffect(gwic.getPlayerData().getName(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 110, 2, graphics, UIRenderingUtil.largeVerdanaFont);
+            UIRenderingUtil.drawTextEffect("" + gwic.getPlayerData().getLevel(), Color.yellow, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 140, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
+            UIRenderingUtil.drawTextEffect("" + gwic.getPlayerData().getStatManager().getCharacterClass(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 165, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
         } else {
-            graphics.drawString("Create new Character",  UIRenderingUtil.calculateTextAllignCenterX(graphics, "Create new Character"), 100);
+            graphics.drawString("Create new Character",  560, 100);
         }
         
         
@@ -254,8 +300,8 @@ public class MainMenuRenderer {
                 
                 @Override
                 protected void createPoints() {
-                    int startX = 100;
-                    int startY = RenderingManager.unScaledGamePlayHeight/2;
+                    int startX = 400;
+                    int startY = RenderingManager.unScaledScreenHeight/2;
                     points = new float[]{startX  , startY -25 ,startX + 50 , startY -50 ,startX+50,startY};
                     
                     
@@ -276,8 +322,8 @@ public class MainMenuRenderer {
                 
                 @Override
                 protected void createPoints() {
-                    int startX = RenderingManager.unScaledGamePlayWidth - 100;
-                    int startY = RenderingManager.unScaledGamePlayHeight/2;
+                    int startX = RenderingManager.unScaledScreenWidth - 200;
+                    int startY = RenderingManager.unScaledScreenHeight/2;
                     points = new float[]{startX  , startY -25 ,startX - 50 , startY -50 ,startX-50,startY};
                     
                     

@@ -147,6 +147,8 @@ public class CharacterSelectionState extends BasicGameState {
                     }
                 }
                 controller.setFilesAmount(availableChars.size() - 1);
+                controller.right();
+                currentSelectionChar = availableChars.get(controller.getSelection());
             } catch (JSONException ex) {
                 Logger.getLogger(CharacterSelectionState.class.getName()).log(Level.SEVERE, null, ex);
             }

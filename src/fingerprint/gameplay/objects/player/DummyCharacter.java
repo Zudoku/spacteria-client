@@ -10,8 +10,6 @@ import fingerprint.states.menu.enums.CharacterClass;
 import java.util.logging.Logger;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import static fingerprint.rendering.manager.RenderingManager.unScaledGamePlayWidth;
-import static fingerprint.rendering.manager.RenderingManager.unScaledGamePlayHeight;
 
 /**
  *
@@ -23,6 +21,8 @@ public class DummyCharacter extends GameObject{
     private String charactername = "";
     private CharacterClass characterClass;
     private String id;
+    
+    private DummyCharacterCharacterData characterdata = null;
 
     public DummyCharacter() {
         super(0, 0);
@@ -82,7 +82,24 @@ public class DummyCharacter extends GameObject{
     public void setCharacterClass(CharacterClass characterClass) {
         this.characterClass = characterClass;
     }
+
+    @Override
+    public String toString() {
+        if(characterdata != null) {
+            return characterdata.getName();
+        } else {
+            return super.toString();
+        }
+    }
+
+    public DummyCharacterCharacterData getCharacterdata() {
+        return characterdata;
+    }
+
+
     
+    
+
     
     
 }
