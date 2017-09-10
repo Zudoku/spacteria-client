@@ -261,6 +261,10 @@ public class GamePlayState extends BasicGameState{
         if(loot != null) {
             if(loot.getItems().size() > event.getIndex()) {
                 try {
+                    if(loot.getItems().get(event.getIndex()).getUniqueid() == -1) {
+                        //TEMP FIXME TODO: 
+                        return;
+                    }
                     LootItemEvent payload = new LootItemEvent(event.getIndex(), loot.getGuid(), loot.getItems().get(event.getIndex()).getUniqueid(),
                             loot.getItems().get(event.getIndex()).getAmount());
                     mySocket.emit(NetworkEvents.CLIENT_LOOT_ITEM, new JSONObject(gson.toJson(payload, LootItemEvent.class)));

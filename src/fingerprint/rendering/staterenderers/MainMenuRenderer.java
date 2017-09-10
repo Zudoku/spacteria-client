@@ -267,6 +267,7 @@ public class MainMenuRenderer {
                 //a hack to get around things not loaded yet
                 String descriptionString = "Level: " + infoContainer.getPlayerData().getLevel() + "   " + infoContainer.getPlayerData().getStatManager().getCharacterClass();
                 graphics.drawString(descriptionString,14f, 126f + (60f * charIndex));
+                
             }
             
             charIndex++;
@@ -281,8 +282,9 @@ public class MainMenuRenderer {
             graphics.drawRect(440, RenderingManager.unScaledScreenHeight / 2 + 100, 600, 200);
             
             UIRenderingUtil.drawTextEffect(gwic.getPlayerData().getName(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 110, 2, graphics, UIRenderingUtil.largeVerdanaFont);
-            UIRenderingUtil.drawTextEffect("" + gwic.getPlayerData().getLevel(), Color.yellow, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 140, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
+            UIRenderingUtil.drawTextEffect("" + gwic.getPlayerData().getLevel(), Color.darkGray, Color.yellow, 450, RenderingManager.unScaledScreenHeight / 2 + 140, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
             UIRenderingUtil.drawTextEffect("" + gwic.getPlayerData().getStatManager().getCharacterClass(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 165, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
+            UIRenderingUtil.drawTextEffect("Created: " + gwic.getPlayerData().getCreated(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 185, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
         } else {
             graphics.drawString("Create new Character",  560, 100);
         }

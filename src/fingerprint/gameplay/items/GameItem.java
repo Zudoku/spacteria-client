@@ -21,6 +21,7 @@ public class GameItem {
     private int rarity;
     private int sellvalue;
     private int imageid;
+    private int cclassreq;
 
     private GameItemAttribute[] attributes;
 
@@ -169,4 +170,14 @@ public class GameItem {
     public void setAttributes(GameItemAttribute[] attributes) {
         this.attributes = attributes;
     }
+
+    public int getCclassreq() {
+        return cclassreq;
+    }
+
+    public void setCclassreq(int cclassreq) {
+        this.cclassreq = cclassreq;
+    }
+    
+    
 }
