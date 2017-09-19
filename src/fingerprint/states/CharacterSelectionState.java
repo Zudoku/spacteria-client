@@ -78,15 +78,15 @@ public class CharacterSelectionState extends BasicGameState {
             throws SlickException {
         inputManager.setInput(gc.getInput());
         inputManager.update();
-        if(inputManager.isKeyBindPressed(KeyBindAction.LEFT,true)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.LEFT,true) || inputManager.isKeyBindPressed(KeyBindAction.UP,true)){
             controller.left();
             currentSelectionChar = availableChars.get(controller.getSelection());
         }
-        if(inputManager.isKeyBindPressed(KeyBindAction.RIGHT,true)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.RIGHT,true) || inputManager.isKeyBindPressed(KeyBindAction.DOWN,true)){
             controller.right();
             currentSelectionChar = availableChars.get(controller.getSelection());
         }
-        if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
             selectCharacter();
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){

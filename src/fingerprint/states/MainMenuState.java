@@ -59,7 +59,7 @@ public class MainMenuState extends BasicGameState{
             throws SlickException {
         inputManager.setInput(gc.getInput());
         inputManager.update();
-        if(inputManager.isKeyBindPressed(KeyBindAction.D,true) || inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
             menuPressed();
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.UP,true)){

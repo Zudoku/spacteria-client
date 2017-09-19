@@ -168,75 +168,83 @@ public class MainMenuRenderer {
         
     }
     
-    public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass selectedDifficulty,int selectedRow,int selectedColumn,TextField nameField,boolean drawBadFileName){
-        graphics.setColor(RenderingManager.FONT_BASE_COLOR);
+    public void drawCharacterCreation(Graphics graphics,GameContainer container,CharacterClass selectedCClass,int phase,TextField nameField,boolean drawBadFileName){
+        graphics.setColor(Color.white);
         String titleText = "Creating a new Character";
+        graphics.setFont(UIRenderingUtil.giganticVerdanaFont);
         graphics.drawString(titleText, UIRenderingUtil.calculateTextAllignCenterX(graphics, titleText), 100);
         
-        String chooseDifficultyText = "Select Class:";
-        graphics.drawString(chooseDifficultyText, 200, 400);
+        
+        graphics.setFont(UIRenderingUtil.mediumVerdanaFont);
+        if(phase == 1) {
+            String chooseDifficultyText = "Select Class:";
+            graphics.drawString(chooseDifficultyText, 200, 300);
+        }
+        
         CharacterClass[] difficulties = CharacterClass.values();
         graphics.setColor(Color.orange);
         int counter = 0;
         int offsetX = 0; 
-        for(CharacterClass difficulty : difficulties){
-            if(difficulty == selectedDifficulty){
+        for(CharacterClass cclass : difficulties){
+            if(cclass == selectedCClass){
                 graphics.setColor(Color.white);
+                graphics.drawString(cclass.toString(), 200+offsetX, 330);
             }else{
-                graphics.setColor(Color.orange);
+                if(phase == 1){
+                    graphics.setColor(Color.orange);
+                    graphics.drawString(cclass.toString(), 200+offsetX, 330);
+                }
+                
             }
-            graphics.drawString(difficulty.toString(), 200+offsetX, 430);
-            if(selectedRow == 0){
-                if(counter == selectedColumn){
+            
+            if(phase == 1){
+                if(cclass == selectedCClass){
                     graphics.setColor(Color.cyan);
-                    int selX= 200+offsetX -7;
-                    int selY = 426;
-                    int width = graphics.getFont().getWidth(difficulty.toString())+10;
-                    int height = 25;
+                    int selX= 200+offsetX -5;
+                    int selY = 326;
+                    int width = graphics.getFont().getWidth(cclass.toString())+10;
+                    int height = 30;
                     graphics.drawRect(selX,selY, width, height);
                 }
             }
-            offsetX += graphics.getFont().getWidth(difficulty.toString()) + 10;
+            offsetX += graphics.getFont().getWidth(cclass.toString()) + 10;
             counter++;
         }
-        graphics.setColor(RenderingManager.FONT_BASE_COLOR);
-        String worldName = "Give the Character a name:";
-        graphics.drawString(worldName, 200, 490);
-        graphics.setColor(Color.lightGray);
-        nameField.render(container, graphics);
-        if(selectedRow == 1){
+        
+        if(phase >= 2) {
+            graphics.setColor(Color.lightGray);
+            nameField.render(container, graphics);
+        }
+        
+        if(phase == 2){
+            graphics.setColor(Color.white);
+            String worldName = "Give the Character a name:";
+            graphics.drawString(worldName, 200, 390);
+            
             graphics.setColor(Color.cyan);
             int height = 44;
             int selX= 200 -7;
-            int selY = 514;
+            int selY = 414;
             int width = 300+10;
             graphics.drawRect(selX, selY, width, height);
         }
         if(drawBadFileName){
             graphics.setColor(Color.pink);
-            graphics.drawString("Bad name!", 530, 530);
+            graphics.drawString("Bad name!", 530, 430);
         }
-        graphics.setColor(RenderingManager.FONT_BASE_COLOR);
-        String generateString = "Create Character";
-        graphics.drawString(generateString, 200, 590);
-        String backString = "Back";
-        graphics.drawString(backString, 200 + 30 + graphics.getFont().getWidth(generateString), 590);
-        if(selectedRow == 2){
-            int height = 25;
-            graphics.setColor(Color.cyan);
-            if(selectedColumn == 0){
-                int selX= 200 -7;
-                int selY = 586;
-                int width = graphics.getFont().getWidth(generateString)+10;
-                graphics.drawRect(selX, selY, width, height);
-            }else if (selectedColumn == 1){
-                int selX= 200+ 30 + graphics.getFont().getWidth(generateString) -7;
-                int selY = 586;
-                int width = graphics.getFont().getWidth(backString)+10;
-                graphics.drawRect(selX, selY, width, height);
-            }
-        }
+        graphics.setColor(Color.white);
         
+        if(phase == 3){
+            String generateString = "Generate Character";
+            graphics.setFont(UIRenderingUtil.largeVerdanaFont);
+            graphics.drawString(generateString, 200, 490);
+            int height = 36;
+            graphics.setColor(Color.cyan);
+            int selX= 200 -7;
+            int selY = 486;
+            int width = graphics.getFont().getWidth(generateString)+10;
+            graphics.drawRect(selX, selY, width, height);
+        }
     }
 
     public void drawCharSelection(Graphics graphics, CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars) {
@@ -287,52 +295,6 @@ public class MainMenuRenderer {
             UIRenderingUtil.drawTextEffect("Created: " + gwic.getPlayerData().getCreated(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 185, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
         } else {
             graphics.drawString("Create new Character",  560, 100);
-        }
-        
-        
-        if(gwic.isMoreLeft()){
-            
-            Shape triangle = new Shape() {
-                
-                @Override
-                public Shape transform(Transform arg0) {
-                    // TODO Auto-generated method stub
-                    return this;
-                }
-                
-                @Override
-                protected void createPoints() {
-                    int startX = 400;
-                    int startY = RenderingManager.unScaledScreenHeight/2;
-                    points = new float[]{startX  , startY -25 ,startX + 50 , startY -50 ,startX+50,startY};
-                    
-                    
-                    
-                }
-            };
-            graphics.fill(triangle);
-        }
-        if(gwic.isMoreRight()){
-            
-            Shape triangle = new Shape() {
-                
-                @Override
-                public Shape transform(Transform arg0) {
-                    // TODO Auto-generated method stub
-                    return this;
-                }
-                
-                @Override
-                protected void createPoints() {
-                    int startX = RenderingManager.unScaledScreenWidth - 200;
-                    int startY = RenderingManager.unScaledScreenHeight/2;
-                    points = new float[]{startX  , startY -25 ,startX - 50 , startY -50 ,startX-50,startY};
-                    
-                    
-                    
-                }
-            };
-            graphics.fill(triangle);
         }
     }
 }

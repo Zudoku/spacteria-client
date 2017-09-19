@@ -22,6 +22,7 @@ import fingerprint.mainmenus.GenericGridController;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.menu.enums.CharacterClass;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class CharacterCreationState extends BasicGameState{
@@ -31,7 +32,7 @@ public class CharacterCreationState extends BasicGameState{
     @Inject private EventBus eventBus;
     @Inject private GameFileHandler fileHandler;
     @Inject private InputManager inputManager;
-    private GenericGridController controller;
+    private int phase = 1;
     
     private TextField characterName;
     private CharacterClass selectedClass;
@@ -41,7 +42,7 @@ public class CharacterCreationState extends BasicGameState{
     private boolean drawBadFileNameText = false;
     
     public CharacterCreationState() {
-        controller = new GenericGridController(Arrays.asList(2,0,1), Arrays.asList(1));
+
     }
     
     @Override
@@ -49,9 +50,10 @@ public class CharacterCreationState extends BasicGameState{
             throws SlickException {
         Font font = new Font("Arial Bold", Font.BOLD, 32);
         TrueTypeFont ttf = new TrueTypeFont(font, true);
-       characterName = new TextField(gc, ttf, 200, 520, 300, 34);
+       characterName = new TextField(gc, ttf, 200, 420, 300, 34);
        characterName.setBackgroundColor(Color.gray);
        characterName.setBorderColor(Color.darkGray);
+       characterName.setAcceptingInput(false);
        selectedClass = CharacterClass.MAGE;
         
     }
@@ -59,37 +61,64 @@ public class CharacterCreationState extends BasicGameState{
     @Override
     public void render(GameContainer gc, StateBasedGame caller, Graphics graphics)
             throws SlickException {
-        renderingManager.drawWorldCreation(graphics,gc,selectedClass,controller.getSelectedRow(),controller.getSelectedColumn(),characterName,drawBadFileNameText);
+        renderingManager.drawWorldCreation(graphics,gc,selectedClass,phase,characterName,drawBadFileNameText);
 
     }
+
+    @Override
+    public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+        super.leave(container, game);
+        selectedClass = CharacterClass.MAGE;
+        characterName.setText("");
+        phase = 1;
+    }
+    
+    
 
     @Override
     public void update(GameContainer gc, StateBasedGame caller, int delta)
             throws SlickException {
         inputManager.setInput(gc.getInput());
         inputManager.update();
-        //TODO: redo everything
-        
-        //TEMPFIX
-        if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
+
+        if(inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
             menuPressed();
         }
-        if(inputManager.isKeyBindPressed(KeyBindAction.UP,true)){
-            controller.up();
-        }
-        if(inputManager.isKeyBindPressed(KeyBindAction.DOWN,true)){
-            controller.down();
+        if(inputManager.isKeyBindPressed(KeyBindAction.LEFT,true)){
+            //END ME PLEASE, THIS IMPLEMENTATION SUCKS
+            if(phase == 1) {
+                if(selectedClass == CharacterClass.KNIGHT){
+                    selectedClass = CharacterClass.MAGE;
+                    return;
+                }
+                if(selectedClass == CharacterClass.MAGE){
+                    selectedClass = CharacterClass.WARRIOR;
+                    return;
+                }
+                if(selectedClass == CharacterClass.WARRIOR){
+                    selectedClass = CharacterClass.KNIGHT;
+                    return;
+                }
+            }
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.RIGHT,true)){
-            controller.right();
+            //END ME PLEASE, THIS IMPLEMENTATION SUCKS
+            if(phase == 1) {
+                if(selectedClass == CharacterClass.MAGE){
+                    selectedClass = CharacterClass.KNIGHT;
+                    return;
+                }
+                if(selectedClass == CharacterClass.WARRIOR){
+                    selectedClass = CharacterClass.MAGE;
+                    return;
+                }
+                if(selectedClass == CharacterClass.KNIGHT){
+                    selectedClass = CharacterClass.WARRIOR;
+                    return;
+                }
+            }
         }
-        if(inputManager.isKeyBindPressed(KeyBindAction.LEFT,true)){
-            controller.left();
-        }
-        if(inputManager.isKeyBindPressed(KeyBindAction.SKIP,true)){
-            controller.unlock();
-            controller.down();
-        }
+
         if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
         }
@@ -97,45 +126,22 @@ public class CharacterCreationState extends BasicGameState{
         checkIfFileNameValid();
     }
     private void menuPressed(){
-        switch(controller.getSelectedRow()){
-        case 0:
-            selectedClass = CharacterClass.values()[controller.getSelectedColumn()];
+        switch(phase){
+        case 1:
+            phase++;
             break;
         case 2:
-            if(controller.getSelectedColumn() == 0){
-                String filename = characterName.getText();
-                
-                //Save character
-                //fileHandler.initCharacter(filename, selectedClass);
-                
-                
-                eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
-                /*
-                if(fileHandler.initiateWorld(filename,selectedClass)){
-                    //Success
-                    GameWorld createdWorld = fileHandler.loadWorldGameFile(filename);
-                    if(createdWorld == null){
-                        logger.log(Level.WARNING,"World load failed.");
-                        return;
-                    }
-                    logger.log(Level.FINEST,"World Loaded!");
-                    eventBus.post(new SelectCharacterEvent(createdWorld));
-                    logger.log(Level.FINEST,"Going into character creationscreen");
-                    
-                }else{
-                    //World creation failed
-                    logger.log(Level.WARNING,"World creation failed.");
-                }
-                */
-            }else if(controller.getSelectedColumn() == 1){
-                //cancel
-                eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
-            }
+            String filename = characterName.getText();
+            phase++;
+
+            break;
+        case 3:
+            //eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_SELECTION_ID));
             break;
         }
     }
     private void checkIfFileInputClose(){
-        if(controller.getSelectedRow() != 1){
+        if(phase != 2){
             characterName.setAcceptingInput(false);
             characterName.setFocus(false);
         }else{
