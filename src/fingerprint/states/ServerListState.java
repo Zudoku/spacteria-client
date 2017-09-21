@@ -110,7 +110,7 @@ public class ServerListState extends BasicGameState{
         
         //TEMPFIX
         Input input = gc.getInput();
-        if(inputManager.isKeyBindPressed(KeyBindAction.D,true)){
+        if(inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
             menuPressed();
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.UP,true)){

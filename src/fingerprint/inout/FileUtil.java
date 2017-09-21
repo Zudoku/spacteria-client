@@ -8,6 +8,7 @@ public class FileUtil {
     public static String LOGS_FOLDER = "logs";
     
     public static String UI_FILES_PATH = "resources/UI";
+    public static String SPRITE_FILES_PATH = "resources/Sprites";
     public static String CHARACTERS_PATH = "Saves/Characters";
     public static String TILEDMAPS_PATH = RESOURCES_FOLDER + "/maps";
     

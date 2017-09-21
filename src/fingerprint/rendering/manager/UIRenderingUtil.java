@@ -4,6 +4,8 @@ package fingerprint.rendering.manager;
 
 import fingerprint.inout.FileUtil;
 import java.awt.Font;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.newdawn.slick.Color;
 
 import org.newdawn.slick.Graphics;
@@ -36,6 +38,15 @@ public class UIRenderingUtil {
         int y = (int)Math.floor((imageid - 1) / 10);
         return items.getSprite(x, y);
     }
+    public static final Image getSpriteImage(int imageid) {
+        try {
+            return new Image(FileUtil.SPRITE_FILES_PATH + "/" + imageid + ".png");
+        } catch (SlickException ex) {
+            Logger.getLogger(UIRenderingUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
     public static final void drawTextEffect(String text, Color color1, Color color2, int x, int y, int sizeDiff, Graphics graphics, TrueTypeFont font){
         graphics.setColor(color1);
         graphics.setFont(font);

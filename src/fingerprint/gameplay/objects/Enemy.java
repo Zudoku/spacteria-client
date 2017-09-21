@@ -6,8 +6,10 @@
 package fingerprint.gameplay.objects;
 
 import fingerprint.gameplay.objects.player.StatContainer;
+import fingerprint.rendering.manager.UIRenderingUtil;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 
 
 /**
@@ -16,7 +18,7 @@ import org.newdawn.slick.Graphics;
  */
 public class Enemy extends GameObject{
     
-    private String image;
+    private int image;
     private String type;
     private StatContainer stats;
     private String hash;
@@ -34,10 +36,15 @@ public class Enemy extends GameObject{
     public void draw(Graphics graphics) {
         double[] drawinCords = getDrawingCoordinates();
         
-        graphics.setColor(Color.black);
-        graphics.fillRect((float)drawinCords[0] , (float)drawinCords[1], shape.getW(), shape.getH());
-        graphics.setColor(Color.cyan);
-        graphics.fillRect((float)drawinCords[0]+ 2, (float)drawinCords[1] + 2, shape.getW() -4, shape.getH()-4);
+        if(image == 0){
+            graphics.setColor(Color.black);
+            graphics.fillRect((float)drawinCords[0] , (float)drawinCords[1], shape.getW(), shape.getH());
+            graphics.setColor(Color.cyan);
+            graphics.fillRect((float)drawinCords[0]+ 2, (float)drawinCords[1] + 2, shape.getW() -4, shape.getH()-4);
+        } else {
+            Image sprite = UIRenderingUtil.getSpriteImage(image);
+            sprite.drawCentered((float) drawinCords[0] + (shape.getW() / 2), (float) drawinCords[1] + (shape.getH() / 2));
+        }
     }
 
     public void setShape(Shape shape) {
