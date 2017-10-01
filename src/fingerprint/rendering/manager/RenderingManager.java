@@ -181,7 +181,7 @@ public class RenderingManager {
         graphics.setBackground(Color.cyan);
         
         //TODO: MAGIC NUMBERS!
-        if(false){
+        if(drawDebugInfo){
             graphics.setColor(Color.black);
             graphics.fillRect(0, 0, 300, 200);
             

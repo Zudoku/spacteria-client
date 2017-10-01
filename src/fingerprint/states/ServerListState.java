@@ -76,6 +76,7 @@ public class ServerListState extends BasicGameState{
             rooms.clear();
             JSONObject roomsPayload = (JSONObject)args[0];
             RoomListContainer roomContainer = gson.fromJson(roomsPayload.toString(), RoomListContainer.class);
+
             for(RoomDescription desc : roomContainer.getRoomlist()) {
                 rooms.add(desc);
             }

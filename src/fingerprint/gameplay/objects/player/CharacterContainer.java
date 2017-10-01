@@ -15,6 +15,8 @@ import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.networking.events.UpdatePositionEvent;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.rendering.gui.event.SetScreenStartCoordinatesEvent;
+import fingerprint.sound.PlaySoundEvent;
+import fingerprint.sound.SoundEffect;
 import fingerprint.states.events.SaveAndExitWorldEvent;
 import org.newdawn.slick.geom.Point;
 
@@ -201,7 +203,7 @@ public class CharacterContainer {
         double projectileStartX = this.currentPlayer.getX() + (playerCollisionWidth / 2);
         double projectileStartY = this.currentPlayer.getY() + (playerCollisionHeight / 2);
         double projectileSpeed = 130d;
-        double projectileMaxDistance = 200d;
+        double projectileMaxDistance = 500d;
         String guid = java.util.UUID.randomUUID().toString();
         Projectile createdProjectile = new Projectile(projectileAngle,projectileSpeed,projectileMaxDistance, projectileStartX,projectileStartY);
         createdProjectile.setGuid(guid);
@@ -238,6 +240,10 @@ public class CharacterContainer {
 
 
             if(event.getStats() != null) {
+                if(currentPlayer.getStatManager().getStats().getHealth() > event.getStats().getHealth()){
+                    //Play sound
+                    eventBus.post(new PlaySoundEvent(SoundEffect.CHARHIT));
+                }
                 currentPlayer.getStatManager().setStats(event.getStats());
             }
         }

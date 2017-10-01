@@ -10,24 +10,28 @@ import fingerprint.rendering.manager.UIRenderingUtil;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.geom.Rectangle;
 
 
 /**
  *
  * @author arska
  */
-public class Enemy extends GameObject{
+public class Enemy extends CollidingObject{
     
     private int image;
     private String type;
     private StatContainer stats;
     private String hash;
+    private String hitsound;
+    private String deathsound;
     private Shape shape;
     
     public Enemy(double initX, double initY) {
-        super(initX, initY);
+        super(initX, initY, new Rectangle(0, 0, 1, 1));
     }
     public void initialize(){
+        this.collideShape = new Rectangle((float)shape.getPos().getX(), (float)shape.getPos().getX(), shape.getW(), shape.getH());
         setX(shape.getPos().getX());
         setY(shape.getPos().getY());
     }
@@ -49,6 +53,7 @@ public class Enemy extends GameObject{
 
     public void setShape(Shape shape) {
         this.shape = shape;
+        this.collideShape = new Rectangle((float)shape.getPos().getX(), (float)shape.getPos().getX(), shape.getW(), shape.getH());
         setX(shape.getPos().getX());
         setY(shape.getPos().getY());
     }
@@ -56,8 +61,14 @@ public class Enemy extends GameObject{
     public String getHash() {
         return hash;
     }
-    
-    
+
+    public String getHitsound() {
+        return hitsound;
+    }
+
+    public String getDeathsound() {
+        return deathsound;
+    }
     
     
 }

@@ -10,7 +10,7 @@ import org.newdawn.slick.geom.Shape;
 
 public class CollidingObject extends GameObject{
     protected transient Shape collideShape;
-    protected boolean collideToTerrain;
+    protected boolean collideToTerrain = false;
     
     public CollidingObject(double initX , double initY,Shape collidingShape) {
         super(initX, initY);
@@ -19,6 +19,9 @@ public class CollidingObject extends GameObject{
     
 
     public boolean isColliding(CollidingObject object){
+        if(collideShape == null || object.getCollideShape() == null) {
+            return false;
+        }
         return collideShape.intersects(object.getCollideShape());
     }
     public Shape getCollideShape() {

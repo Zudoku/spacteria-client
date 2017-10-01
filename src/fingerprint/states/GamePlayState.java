@@ -33,6 +33,8 @@ import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.rendering.gui.event.EquipmentClickEvent;
 import fingerprint.rendering.gui.event.InventoryClickEvent;
 import fingerprint.rendering.gui.event.LootBagClickEvent;
+import fingerprint.sound.PlaySoundEvent;
+import fingerprint.sound.SoundEffect;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.InitGameInfoEvent;
 import fingerprint.states.events.SaveAndExitWorldEvent;
@@ -165,7 +167,7 @@ public class GamePlayState extends BasicGameState{
         }
         
         description.getPlayers().remove(ourOwn);
-        
+        eventBus.post(new PlaySoundEvent(SoundEffect.TELEPORT));
         worldContainer.setCurrentRoom(description, myID);
         worldContainer.setPlayerCoords(description.getMapDescription().getStartX(), description.getMapDescription().getStartY());
         try{
@@ -193,12 +195,8 @@ public class GamePlayState extends BasicGameState{
         }).on(NetworkEvents.SERVER_GAMEOBJECT_DESPAWNED, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), DeleteEntityEvent.class));
         }).on(NetworkEvents.SERVER_REFRESH_ROOM_DESC, args -> {
-            try {
                 RefreshRoomDescEvent event = gson.fromJson(args[0].toString(), RefreshRoomDescEvent.class);
-                changeRoom(event.getDesc()); }
-            catch (Exception e) {
-                System.out.println(e);
-            }
+                changeRoom(event.getDesc());
         }).on(NetworkEvents.SERVER_LOOTBAG_SPAWNED, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), NewLootBagSpawnedEvent.class));
         }).on(NetworkEvents.SERVER_UPDATE_LOOTBAG_STATUS, args -> {
@@ -230,7 +228,7 @@ public class GamePlayState extends BasicGameState{
         }
     }
     @Subscribe
-    public void listenUpdatePositionEvent(SpawnProjectileEvent event){
+    public void listenSpawnProjectileEvent(SpawnProjectileEvent event){
         try {
             mySocket.emit(NetworkEvents.CLIENT_SPAWN_PROJECTILE, new JSONObject(gson.toJson(event, SpawnProjectileEvent.class)));
         } catch (JSONException ex) {

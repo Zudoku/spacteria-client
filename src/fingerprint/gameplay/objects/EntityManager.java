@@ -19,6 +19,8 @@ import fingerprint.networking.events.CorrectNPCPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
 import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.rendering.gui.event.DisplayConsoleMessageEvent;
+import fingerprint.sound.PlaySoundEvent;
+import fingerprint.sound.SoundEffect;
 import org.newdawn.slick.Color;
 
 @Singleton
@@ -59,8 +61,12 @@ public class EntityManager {
     }
     public void removeObjectWithID(String ID){
         if(idMap.containsKey(ID)){
+            GameObject removed = idMap.get(ID);
             idMap.remove(ID);
             logger.log(Level.FINEST,"Removed object with ID {0} from MAP",new Object[]{ID});
+            if(removed instanceof Enemy) {
+                eventBus.post(new PlaySoundEvent(SoundEffect.valueOf(((Enemy)removed).getDeathsound())));
+            }
             return;
         }
         logger.log(Level.FINER,"Couldn't find any object with ID {0} , didn't do anything.",new Object[]{ID});

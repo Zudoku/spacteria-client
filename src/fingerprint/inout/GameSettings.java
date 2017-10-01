@@ -49,8 +49,8 @@ public class GameSettings {
         
         keyboardActive = true;
         CURRENT_CONTROLLER = 0;
-        soundVolume = 100;
-        musicVolume = 100;
+        soundVolume = 50;
+        musicVolume = 50;
         
     }
     

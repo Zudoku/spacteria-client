@@ -7,9 +7,17 @@ package fingerprint.gameplay.objects.projectiles;
 
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.CollisionManager;
+import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
+import fingerprint.inout.FileUtil;
+import fingerprint.sound.PlaySoundEvent;
+import fingerprint.sound.SoundEffect;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 
 /**
@@ -68,17 +76,19 @@ public class Projectile extends CollidingObject{
 
     @Override
     public void draw(Graphics graphics) {
-        //try {
+        try {
             double[] drawingCoords = getDrawingCoordinates();
+            /*
             graphics.setColor(Color.black);
             graphics.fillRect((float)drawingCoords[0],(float)drawingCoords[1],(float)collideShape.getWidth(),(float)collideShape.getHeight());
-            //Image projectileImage = new Image("resources/" + image.getFilename());
+            */
+            Image projectileImage = new Image(FileUtil.PROJECTILES_PATH + "/" + image.getFilename());
+            projectileImage.setRotation(360 - (int)getAngle());
+            projectileImage.draw((float)drawingCoords[0], (float)drawingCoords[1]);
             
-            //projectileImage.draw((float)drawingCoords[0], (float)drawingCoords[1]);
-            
-        //} catch (SlickException ex) {
-        //    Logger.getLogger(Projectile.class.getName()).log(Level.SEVERE, null, ex);
-        //}
+        } catch (SlickException ex) {
+           Logger.getLogger(Projectile.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -89,9 +99,10 @@ public class Projectile extends CollidingObject{
         deltaMovX -= getX();
         deltaMovY -= getY();
         
-        double diff = Math.abs(deltaMovX) + Math.abs(deltaMovY);
+        double diff = Math.sqrt(Math.abs(deltaMovX)* Math.abs(deltaMovX) + Math.abs(deltaMovY) * Math.abs(deltaMovY));
         currentTravelDistance += diff;
         if(maxTravelDistance < currentTravelDistance){
+            destroyed = true;
             eventBus.post(new DeleteEntityEvent(guid));
         }
     }
@@ -99,11 +110,17 @@ public class Projectile extends CollidingObject{
     @Override
     protected void onCollision(CollidingObject collidedWith) {
         
+        if(collidedWith instanceof Enemy && this.team == 1){
+            Enemy enemy = (Enemy) collidedWith;
+            eventBus.post(new PlaySoundEvent(SoundEffect.valueOf(enemy.getHitsound())));
+            destroyed = true;
+            eventBus.post(new DeleteEntityEvent(guid));
+        } 
     }
 
     @Override
     protected void onTerrainCollision() {
-        if(!destroyed && false){
+        if(!destroyed){
             destroyed = true;
             eventBus.post(new DeleteEntityEvent(guid));
         }

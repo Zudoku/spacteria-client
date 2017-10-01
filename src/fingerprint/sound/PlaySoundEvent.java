@@ -3,10 +3,16 @@ package fingerprint.sound;
 public class PlaySoundEvent {
     
     
-    public Sound soundToPlay;
+    public SoundEffect soundToPlay;
     
-    public PlaySoundEvent(Sound soundToPlay) {
+    public PlaySoundEvent(SoundEffect soundToPlay) {
         this.soundToPlay = soundToPlay;
     }
+
+    public SoundEffect getSoundToPlay() {
+        return soundToPlay;
+    }
+    
+    
 
 }
