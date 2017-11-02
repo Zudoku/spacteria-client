@@ -36,26 +36,25 @@ public class GameObject {
         }
         
     }
-    protected double[] moveDestinationX(int delta){
-        double movechunk = 0;
-        if(getDeltaX() > 0){
-            movechunk = 0.1d;
-        } else {
-            movechunk = -0.1d;
+    protected double[] moveDestinationX(int delta, double fullMove, double currentDelta){
+        final double MOVE_CYCLE_AMOUNT = 0.3d;
+        
+        double movechunk = Math.min(fullMove, Math.min(fullMove - currentDelta, MOVE_CYCLE_AMOUNT));
+        if(getDeltaX() < 0){
+            movechunk = -movechunk;
         }
         
         double destinationY =  (double)(getY());
-        double destinationX =  (double)(getX() + (movechunk / 1));
+        double destinationX =  (double)(getX() + (movechunk));
         
         return new double[]{destinationX,destinationY};
         
     }
-    protected double[] moveDestinationY(int delta){
-        double movechunk = 0;
-        if(getDeltaY() > 0){
-            movechunk = 0.1d;
-        } else {
-            movechunk = -0.1d;
+    protected double[] moveDestinationY(int delta, double fullMove, double currentDelta){
+        final double MOVE_CYCLE_AMOUNT = 0.3d;
+        double movechunk = Math.min(fullMove, Math.min(fullMove - currentDelta, MOVE_CYCLE_AMOUNT));
+        if(getDeltaY() < 0){
+            movechunk = -movechunk;
         }
         
         double destinationY =  (double)(getY() + (movechunk / 1));
@@ -100,13 +99,6 @@ public class GameObject {
         this.deltaX = deltaX;
     }
     public void setDeltaY(double deltaY) {
-        this.deltaY = deltaY;
-    }
-    
-    public void setDeltaX(double deltaX,double slowAmount) {
-        this.deltaX = deltaX;
-    }
-    public void setDeltaY(double deltaY, double slowAmount) {
         this.deltaY = deltaY;
     }
     protected double[] getDrawingCoordinates(){

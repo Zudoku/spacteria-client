@@ -11,6 +11,10 @@ package fingerprint.gameplay.objects.projectiles;
  */
 public enum ProjectileImage {
     BASIC("basicprojectile.png"),
+    BLOBGUARDIAN("blobguardian.png"),
+    BLOBGUARDIANSLOW("blobguardianslow.png"),
+    CHARGER("charger.png"),
+    SLIMEGUARDIANSLOW("slimeguardianslow.png"),
     MINIBLOB("miniblob.png");
     
     private String filename;

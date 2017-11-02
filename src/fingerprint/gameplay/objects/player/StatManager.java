@@ -13,11 +13,9 @@ import fingerprint.states.menu.enums.CharacterClass;
  */
 public class StatManager {
 
-    private transient CharacterClass characterClass;
     private transient StatContainer stats;
 
-    public StatManager(CharacterClass characterClass) {
-        this.characterClass = characterClass;
+    public StatManager() {
         stats = new StatContainer(1,1,1,1,1,100,1);
     }
     
@@ -29,14 +27,5 @@ public class StatManager {
     public void setStats(StatContainer stats) {
         this.stats = stats;
     }
-
-    public void setCharacterClass(CharacterClass characterClass) {
-        this.characterClass = characterClass;
-    }
-
-    public CharacterClass getCharacterClass() {
-        return characterClass;
-    }
-    
     
 }

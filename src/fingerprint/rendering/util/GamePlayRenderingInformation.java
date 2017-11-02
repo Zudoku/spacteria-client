@@ -26,7 +26,6 @@ public class GamePlayRenderingInformation {
     private int experience;
     private StatContainer myStats;
     private String mapName;
-    private CharacterClass charClass;
     private LootBag lootToRender;
     private Equipments equipmentToRender;
     private Inventory inventoryToRender;
@@ -91,15 +90,6 @@ public class GamePlayRenderingInformation {
     public String getMapName() {
         return mapName;
     }
-
-    public CharacterClass getCharClass() {
-        return charClass;
-    }
-
-    public void setCharClass(CharacterClass charClass) {
-        this.charClass = charClass;
-    }
-
     public LootBag getLootToRender() {
         return lootToRender;
     }

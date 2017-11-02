@@ -8,16 +8,12 @@ import fingerprint.core.GameLauncher;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.RoomDescription;
-import static fingerprint.rendering.manager.RenderingManager.FONT_BASE_COLOR;
 import fingerprint.rendering.manager.UIRenderingUtil;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
-import io.socket.client.IO;
 import java.util.Arrays;
 import java.util.List;
-import org.newdawn.slick.geom.Shape;
-import org.newdawn.slick.geom.Transform;
 
 public class MainMenuRenderer {
     
@@ -273,7 +269,7 @@ public class MainMenuRenderer {
             } else {
                 graphics.drawString(infoContainer.getPlayerData().getName(),14f, 104f + (60f * charIndex));
                 //a hack to get around things not loaded yet
-                String descriptionString = "Level: " + infoContainer.getPlayerData().getLevel() + "   " + infoContainer.getPlayerData().getStatManager().getCharacterClass();
+                String descriptionString = "Level: " + infoContainer.getPlayerData().getLevel();
                 graphics.drawString(descriptionString,14f, 126f + (60f * charIndex));
                 
             }
@@ -291,7 +287,6 @@ public class MainMenuRenderer {
             
             UIRenderingUtil.drawTextEffect(gwic.getPlayerData().getName(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 110, 2, graphics, UIRenderingUtil.largeVerdanaFont);
             UIRenderingUtil.drawTextEffect("" + gwic.getPlayerData().getLevel(), Color.darkGray, Color.yellow, 450, RenderingManager.unScaledScreenHeight / 2 + 140, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
-            UIRenderingUtil.drawTextEffect("" + gwic.getPlayerData().getStatManager().getCharacterClass(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 165, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
             UIRenderingUtil.drawTextEffect("Created: " + gwic.getPlayerData().getCreated(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 185, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
         } else {
             graphics.drawString("Create new Character",  560, 100);

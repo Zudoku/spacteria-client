@@ -27,17 +27,20 @@ public class CollisionManager {
     private EntityManager entityManager;
     
     private List<Integer> blockingTiles = new ArrayList<>(Arrays.asList(new Integer[]{
-        1,2,4,8,10
+        1,2,4,6,7,8,10,11,15,16,18
     }));
     
     
     private String filename = "";
+    
+    private int zoneAmount = 10;
+    
+    private ArrayList<GameObject>[][] zones;
 
     
     @Inject
     public CollisionManager(EntityManager entityManager) {
-        
-        
+        this.zones = new ArrayList[zoneAmount][zoneAmount];
         
         this.entityManager = entityManager;
     }

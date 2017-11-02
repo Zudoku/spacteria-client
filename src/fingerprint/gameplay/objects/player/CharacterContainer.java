@@ -33,7 +33,7 @@ public class CharacterContainer {
     public transient static final int playerRenderHeight = 64;
     
     
-    private double angle = 45;
+    private double angle = 0;
     
     private int lastPosOnServerX = 0;
     private int lastPosOnServerY = 0;
@@ -67,8 +67,12 @@ public class CharacterContainer {
         
     }
     
+    int getAngleI(){
+        return (int) angle;
+    }
+    
     private void updateInput(InputManager inputManager,int delta) {
-        double angleInRadians = (angle / 360) * (2 * Math.PI);
+        double angleInRadians = ((double)getAngle() / 360) * (2 * Math.PI);
         double scaler = ((double)getStats().getSpeed() * delta / 200d);
         
         currentPlayer.setDeltaX(0);
@@ -151,8 +155,9 @@ public class CharacterContainer {
         double amount = ((double)delta) * 12d / 60d;
         angle -= amount;
         if(angle < 0){
-            angle = 360 - angle;
+            angle = 359d - Math.abs(angle);
         }
+        angle = angle % 360;
         
     }
     private void rotateCameraRight(int delta){
@@ -161,6 +166,7 @@ public class CharacterContainer {
         if(angle > 360){
             angle = angle - 360;
         }
+        angle = angle % 360;
     }
     
     
@@ -177,7 +183,7 @@ public class CharacterContainer {
     }
 
     public double getAngle() {
-        return angle;
+        return angle % 360;
     }
     
     private StatContainer getStats(){
@@ -207,7 +213,7 @@ public class CharacterContainer {
         String guid = java.util.UUID.randomUUID().toString();
         Projectile createdProjectile = new Projectile(projectileAngle,projectileSpeed,projectileMaxDistance, projectileStartX,projectileStartY);
         createdProjectile.setGuid(guid);
-        createdProjectile.setTeam((byte) 2);
+        createdProjectile.setTeam((byte) 1);
         entityManager.addNewObject(guid, createdProjectile);
         //Launch event to server
         eventBus.post(new SpawnProjectileEvent(createdProjectile));

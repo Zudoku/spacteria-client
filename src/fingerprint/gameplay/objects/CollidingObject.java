@@ -1,6 +1,7 @@
 package fingerprint.gameplay.objects;
 
 import fingerprint.gameplay.objects.player.CharacterContainer;
+import fingerprint.rendering.manager.RenderingManager;
 import java.math.BigDecimal;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -43,6 +44,8 @@ public class CollidingObject extends GameObject{
             displaySpeedY = getDeltaY();
             return;
         }
+        
+        final double MOVE_CYCLE_AMOUNT = 0.3d;
 
         displaySpeedX = getDeltaX();
         displaySpeedY = getDeltaY();
@@ -51,11 +54,11 @@ public class CollidingObject extends GameObject{
         //boolean blockedYMovement = false;
         
         double maxDelta = Math.max(Math.abs(getDeltaX()), Math.abs(getDeltaY()));
-        //Move in 0.1 chunks
-        for(double currentDelta = 0.0d ; currentDelta < maxDelta ; currentDelta += 0.1d){
+        //Move in small chunks
+        for(double currentDelta = 0.00001d ; currentDelta < maxDelta ; currentDelta += MOVE_CYCLE_AMOUNT){
             //Move in X 
             if(currentDelta < Math.abs(getDeltaX())){
-                double[] destination = moveDestinationX(delta);
+                double[] destination = moveDestinationX(delta, Math.abs(getDeltaX()), currentDelta);
                 if(collideToTerrain){
                     Shape clonedShape = new Polygon(collideShape.getPoints());
                     
@@ -78,7 +81,7 @@ public class CollidingObject extends GameObject{
             
             //Move in Y 
             if(currentDelta < Math.abs(getDeltaY())){
-                double[] destination = moveDestinationY(delta);
+                double[] destination = moveDestinationY(delta, Math.abs(getDeltaY()), currentDelta);
                 if(collideToTerrain){
                     Shape clonedShape = new Polygon(collideShape.getPoints());
                     clonedShape.setLocation((float)Math.floor(destination[0]),(float) Math.floor(destination[1]));
@@ -95,43 +98,8 @@ public class CollidingObject extends GameObject{
                 }
             }
         }
-        
-        float speed = 5.5f;
-      //Reduce speed X 
-        if(getDeltaX() < 0){
-            if(-getDeltaX() > speed){
-                setDeltaX(getDeltaX()  + speed);
-            }else{
-                setDeltaX(0);
-            }
-        }
-        
-        if(getDeltaX() > 0){
-            if(getDeltaX() > speed){
-                setDeltaX(getDeltaX()  - speed);
-            }else{
-                setDeltaX(0);
-            }
-        }
-        //Reduce speed Y 
-        if(getDeltaY() < 0){
-            if(-getDeltaY() > speed){
-                setDeltaY(getDeltaY()  + speed);
-            }else{
-                setDeltaY(0);
-            }
-        }
-        
-        if(getDeltaY() > 0){
-            if(getDeltaY() > speed){
-                setDeltaY(getDeltaY()  - speed);
-            }else{
-                setDeltaY(0);
-            }
-        }
-        
-        
-        
+        setDeltaX(0);
+        setDeltaY(0);
     }
     protected void onCollision(CollidingObject collidedWith){
         
@@ -155,5 +123,10 @@ public class CollidingObject extends GameObject{
     
     public void setCollideToTerrain(boolean collideToTerrain) {
         this.collideToTerrain = collideToTerrain;
+    }
+    @Override
+    protected double[] getDrawingCoordinates(){
+        
+        return new double[]{getX() - RenderingManager.getScreenStartX(), getY()  - RenderingManager.getScreenStartY() };
     }
 }

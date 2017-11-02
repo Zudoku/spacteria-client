@@ -104,10 +104,6 @@ public class GameWorldContainer {
         return playerContainer.getCurrentPlayer().getLevel();
     }
     
-    public CharacterClass getMyClass(){
-        return playerContainer.getCurrentPlayer().getCharacterClass();
-    }
-    
     public int getMyExp(){
         return playerContainer.getCurrentPlayer().getExperience();
     }

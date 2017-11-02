@@ -9,7 +9,9 @@ import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
+import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.inout.FileUtil;
+import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.sound.PlaySoundEvent;
 import fingerprint.sound.SoundEffect;
 import java.util.logging.Level;
@@ -36,8 +38,12 @@ public class Projectile extends CollidingObject{
     private int damage;
     private String guid;
     private boolean destroyed = false;
+    private int width;
+    private int height;
     
     private byte team;
+    
+    private transient Image imageRef = null;
 
     public Projectile(double angle, double speed, double maxTravelDistance, double initX, double initY) {
         super(initX, initY, new Rectangle((float)initX, (float)initX, 2, 2));
@@ -54,6 +60,10 @@ public class Projectile extends CollidingObject{
         super.setCollideToTerrain(true);
         this.currentTravelDistance = 0;
         this.damage = 0;
+    }
+    
+    void init() {
+        this.collideShape = new Rectangle((float)getX(), (float)getY(), width, height);
     }
     
     public void setFriendly(boolean friendly) {
@@ -78,13 +88,18 @@ public class Projectile extends CollidingObject{
     public void draw(Graphics graphics) {
         try {
             double[] drawingCoords = getDrawingCoordinates();
-            /*
-            graphics.setColor(Color.black);
-            graphics.fillRect((float)drawingCoords[0],(float)drawingCoords[1],(float)collideShape.getWidth(),(float)collideShape.getHeight());
-            */
-            Image projectileImage = new Image(FileUtil.PROJECTILES_PATH + "/" + image.getFilename());
-            projectileImage.setRotation(360 - (int)getAngle());
-            projectileImage.draw((float)drawingCoords[0], (float)drawingCoords[1]);
+            
+            if(imageRef == null) {
+                imageRef = new Image(FileUtil.PROJECTILES_PATH + "/" + image.getFilename());
+                imageRef.setCenterOfRotation(imageRef.getWidth() / 2, imageRef.getHeight() / 2);
+            }
+            
+            float offsetX = (imageRef.getWidth() - width) / 2;
+            float offsetY = (imageRef.getHeight() - height) / 2;
+            
+            imageRef.setRotation(360 - (int)getAngle());
+            imageRef.draw((float)drawingCoords[0] - offsetX, (float)drawingCoords[1] - offsetY);
+            graphics.drawRect((float)drawingCoords[0], (float)drawingCoords[1], width, height);
             
         } catch (SlickException ex) {
            Logger.getLogger(Projectile.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,7 +130,13 @@ public class Projectile extends CollidingObject{
             eventBus.post(new PlaySoundEvent(SoundEffect.valueOf(enemy.getHitsound())));
             destroyed = true;
             eventBus.post(new DeleteEntityEvent(guid));
-        } 
+        }
+        
+        if(collidedWith instanceof GCharacter && this.team == 2){
+            eventBus.post(new PlaySoundEvent(SoundEffect.CHARHIT));
+            destroyed = true;
+            eventBus.post(new DeleteEntityEvent(guid));
+        }
     }
 
     @Override
@@ -125,8 +146,7 @@ public class Projectile extends CollidingObject{
             eventBus.post(new DeleteEntityEvent(guid));
         }
     }
-    
-    
+   
     
 
     public double getAngle() {
@@ -192,6 +212,7 @@ public class Projectile extends CollidingObject{
     public void setTeam(byte team) {
         this.team = team;
     }
+
     
     
 }

@@ -2,36 +2,23 @@ package fingerprint.inout;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import fingerprint.core.GameLauncher;
-import fingerprint.gameplay.map.gameworld.CharacterSaveFile;
-import fingerprint.gameplay.map.gameworld.CharacterSaveFileDeserializer;
-import fingerprint.gameplay.map.gameworld.CharacterMetaData;
-import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.networking.events.LoadNewMapEvent;
-import fingerprint.states.menu.enums.CharacterClass;
 
 @Singleton
 public class GameFileHandler {
     private static final Logger logger = Logger.getLogger(GameFileHandler.class.getName());
-    private CharacterSaveFileDeserializer worldDeSerializer;
     private EventBus eventBus;
     private boolean readableFiles = true;
 
     @Inject
     public GameFileHandler(EventBus eventBus) {
-        worldDeSerializer = new CharacterSaveFileDeserializer();
         this.eventBus = eventBus;
     }
 

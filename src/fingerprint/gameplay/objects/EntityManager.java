@@ -6,6 +6,7 @@ import com.google.common.eventbus.Subscribe;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Timer;
 
 import com.google.inject.Singleton;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
@@ -21,6 +22,8 @@ import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.rendering.gui.event.DisplayConsoleMessageEvent;
 import fingerprint.sound.PlaySoundEvent;
 import fingerprint.sound.SoundEffect;
+import java.awt.event.ActionListener;
+import javafx.event.ActionEvent;
 import org.newdawn.slick.Color;
 
 @Singleton
@@ -127,7 +130,12 @@ public class EntityManager {
     }
     @Subscribe
     public void listenNewProjectileSpawnedEvent(NewProjectileSpawnedEvent event){
-        addNewObject(event.getProjectile().getGuid(), event.getProjectile());
+        addNewObject(event.getProjectile().getGuid(), event.getProjectile());/*
+        Timer timer = new Timer(25, (java.awt.event.ActionEvent ae) -> {
+            addNewObject(event.getProjectile().getGuid(), event.getProjectile());
+        });
+        timer.setRepeats(false); // Only execute once
+        timer.start(); // Go go go! */
     }
     
     @Subscribe

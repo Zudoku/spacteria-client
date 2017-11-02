@@ -17,6 +17,7 @@ public class NewProjectileSpawnedEvent {
     }
 
     public Projectile getProjectile() {
+        projectile.init();
         return projectile;
     }
     

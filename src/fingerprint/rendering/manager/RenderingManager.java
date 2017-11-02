@@ -4,7 +4,6 @@ import fingerprint.rendering.gui.event.SetScreenStartCoordinatesEvent;
 import fingerprint.rendering.util.RenderingResolutions;
 import fingerprint.rendering.util.GamePlayRenderingInformation;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.logging.Logger;
 
 import fingerprint.gameplay.items.*;
@@ -12,10 +11,7 @@ import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Shape;
-import org.newdawn.slick.geom.Transform;
 import org.newdawn.slick.gui.TextField;
 
 import com.google.common.eventbus.EventBus;
@@ -27,7 +23,6 @@ import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.GCharacter;
-import fingerprint.inout.FileUtil;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.MapDescription;
@@ -40,7 +35,6 @@ import fingerprint.states.menu.enums.MainMenuSelection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.GUIContext;
 
@@ -230,7 +224,6 @@ public class RenderingManager {
         UIRenderingUtil.drawTextEffect(gri.getMyName(), Color.black, Color.yellow, unScaledGamePlayWidth + 10, 5 * TS +10, 1, graphics, UIRenderingUtil.largeVerdanaFont);
         graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.black);
-        graphics.drawString("(" + gri.getCharClass().name() + ")", unScaledGamePlayWidth + 10, 5 * TS +40);
 
         //EXP
 
@@ -387,7 +380,7 @@ public class RenderingManager {
             graphics.drawString(rarity.getName(), mx + 6, my + 28);
 
             graphics.setColor(Color.white);
-            graphics.drawString(ItemType.values()[i.getItemtypeid() - 1].getText(), mx + 6, my + 42);
+            graphics.drawString(ItemType.values()[i.getItemtypeid()].getText(), mx + 6, my + 42);
 
             Color usableColor = i.getLevelreq() >= gri.getLevel() ? Color.white : Color.red;
             graphics.setColor(usableColor);

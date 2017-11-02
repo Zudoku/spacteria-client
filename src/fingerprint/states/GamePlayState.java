@@ -91,7 +91,6 @@ public class GamePlayState extends BasicGameState{
         gri.setExperience(worldContainer.getMyExp());
         gri.setMyStats(worldContainer.getMyStats());
         gri.setMapName(worldContainer.getMapName());
-        gri.setCharClass(worldContainer.getMyClass());
         gri.setLootToRender(worldContainer.getLootToRender());
         gri.setEquipmentToRender(worldContainer.getCharacterEquipment());
         gri.setInventoryToRender(worldContainer.getInventoryToRender());
