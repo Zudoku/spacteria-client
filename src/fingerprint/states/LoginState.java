@@ -18,6 +18,7 @@ import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
+import fingerprint.states.menu.enums.CharacterClass;
 import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -228,6 +229,13 @@ public class LoginState  extends BasicGameState {
     private void cleanUpSocket() {
         socket.off(NetworkEvents.SERVER_LOGIN_FAIL);
         socket.off(NetworkEvents.SERVER_LOGIN_SUCCESS);
+    }
+    
+    @Override
+    public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+        super.leave(container, game);
+        passwordTextField.setAcceptingInput(false);
+        usernameTextField.setAcceptingInput(false);
     }
 
 }

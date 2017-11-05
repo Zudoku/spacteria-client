@@ -45,6 +45,9 @@ public class NetworkEvents {
     public static final String SERVER_UPDATE_CHARACTER_STATUS = "updatecharacterstatus";
     public static final String SERVER_UPDATE_LOOTBAG_STATUS = "updatelootbagstatus";
     public static final String SERVER_LOAD_NEW_MAP = "loadnewmap";
+    public static final String SERVER_BAD_CHARACTERNAME = "badcharactername";
+    public static final String SERVER_CHARACTER_CREATED = "charactercreated";
+    
     
     //public static final String SERVER_UPDATE_NPC_POSITION= "updatenpcposition";
 }

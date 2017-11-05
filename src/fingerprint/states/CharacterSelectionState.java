@@ -47,7 +47,6 @@ public class CharacterSelectionState extends BasicGameState {
     @Inject private Gson gson;
     private CharacterSelectionController controller;
     
-    private File[] savedChars;
     private Socket socket;
     
     public CharacterSelectionState() {
@@ -59,6 +58,7 @@ public class CharacterSelectionState extends BasicGameState {
             throws SlickException {
         CharacterInfoContainer createNewWorld = new CharacterInfoContainer();
         createNewWorld.setIsCreateNewCharDummy(true);
+        availableChars.clear();
         availableChars.add(createNewWorld);
         currentSelectionChar = createNewWorld;
         
@@ -98,7 +98,7 @@ public class CharacterSelectionState extends BasicGameState {
     }
     public void selectCharacter(){
         if(controller.getSelection() == 0){
-            //TODO: FIX THIS 
+            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.CHARACTER_CREATION_ID));
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.CHARACTER_CREATION_ID));
         }else{
             JSONObject payload = new JSONObject();
@@ -113,11 +113,16 @@ public class CharacterSelectionState extends BasicGameState {
     }
 
     @Subscribe
-    public void listenInitGameInfoEvent(GiveSocketInfoEvent event){
+    public void listenGiveSocketInfoEvent(GiveSocketInfoEvent event){
         if(event.getState() != getID()) {
             return;
         }
 
+        CharacterInfoContainer createNewWorld = new CharacterInfoContainer();
+        createNewWorld.setIsCreateNewCharDummy(true);
+        availableChars.clear();
+        availableChars.add(createNewWorld);
+        
         this.socket = event.getSocket();
         this.initializeSocketToCharacterSelectionMode();
         this.requestForCharacters();
@@ -129,6 +134,7 @@ public class CharacterSelectionState extends BasicGameState {
             try {
                 logger.log(Level.SEVERE, args[0].toString());
                 JSONArray charsPayload =((JSONObject)args[0]).getJSONArray("chars");
+                List<CharacterInfoContainer> charactersToAdd = new ArrayList<>();
                 for(int y = 0; y < charsPayload.length(); y++){
                     try {
                         JSONObject charToAdd = charsPayload.getJSONObject(y);
@@ -136,7 +142,7 @@ public class CharacterSelectionState extends BasicGameState {
                             GCharacter character = gson.fromJson(charToAdd.toString(), GCharacter.class);
                             CharacterInfoContainer cic = new CharacterInfoContainer();
                             cic.setPlayerData(character);
-                            availableChars.add(cic);
+                            charactersToAdd.add(cic);
                         } catch(Exception e){
                             Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, e);
                         }
@@ -146,6 +152,11 @@ public class CharacterSelectionState extends BasicGameState {
                         Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+                CharacterInfoContainer createNewWorld = new CharacterInfoContainer();
+                createNewWorld.setIsCreateNewCharDummy(true);
+                availableChars.clear();
+                availableChars.add(createNewWorld);
+                availableChars.addAll(charactersToAdd);
                 controller.setFilesAmount(availableChars.size() - 1);
                 controller.right();
                 currentSelectionChar = availableChars.get(controller.getSelection());
@@ -182,6 +193,7 @@ public class CharacterSelectionState extends BasicGameState {
     
     private void cleanUpSocket() {
         socket.off(NetworkEvents.SERVER_CHARACTERLIST);
+        socket.off(NetworkEvents.SERVER_CHARACTERLOAD_SUCCESS);
     }
 
 }

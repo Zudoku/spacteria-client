@@ -105,9 +105,9 @@ public class RenderingManager {
         mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password, controller, connectionInformation);
     }
     
-    public void drawWorldCreation(Graphics graphics,GameContainer container,CharacterClass difficulty,int phase,TextField filename,boolean drawBadFileName){
+    public void drawCharacterCreation(Graphics graphics,GameContainer container,int phase,TextField characternameTextField, String naggingText){
         initDraw(graphics);
-        mainMenuRenderer.drawCharacterCreation(graphics,container,difficulty,phase,filename,drawBadFileName);
+        mainMenuRenderer.drawCharacterCreation(graphics,container,phase,characternameTextField, naggingText);
     }
     public void drawMainMenu(Graphics graphics,MainMenuSelection selection){
         initDraw(graphics);

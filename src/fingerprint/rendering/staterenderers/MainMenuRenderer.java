@@ -164,55 +164,17 @@ public class MainMenuRenderer {
         
     }
     
-    public void drawCharacterCreation(Graphics graphics,GameContainer container,CharacterClass selectedCClass,int phase,TextField nameField,boolean drawBadFileName){
+    public void drawCharacterCreation(Graphics graphics,GameContainer container,int phase,TextField nameField, String naggingText){
         graphics.setColor(Color.white);
         String titleText = "Creating a new Character";
         graphics.setFont(UIRenderingUtil.giganticVerdanaFont);
         graphics.drawString(titleText, UIRenderingUtil.calculateTextAllignCenterX(graphics, titleText), 100);
         
-        
         graphics.setFont(UIRenderingUtil.mediumVerdanaFont);
-        if(phase == 1) {
-            String chooseDifficultyText = "Select Class:";
-            graphics.drawString(chooseDifficultyText, 200, 300);
-        }
+        graphics.setColor(Color.lightGray);
+        nameField.render(container, graphics);
         
-        CharacterClass[] difficulties = CharacterClass.values();
-        graphics.setColor(Color.orange);
-        int counter = 0;
-        int offsetX = 0; 
-        for(CharacterClass cclass : difficulties){
-            if(cclass == selectedCClass){
-                graphics.setColor(Color.white);
-                graphics.drawString(cclass.toString(), 200+offsetX, 330);
-            }else{
-                if(phase == 1){
-                    graphics.setColor(Color.orange);
-                    graphics.drawString(cclass.toString(), 200+offsetX, 330);
-                }
-                
-            }
-            
-            if(phase == 1){
-                if(cclass == selectedCClass){
-                    graphics.setColor(Color.cyan);
-                    int selX= 200+offsetX -5;
-                    int selY = 326;
-                    int width = graphics.getFont().getWidth(cclass.toString())+10;
-                    int height = 30;
-                    graphics.drawRect(selX,selY, width, height);
-                }
-            }
-            offsetX += graphics.getFont().getWidth(cclass.toString()) + 10;
-            counter++;
-        }
-        
-        if(phase >= 2) {
-            graphics.setColor(Color.lightGray);
-            nameField.render(container, graphics);
-        }
-        
-        if(phase == 2){
+        if(phase == 1){
             graphics.setColor(Color.white);
             String worldName = "Give the Character a name:";
             graphics.drawString(worldName, 200, 390);
@@ -224,13 +186,13 @@ public class MainMenuRenderer {
             int width = 300+10;
             graphics.drawRect(selX, selY, width, height);
         }
-        if(drawBadFileName){
+        if(!naggingText.isEmpty()){
             graphics.setColor(Color.pink);
-            graphics.drawString("Bad name!", 530, 430);
+            graphics.drawString(naggingText, 530, 430);
         }
         graphics.setColor(Color.white);
         
-        if(phase == 3){
+        if(phase == 2){
             String generateString = "Generate Character";
             graphics.setFont(UIRenderingUtil.largeVerdanaFont);
             graphics.drawString(generateString, 200, 490);
