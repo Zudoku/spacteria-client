@@ -10,6 +10,9 @@ public class CharacterSelectionController {
     }
     public void setFilesAmount(int filesAmount) {
         this.filesAmount = filesAmount;
+        if(selection >= filesAmount){
+            selection = filesAmount -1;
+        }
     }
 
     public boolean getMoreLeft() {

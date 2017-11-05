@@ -113,9 +113,9 @@ public class RenderingManager {
         initDraw(graphics);
         mainMenuRenderer.drawMainMenu(graphics, selection);
     }
-    public void drawWorldSelection(Graphics graphics,CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars){
+    public void drawCharacterSelection(Graphics graphics,CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars, int deleteCounter){
         initDraw(graphics);
-        mainMenuRenderer.drawCharSelection(graphics, gwic, availableChars);
+        mainMenuRenderer.drawCharSelection(graphics, gwic, availableChars, deleteCounter);
     }
     public void drawGamePlay(Graphics graphics, GUIContext context, boolean drawDebugInfo, GamePlayRenderingInformation gri){
         initDraw(graphics);

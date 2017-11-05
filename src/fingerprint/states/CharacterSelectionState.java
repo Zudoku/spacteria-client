@@ -33,6 +33,7 @@ import io.socket.client.Socket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.newdawn.slick.Color;
 
 public class CharacterSelectionState extends BasicGameState {
     private static final Logger logger = Logger.getLogger(CharacterSelectionState.class.getName());
@@ -48,6 +49,8 @@ public class CharacterSelectionState extends BasicGameState {
     private CharacterSelectionController controller;
     
     private Socket socket;
+    
+    private int deleteCounter = 0;
     
     public CharacterSelectionState() {
         controller = new CharacterSelectionController();
@@ -69,8 +72,7 @@ public class CharacterSelectionState extends BasicGameState {
     public void render(GameContainer arg0, StateBasedGame caller, Graphics graphics)
             throws SlickException {
         
-        renderingManager.drawWorldSelection(graphics,currentSelectionChar, availableChars);
-
+        renderingManager.drawCharacterSelection(graphics,currentSelectionChar, availableChars, deleteCounter);
     }
 
     @Override
@@ -88,6 +90,23 @@ public class CharacterSelectionState extends BasicGameState {
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
             selectCharacter();
+        }
+        if(inputManager.isKeyBindDown(KeyBindAction.DEBUG_TOGGLE,false) 
+                && inputManager.isKeyBindDown(KeyBindAction.SKIP,false 
+                && !currentSelectionChar.isIsCreateNewCharDummy())){
+            deleteCounter += delta;
+            if(deleteCounter > 2500){
+                try {
+                    JSONObject payload = new JSONObject();
+                    payload.put("characterID", currentSelectionChar.getPlayerData().getUniqueid());
+                    socket.emit(NetworkEvents.CLIENT_DELETE_CHARACTER, payload);
+                    deleteCounter = 0;
+                } catch (JSONException ex) {
+                    Logger.getLogger(CharacterSelectionState.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } else {
+            deleteCounter = 0;
         }
         if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));

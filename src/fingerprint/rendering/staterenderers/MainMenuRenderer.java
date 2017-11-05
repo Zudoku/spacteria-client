@@ -205,7 +205,7 @@ public class MainMenuRenderer {
         }
     }
 
-    public void drawCharSelection(Graphics graphics, CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars) {
+    public void drawCharSelection(Graphics graphics, CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars, int deleteCounter) {
         
         UIRenderingUtil.drawTextEffect("Characters:", Color.lightGray, Color.black, 14, 60, 2, graphics, UIRenderingUtil.largeVerdanaFont);
         
@@ -219,10 +219,13 @@ public class MainMenuRenderer {
         int charIndex = 0;
         for(CharacterInfoContainer infoContainer : availableChars) {
             if(infoContainer == gwic) {
+                graphics.setColor(Color.darkGray);
+                graphics.fillRect(10f, 100f + (60f * charIndex), 200, 50);
                 graphics.setColor(Color.cyan);
             } else {
                 graphics.setColor(Color.white);
             }
+            
             graphics.drawRect(10f, 100f + (60f * charIndex), 200, 50);
             graphics.setColor(Color.white);
             graphics.setFont(UIRenderingUtil.smallVerdanaFont);
@@ -245,13 +248,24 @@ public class MainMenuRenderer {
         if(!gwic.isIsCreateNewCharDummy()){
             graphics.drawString(gwic.getPlayerData().getName(), 650, 100);
             graphics.setFont(UIRenderingUtil.smallVerdanaFont);
+            graphics.setColor(Color.darkGray);
+            graphics.fillRect(440, RenderingManager.unScaledScreenHeight / 2 + 100, 600, 200);
+            if(deleteCounter > 0) {
+                graphics.setColor(Color.red);
+                graphics.fillRect(440, RenderingManager.unScaledScreenHeight / 2 + 100, (int)(((double)deleteCounter / 2500d) * 600d), 200);
+            }
+            graphics.setColor(Color.white);
             graphics.drawRect(440, RenderingManager.unScaledScreenHeight / 2 + 100, 600, 200);
             
             UIRenderingUtil.drawTextEffect(gwic.getPlayerData().getName(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 110, 2, graphics, UIRenderingUtil.largeVerdanaFont);
             UIRenderingUtil.drawTextEffect("" + gwic.getPlayerData().getLevel(), Color.darkGray, Color.yellow, 450, RenderingManager.unScaledScreenHeight / 2 + 140, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
             UIRenderingUtil.drawTextEffect("Created: " + gwic.getPlayerData().getCreated(), Color.lightGray, Color.black, 450, RenderingManager.unScaledScreenHeight / 2 + 185, 1, graphics, UIRenderingUtil.mediumVerdanaFont);
+            graphics.setColor(Color.black);
+            graphics.setFont(UIRenderingUtil.mediumVerdanaFont);
+            graphics.drawString("DELETE character: hold TAB + F2", 450, RenderingManager.unScaledScreenHeight / 2 + 220);
         } else {
             graphics.drawString("Create new Character",  560, 100);
         }
     }
 }
+    
