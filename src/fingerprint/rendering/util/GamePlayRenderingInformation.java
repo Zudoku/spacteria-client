@@ -8,9 +8,10 @@ package fingerprint.rendering.util;
 import fingerprint.gameplay.items.Equipments;
 import fingerprint.gameplay.items.GameItem;
 import fingerprint.gameplay.items.Inventory;
-import fingerprint.gameplay.objects.Portal;
-import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
-import fingerprint.gameplay.objects.lootbag.LootBag;
+import fingerprint.gameplay.objects.interact.Portal;
+import fingerprint.gameplay.objects.interact.GameItemWrapper;
+import fingerprint.gameplay.objects.interact.Interactable;
+import fingerprint.gameplay.objects.interact.LootBag;
 import fingerprint.gameplay.objects.player.StatContainer;
 import fingerprint.states.menu.enums.CharacterClass;
 import java.util.List;
@@ -29,7 +30,7 @@ public class GamePlayRenderingInformation {
     private LootBag lootToRender;
     private Equipments equipmentToRender;
     private Inventory inventoryToRender;
-    private Portal portalToRender;
+    private Interactable collidedInteractable;
     private GameItem hoverGameItem;
     
     public GamePlayRenderingInformation() {
@@ -106,13 +107,12 @@ public class GamePlayRenderingInformation {
         this.inventoryToRender = inventoryToRender;
     }
 
-
-    public Portal getPortalToRender() {
-        return portalToRender;
+    public void setCollidedInteractable(Interactable collidedInteractable) {
+        this.collidedInteractable = collidedInteractable;
     }
 
-    public void setPortalToRender(Portal portalToRender) {
-        this.portalToRender = portalToRender;
+    public Interactable getCollidedInteractable() {
+        return collidedInteractable;
     }
 
     public GameItem getHoverGameItem() {

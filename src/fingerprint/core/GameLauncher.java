@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import fingerprint.inout.FileUtil;
 
 import fingerprint.inout.GameSettings;
 import fingerprint.inout.GameSettingsProvider;
@@ -34,6 +35,7 @@ import fingerprint.states.LoginState;
 import fingerprint.states.ServerListState;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
+import org.newdawn.slick.Sound;
 
 public class GameLauncher extends StateBasedGame {
     private static final Logger logger = Logger.getLogger(GameLauncher.class.getName());
@@ -48,6 +50,8 @@ public class GameLauncher extends StateBasedGame {
     private List<BasicGameState> gameStates = new ArrayList<>();
     private static GameModule gamemodule;
     private static AppGameContainer application;
+    
+    public static Sound MAINMENU_MUSIC;
     
     public GameLauncher(String title) {
         super(title);
@@ -68,6 +72,8 @@ public class GameLauncher extends StateBasedGame {
         try {
             AppGameContainer application = new AppGameContainer(new GameLauncher(PROGRAM_NAME));
             applyGameSettings(application, gameSettings);
+            MAINMENU_MUSIC = new Sound(FileUtil.MUSIC_PATH + "/" + "theoldarcade.ogg");
+            MAINMENU_MUSIC.loop(1, gameSettings.soundVolume);
             application.start();  //Start the application
         } catch (SlickException e) {
             e.printStackTrace();

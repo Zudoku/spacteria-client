@@ -7,7 +7,7 @@ import java.awt.Dimension;
 import java.util.logging.Logger;
 
 import fingerprint.gameplay.items.*;
-import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
+import fingerprint.gameplay.objects.interact.GameItemWrapper;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -217,7 +217,7 @@ public class RenderingManager {
         graphics.drawRect(unScaledGamePlayWidth, 4 * TS, 4 * TS -1, 20);
         graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.black);
-        String interactText = (gri.getPortalToRender() == null) ? "" : (" Space to enter: " + gri.getPortalToRender().getTo());
+        String interactText = (gri.getCollidedInteractable() == null) ? "" : (gri.getCollidedInteractable().getInteractionText());
         graphics.drawString(interactText, unScaledGamePlayWidth + MINI_PADDING, 4 * TS + MINI_PADDING);
         //Draw character information
 

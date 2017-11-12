@@ -5,10 +5,6 @@
  */
 package fingerprint.mainmenus.serverlist;
 
-import fingerprint.gameplay.objects.Enemy;
-import fingerprint.gameplay.objects.GameObject;
-import fingerprint.gameplay.objects.projectiles.Projectile;
-
 /**
  *
  * @author arska

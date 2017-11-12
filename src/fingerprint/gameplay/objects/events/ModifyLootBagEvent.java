@@ -6,8 +6,8 @@
 
 package fingerprint.gameplay.objects.events;
 
-import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
-import fingerprint.gameplay.objects.lootbag.LootBag;
+import fingerprint.gameplay.objects.interact.GameItemWrapper;
+import fingerprint.gameplay.objects.interact.LootBag;
 import java.util.List;
 
 /**

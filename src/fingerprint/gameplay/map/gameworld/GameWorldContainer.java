@@ -1,5 +1,7 @@
 package fingerprint.gameplay.map.gameworld;
 
+import fingerprint.gameplay.objects.interact.Portal;
+import fingerprint.gameplay.objects.interact.NPC;
 import java.util.logging.Logger;
 
 
@@ -13,13 +15,14 @@ import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.objects.*;
 import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
 import fingerprint.gameplay.objects.events.gui.EnterPortalEvent;
-import fingerprint.gameplay.objects.lootbag.LootBag;
+import fingerprint.gameplay.objects.interact.Interactable;
+import fingerprint.gameplay.objects.interact.InteractableManager;
+import fingerprint.gameplay.objects.interact.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.gameplay.objects.player.CharacterContainer;
 import fingerprint.gameplay.objects.player.StatContainer;
 import fingerprint.mainmenus.serverlist.RoomDescription;
-import fingerprint.states.menu.enums.CharacterClass;
 
 
 public class GameWorldContainer {
@@ -30,16 +33,12 @@ public class GameWorldContainer {
     private RoomDescription world;
     @Inject private CharacterContainer playerContainer;
     @Inject private EventBus eventBus;
-
-    private LootBag lootToRender;
-    private Portal portalToRender;
+    private InteractableManager interactableManager;
     
-    private boolean thereWasLoot = false;
-    private boolean thereWasPortal = false;
 
     public GameWorldContainer() {
         playerContainer = new CharacterContainer();
-
+        interactableManager = new InteractableManager();
         //eventBus.register(this);
         
     }
@@ -54,10 +53,13 @@ public class GameWorldContainer {
 
     private void interactUpdate(InputManager inputManager) {
         if(inputManager.isKeyBindPressed(KeyBindAction.D, true )) {
-            if(portalToRender != null){
-                eventBus.post(new EnterPortalEvent(portalToRender.getHash(), portalToRender.getTo()));
+            Interactable currentInteractable = interactableManager.getCurrentInteractable();
+            if(currentInteractable instanceof Portal){
+                Portal portalInteractable = (Portal) currentInteractable;
+                eventBus.post(new EnterPortalEvent(portalInteractable.getHash(), portalInteractable.getTo()));
             }
         }
+        
     }
 
     public void setMyCharacter(GCharacter player, String id) {
@@ -88,6 +90,11 @@ public class GameWorldContainer {
                 lootBagObj.flushShape();
                 entityManager.addNewObject(ggaow.getHash(), lootBagObj);
             }
+            if(actualGGAO instanceof NPC) {
+                NPC npcObj = (NPC) actualGGAO;
+                npcObj.flushShape();
+                entityManager.addNewObject(ggaow.getHash(), npcObj);
+            }
         }
 
         
@@ -98,6 +105,10 @@ public class GameWorldContainer {
     
     public String getMyName(){
         return playerContainer.getCurrentPlayer().getName();
+    }
+    
+    public Interactable getInteractable(){
+        return interactableManager.getCurrentInteractable();
     }
     
     public int getMyLevel(){
@@ -120,29 +131,12 @@ public class GameWorldContainer {
         
     }
 
-
-    public LootBag getLootToRender() {
-        return lootToRender;
-    }
-
-    public void setLootToRender(LootBag lootToRender) {
-        this.lootToRender = lootToRender;
-    }
-
     public double getCameraAngle(){
         return playerContainer.getAngle();
     }
 
     public Equipments getCharacterEquipment() {
         return playerContainer.getCurrentPlayer().getEquipment();
-    }
-
-    public boolean isThereWasLoot() {
-        return thereWasLoot;
-    }
-
-    public void setThereWasLoot(boolean thereWasLoot) {
-        this.thereWasLoot = thereWasLoot;
     }
     
     public void characterStatusUpdate(ModifyCharacterEvent event) {
@@ -152,19 +146,18 @@ public class GameWorldContainer {
         return playerContainer.getCurrentPlayer().getInventory();
     }
 
-    public Portal getPortalToRender() {
-        return portalToRender;
+    public LootBag getLootToRender() {
+        if(interactableManager.getPersistentInteractable() != null && interactableManager.getPersistentInteractable() instanceof LootBag){
+            return (LootBag) interactableManager.getPersistentInteractable();
+        }
+        return null;
     }
 
-    public void setPortalToRender(Portal portalToRender) {
-        this.portalToRender = portalToRender;
+    public void collidedWithInteractable(Interactable i) {
+        interactableManager.collideWithInteractable(i);
     }
 
-    public void setThereWasPortal(boolean thereWasPortal) {
-        this.thereWasPortal = thereWasPortal;
-    }
-
-    public boolean isThereWasPortal() {
-        return thereWasPortal;
+    public void cycleIM() {
+        interactableManager.cycle();
     }
 }

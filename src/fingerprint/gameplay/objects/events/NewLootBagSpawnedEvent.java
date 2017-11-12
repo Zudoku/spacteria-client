@@ -1,6 +1,6 @@
 package fingerprint.gameplay.objects.events;
 
-import fingerprint.gameplay.objects.lootbag.LootBag;
+import fingerprint.gameplay.objects.interact.LootBag;
 
 public class NewLootBagSpawnedEvent {
     private String guid;

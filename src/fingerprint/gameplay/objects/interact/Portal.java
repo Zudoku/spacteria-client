@@ -1,14 +1,12 @@
-package fingerprint.gameplay.objects;
+package fingerprint.gameplay.objects.interact;
 
-import fingerprint.gameplay.objects.events.RenderEnterPortalEvent;
-import fingerprint.gameplay.objects.events.RenderLootBagEvent;
-import fingerprint.gameplay.objects.player.CharacterContainer;
+import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.player.GCharacter;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.*;
 
-public class Portal extends CollidingObject {
+public class Portal extends CollidingObject implements Interactable{
 
     private int to;
     private String hash;
@@ -35,7 +33,7 @@ public class Portal extends CollidingObject {
     @Override
     protected void onCollision(CollidingObject collidedWith) {
         if(collidedWith instanceof GCharacter) {
-            eventBus.post(new RenderEnterPortalEvent(this));
+            eventBus.post(new InteractableCollisionEvent(this));
         }
     }
 
@@ -45,5 +43,15 @@ public class Portal extends CollidingObject {
 
     public int getTo() {
         return to;
+    }
+
+    @Override
+    public String getInteractionText() {
+        return "Enter " + to;
+    }
+
+    @Override
+    public int getInteractionLevel() {
+        return 3;
     }
 }

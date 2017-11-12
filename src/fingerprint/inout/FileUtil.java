@@ -11,6 +11,7 @@ public class FileUtil {
     public static final String TILEDMAPS_PATH = RESOURCES_FOLDER + "/maps";
     public static final String PROJECTILES_PATH = RESOURCES_FOLDER + "/Projectiles";
     public static final String SOUNDS_PATH = RESOURCES_FOLDER + "/Sounds";
+    public static final String MUSIC_PATH = RESOURCES_FOLDER + "/Music";
     
     
     

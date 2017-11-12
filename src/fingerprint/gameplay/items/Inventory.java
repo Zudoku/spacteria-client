@@ -1,6 +1,6 @@
 package fingerprint.gameplay.items;
 
-import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
+import fingerprint.gameplay.objects.interact.GameItemWrapper;
 
 import java.io.Serializable;
 import java.util.HashMap;

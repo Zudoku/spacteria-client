@@ -18,10 +18,13 @@ import com.google.gson.Gson;
 import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
+import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.items.GameItem;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
-import fingerprint.gameplay.objects.lootbag.GameItemWrapper;
-import fingerprint.gameplay.objects.lootbag.LootBag;
+import fingerprint.gameplay.objects.interact.GameItemWrapper;
+import fingerprint.gameplay.objects.interact.InteractableCollisionEvent;
+import fingerprint.gameplay.objects.interact.InteractableManager;
+import fingerprint.gameplay.objects.interact.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
@@ -94,24 +97,11 @@ public class GamePlayState extends BasicGameState{
         gri.setLootToRender(worldContainer.getLootToRender());
         gri.setEquipmentToRender(worldContainer.getCharacterEquipment());
         gri.setInventoryToRender(worldContainer.getInventoryToRender());
-        gri.setPortalToRender(worldContainer.getPortalToRender());
+        gri.setCollidedInteractable(worldContainer.getInteractable());
         gri.setHoverGameItem(itemToRenderHover);
         //worldContainer.
         renderingManager.drawGamePlay(graphics, gc, debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
-        
-        if(!worldContainer.isThereWasLoot()) {
-            worldContainer.setLootToRender(null);
-        } else {
-            worldContainer.setThereWasLoot(false);
-        }
-
-        if(!worldContainer.isThereWasPortal()) {
-            worldContainer.setPortalToRender(null);
-        } else {
-            worldContainer.setThereWasPortal(false);
-        }
-        
         itemToRenderHover = null;
     }
 
@@ -121,10 +111,10 @@ public class GamePlayState extends BasicGameState{
         if(!initialized){
             return;
         }
+        worldContainer.cycleIM();
         inputManager.setInput(gc.getInput());
         inputManager.update();
         worldContainer.updateWorld(inputManager,delta);
-        
         
     }
     
@@ -148,7 +138,7 @@ public class GamePlayState extends BasicGameState{
         event.getMyCharacter().init();
         worldContainer.setMyCharacter(event.getMyCharacter(),myID);
 
-
+        GameLauncher.MAINMENU_MUSIC.stop();
         
         initializeSocketToGamePlayMode();
         inputManager.setUseGUIInputHandler(true);
@@ -235,21 +225,10 @@ public class GamePlayState extends BasicGameState{
         }
     }
 
-    @Subscribe
-    public void listenRenderLootBagEvent(RenderLootBagEvent event){
-        if(worldContainer != null){
-            worldContainer.setLootToRender(event.getLootBag());
-            worldContainer.setThereWasLoot(true);
-        }
-    }
-
 
     @Subscribe
-    public void listenRenderPortalEvent(RenderEnterPortalEvent event){
-        if(worldContainer != null){
-            worldContainer.setPortalToRender(event.getPortal());
-            worldContainer.setThereWasPortal(true);
-        }
+    public void listenInteractableCollisionEvent(InteractableCollisionEvent event){
+        worldContainer.collidedWithInteractable(event.getI());
     }
     
     @Subscribe

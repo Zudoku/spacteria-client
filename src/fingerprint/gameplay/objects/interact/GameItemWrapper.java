@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package fingerprint.gameplay.objects.lootbag;
+package fingerprint.gameplay.objects.interact;
 
 import fingerprint.gameplay.items.GameItem;
 

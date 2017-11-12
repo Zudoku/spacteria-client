@@ -4,14 +4,13 @@
  * and open the template in the editor.
  */
 
-package fingerprint.gameplay.objects.lootbag;
+package fingerprint.gameplay.objects.interact;
 
 import fingerprint.gameplay.objects.CollidingObject;
-import fingerprint.gameplay.objects.GameObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import fingerprint.gameplay.objects.events.RenderLootBagEvent;
+
 import fingerprint.gameplay.objects.player.GCharacter;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
@@ -22,7 +21,7 @@ import org.newdawn.slick.geom.Shape;
  * Created Apr 9, 2017
  * @author arska
  */
-public class LootBag extends CollidingObject {
+public class LootBag extends CollidingObject implements Interactable {
     private int quality;
     private transient String guid;
     private List<GameItemWrapper> items = new ArrayList<>();
@@ -58,7 +57,7 @@ public class LootBag extends CollidingObject {
     @Override
     protected void onCollision(CollidingObject collidedWith) {
         if(collidedWith instanceof GCharacter) {
-            eventBus.post(new RenderLootBagEvent(this));
+            eventBus.post(new InteractableCollisionEvent(this));
         }
     }
 
@@ -72,5 +71,15 @@ public class LootBag extends CollidingObject {
 
     public void setItems(List<GameItemWrapper> items) {
         this.items = items;
+    }
+
+    @Override
+    public String getInteractionText() {
+        return "";
+    }
+
+    @Override
+    public int getInteractionLevel() {
+        return 5;
     }
 }
