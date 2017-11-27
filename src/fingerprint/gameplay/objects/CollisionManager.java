@@ -36,6 +36,8 @@ public class CollisionManager {
     private int zoneAmount = 10;
     
     private ArrayList<GameObject>[][] zones;
+    
+    private byte[][] minimap;
 
     
     @Inject
@@ -50,6 +52,9 @@ public class CollisionManager {
         this.map = null;
     }
 
+    public TiledMapPlus getMap() {
+        return map;
+    }
     public void checkCollision(){
         //TODO: optimize this 
         for(CollidingObject object_1 : entityManager.get(CollidingObject.class)){
@@ -69,10 +74,22 @@ public class CollisionManager {
             }else {
                 try {
                     map = new TiledMapPlus(FileUtil.TILEDMAPS_PATH + "/" + filename + FileUtil.TILEDMAP_FILE_EXTENSION);
+                    minimap = new byte[map.getHeight()][map.getWidth()];
+                    for(int y = 0; y < map.getHeight(); y++){
+                        for(int x = 0; x < map.getWidth(); x++){
+                            if(!blockingTiles.contains(map.getTileId(x,y,0))){
+                                minimap[y][x] = 1;
+                            }
+                            
+                        }
+                    }
                 } catch (SlickException ex) {
                     logger.log(Level.SEVERE, null, ex);
                 }
             }
+        }
+        if(collider == null){
+            return false;
         }
         List<int[][]> arrayPoints = new ArrayList<>();
         for(int i = 0; i < collider.getPointCount() ; i ++){
@@ -113,5 +130,8 @@ public class CollisionManager {
 
         return false;
     }
-    
+
+    public byte[][] getMinimap() {
+        return minimap;
+    }
 }

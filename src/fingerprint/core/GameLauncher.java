@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
@@ -28,7 +25,6 @@ import fingerprint.inout.GameSettingsProvider;
 import fingerprint.rendering.util.RenderingResolutions;
 import fingerprint.states.GamePlayState;
 import fingerprint.states.MainMenuState;
-import fingerprint.states.State_IDs;
 import fingerprint.states.CharacterCreationState;
 import fingerprint.states.CharacterSelectionState;
 import fingerprint.states.LoginState;

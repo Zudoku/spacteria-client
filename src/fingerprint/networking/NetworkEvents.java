@@ -28,6 +28,7 @@ public class NetworkEvents {
     public static final String CLIENT_MOVE_ITEM_IN_INVENTORY = "moveitemininventory";
     public static final String CLIENT_MAP_LOADED = "maploaded";
     public static final String CLIENT_ENTER_PORTAL = "enterportal";
+    public static final String CLIENT_SELL_ITEM = "sellitem";
     
     public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
     public static final String SERVER_CHARACTERLIST = "displaycharacterlist";

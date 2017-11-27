@@ -21,6 +21,7 @@ import fingerprint.controls.InputManager;
 import fingerprint.core.GameLauncher;
 import fingerprint.gameplay.items.GameItem;
 import fingerprint.gameplay.map.gameworld.GameWorldContainer;
+import fingerprint.gameplay.map.gameworld.UIMode;
 import fingerprint.gameplay.objects.interact.GameItemWrapper;
 import fingerprint.gameplay.objects.interact.InteractableCollisionEvent;
 import fingerprint.gameplay.objects.interact.InteractableManager;
@@ -28,6 +29,7 @@ import fingerprint.gameplay.objects.interact.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
 import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
+import fingerprint.inout.ChatManager;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.networking.NetworkEvents;
@@ -61,6 +63,7 @@ public class GamePlayState extends BasicGameState{
     @Inject private Gson gson;
 
     private boolean debugInfo = true;
+    private ChatManager chatManager = new ChatManager();
     
     private String myID = "";
     
@@ -76,7 +79,8 @@ public class GamePlayState extends BasicGameState{
         //GameLauncher.injector.injectMembers(worldContainer); //dirty trick
         eventBus.register(this);
         inputManager.setInput(gc.getInput());
-        
+        chatManager.clear();
+        eventBus.register(chatManager);
         
     }
 
@@ -99,6 +103,10 @@ public class GamePlayState extends BasicGameState{
         gri.setInventoryToRender(worldContainer.getInventoryToRender());
         gri.setCollidedInteractable(worldContainer.getInteractable());
         gri.setHoverGameItem(itemToRenderHover);
+        gri.setChat(chatManager.getRelevantChatlines());
+        gri.setUiMode(worldContainer.getUiMode());
+        gri.setCurrencies(worldContainer.getCharacterCurrencies());
+        gri.setMinimap(worldContainer.getMinimap());
         //worldContainer.
         renderingManager.drawGamePlay(graphics, gc, debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
@@ -237,10 +245,6 @@ public class GamePlayState extends BasicGameState{
         if(loot != null) {
             if(loot.getItems().size() > event.getIndex()) {
                 try {
-                    if(loot.getItems().get(event.getIndex()).getUniqueid() == -1) {
-                        //TEMP FIXME TODO: 
-                        return;
-                    }
                     LootItemEvent payload = new LootItemEvent(event.getIndex(), loot.getGuid(), loot.getItems().get(event.getIndex()).getUniqueid(),
                             loot.getItems().get(event.getIndex()).getAmount());
                     mySocket.emit(NetworkEvents.CLIENT_LOOT_ITEM, new JSONObject(gson.toJson(payload, LootItemEvent.class)));
@@ -285,7 +289,8 @@ public class GamePlayState extends BasicGameState{
         }
         if (item != null && event.getMousebutton() == 2) {
             try {
-                mySocket.emit(NetworkEvents.CLIENT_DROP_ITEM, new JSONObject(gson.toJson(new DropItemEvent(event.getIndex()), DropItemEvent.class)));
+                String eventString = (worldContainer.getUiMode() == UIMode.SHOP) ? NetworkEvents.CLIENT_SELL_ITEM : NetworkEvents.CLIENT_DROP_ITEM;
+                mySocket.emit(eventString, new JSONObject(gson.toJson(new DropItemEvent(event.getIndex()), DropItemEvent.class)));
             } catch (JSONException ex) {
                 Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
             }

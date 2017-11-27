@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
+import fingerprint.gameplay.items.Currencies;
 import fingerprint.gameplay.items.Equipments;
 import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.objects.*;
@@ -23,6 +24,10 @@ import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.gameplay.objects.player.CharacterContainer;
 import fingerprint.gameplay.objects.player.StatContainer;
 import fingerprint.mainmenus.serverlist.RoomDescription;
+import fingerprint.rendering.gui.event.DisplayConsoleMessageEvent;
+import java.util.ArrayList;
+import java.util.List;
+import org.newdawn.slick.Color;
 
 
 public class GameWorldContainer {
@@ -35,19 +40,27 @@ public class GameWorldContainer {
     @Inject private EventBus eventBus;
     private InteractableManager interactableManager;
     
+    private UIMode uiMode;
+    
 
     public GameWorldContainer() {
         playerContainer = new CharacterContainer();
         interactableManager = new InteractableManager();
+        uiMode = UIMode.NORMAL;
         //eventBus.register(this);
         
     }
     public void updateWorld(InputManager inputManager,int delta){
+        if(collisionManager.getMap() == null){
+            collisionManager.collideWithTerrain(null);
+        }
         playerContainer.updatePlayer(inputManager,delta);
         playerContainer.updateCamera();
         entityManager.updateProjectileDelta(delta);
         entityManager.updateEntities(delta,collisionManager);
         interactUpdate(inputManager);
+        
+        checkNotInShop();
 
     }
 
@@ -58,7 +71,15 @@ public class GameWorldContainer {
                 Portal portalInteractable = (Portal) currentInteractable;
                 eventBus.post(new EnterPortalEvent(portalInteractable.getHash(), portalInteractable.getTo()));
             }
+            if(currentInteractable instanceof NPC){
+                NPC npc = (NPC) currentInteractable;
+                eventBus.post(new DisplayConsoleMessageEvent(npc.getInteractChatLine(), Color.yellow));
+                if("VENDOR".equals(npc.getType())){
+                    uiMode = UIMode.SHOP;
+                }
+            }
         }
+        
         
     }
 
@@ -150,6 +171,11 @@ public class GameWorldContainer {
         if(interactableManager.getPersistentInteractable() != null && interactableManager.getPersistentInteractable() instanceof LootBag){
             return (LootBag) interactableManager.getPersistentInteractable();
         }
+        if(interactableManager.getCurrentInteractable() == null 
+                && interactableManager.getLastInteractable() != null 
+                && interactableManager.getLastInteractable() instanceof LootBag){
+            return (LootBag) interactableManager.getLastInteractable();
+        }
         return null;
     }
 
@@ -160,4 +186,62 @@ public class GameWorldContainer {
     public void cycleIM() {
         interactableManager.cycle();
     }
+
+    private void checkNotInShop() {
+        if(interactableManager.getPersistentInteractable() == null && uiMode == UIMode.SHOP){
+            uiMode = UIMode.NORMAL;
+        }
+    }
+
+    public UIMode getUiMode() {
+        return uiMode;
+    }
+    
+    public Currencies getCharacterCurrencies(){
+        return playerContainer.getCurrentPlayer().getCurrencies();
+    }
+    public byte[][] getMinimap(){
+        if(collisionManager.getMinimap() != null){
+            int pX =  (int) Math.floor(playerContainer.getCurrentPlayer().getX() / 64);
+            int pY =  (int) Math.floor(playerContainer.getCurrentPlayer().getY() / 64);
+            return getMinimapView(collisionManager.getMinimap(),pX , pY, new ArrayList<>(entityManager.get(Portal.class)));
+        }
+        return null;
+    }
+    
+    private byte[][] getMinimapView(byte[][] original, int startX, int startY, List<GameObject> gameObjects){
+        final int minimapSize = 128;
+        byte[][] result = new byte[minimapSize][minimapSize];
+        int arrayPosStartX = startX - 64;
+        int arrayPosStartY = startY - 64;
+        for (int y = 0; y < minimapSize; y++) {
+            for (int x = 0; x < minimapSize; x++) {
+                int currentPosX = x + arrayPosStartX;
+                int currentPosY = y + arrayPosStartY;
+                boolean overBound = (currentPosX < 0 
+                        || currentPosX >= original[0].length
+                        || currentPosY < 0
+                        || currentPosY >= original.length);
+                if(!overBound){
+                    result[y][x] = original[currentPosY][currentPosX];
+                    if(startX == currentPosX && startY == currentPosY){
+                        result[y][x] = 2;
+                    }
+                }
+            }
+        }
+        for(GameObject obj : gameObjects){
+            int currentPosX = (int) Math.floor(obj.getX() / 64) - startX + 64;
+            int currentPosY = (int) Math.floor(obj.getY() / 64) - startY + 64;
+                boolean overBound = (currentPosX < 0 
+                        || currentPosX >= minimapSize
+                        || currentPosY < 0
+                        || currentPosY >= minimapSize);
+                if(!overBound){
+                    result[currentPosY][currentPosX] = 3;
+                }
+        }
+        return result;
+    }
+    
 }

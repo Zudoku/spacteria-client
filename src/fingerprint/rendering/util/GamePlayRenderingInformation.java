@@ -5,15 +5,15 @@
  */
 package fingerprint.rendering.util;
 
+import fingerprint.gameplay.items.Currencies;
 import fingerprint.gameplay.items.Equipments;
 import fingerprint.gameplay.items.GameItem;
 import fingerprint.gameplay.items.Inventory;
-import fingerprint.gameplay.objects.interact.Portal;
-import fingerprint.gameplay.objects.interact.GameItemWrapper;
+import fingerprint.gameplay.map.gameworld.UIMode;
 import fingerprint.gameplay.objects.interact.Interactable;
 import fingerprint.gameplay.objects.interact.LootBag;
 import fingerprint.gameplay.objects.player.StatContainer;
-import fingerprint.states.menu.enums.CharacterClass;
+import fingerprint.inout.Chatline;
 import java.util.List;
 
 /**
@@ -32,6 +32,10 @@ public class GamePlayRenderingInformation {
     private Inventory inventoryToRender;
     private Interactable collidedInteractable;
     private GameItem hoverGameItem;
+    private List<Chatline> chat;
+    private UIMode uiMode;
+    private Currencies currencies;
+    private byte[][] minimap;
     
     public GamePlayRenderingInformation() {
     }
@@ -66,6 +70,14 @@ public class GamePlayRenderingInformation {
 
     public int getExperience() {
         return experience;
+    }
+
+    public List<Chatline> getChat() {
+        return chat;
+    }
+
+    public void setChat(List<Chatline> chat) {
+        this.chat = chat;
     }
 
     public int getLevel() {
@@ -121,5 +133,29 @@ public class GamePlayRenderingInformation {
 
     public void setHoverGameItem(GameItem hoverGameItem) {
         this.hoverGameItem = hoverGameItem;
+    }
+
+    public UIMode getUiMode() {
+        return uiMode;
+    }
+
+    public void setUiMode(UIMode uiMode) {
+        this.uiMode = uiMode;
+    }
+
+    public Currencies getCurrencies() {
+        return currencies;
+    }
+
+    public void setCurrencies(Currencies currencies) {
+        this.currencies = currencies;
+    }
+
+    public byte[][] getMinimap() {
+        return minimap;
+    }
+
+    public void setMinimap(byte[][] minimap) {
+        this.minimap = minimap;
     }
 }

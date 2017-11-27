@@ -6,7 +6,6 @@ import com.google.common.eventbus.Subscribe;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Timer;
 
 import com.google.inject.Singleton;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
@@ -22,8 +21,6 @@ import fingerprint.networking.events.PlayerLeftEvent;
 import fingerprint.rendering.gui.event.DisplayConsoleMessageEvent;
 import fingerprint.sound.PlaySoundEvent;
 import fingerprint.sound.SoundEffect;
-import java.awt.event.ActionListener;
-import javafx.event.ActionEvent;
 import org.newdawn.slick.Color;
 
 @Singleton

@@ -12,8 +12,10 @@ import java.util.List;
 
 
 import fingerprint.gameplay.objects.player.GCharacter;
+import fingerprint.rendering.manager.UIRenderingUtil;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
@@ -43,10 +45,8 @@ public class LootBag extends CollidingObject implements Interactable {
     public void draw(Graphics graphics) {
         double[] drawinCords = getDrawingCoordinates();
         
-        graphics.setColor(Color.black);
-        graphics.fillRect((float)drawinCords[0] , (float)drawinCords[1], getCollideShape().getWidth(), getCollideShape().getHeight());
-        graphics.setColor(Color.red);
-        graphics.fillRect((float)drawinCords[0]+ 2, (float)drawinCords[1] + 2, getCollideShape().getWidth() -4, getCollideShape().getHeight()-4);
+        Image sprite = UIRenderingUtil.getSpriteImage(11);
+        sprite.drawCentered((float) drawinCords[0] + (48 / 2), (float) drawinCords[1] + (48 / 2));
     }
 
 

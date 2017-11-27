@@ -11,10 +11,14 @@ package fingerprint.gameplay.objects.player;
  */
 public class AttackManager {
     private long lastAttacked = 0;
-    private long attackSpeed = 200;
+    private long attackSpeed = 500;
 
     public AttackManager() {
         
+    }
+    
+    public void setDexterity(int dexterity){
+        attackSpeed =(long) (1000D / (double)((100D * (double) dexterity) / 1000D));
     }
     
     public void attack(){

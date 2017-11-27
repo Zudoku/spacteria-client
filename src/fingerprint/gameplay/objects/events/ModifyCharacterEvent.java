@@ -6,6 +6,7 @@
 
 package fingerprint.gameplay.objects.events;
 
+import fingerprint.gameplay.items.Currencies;
 import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.gameplay.objects.player.StatContainer;
 
@@ -16,6 +17,7 @@ import fingerprint.gameplay.objects.player.StatContainer;
 public class ModifyCharacterEvent {
     private GCharacter character;
     private StatContainer stats;
+    private Currencies currencies;
 
     public GCharacter getCharacter() {
         return character;
@@ -32,4 +34,14 @@ public class ModifyCharacterEvent {
     public void setStats(StatContainer stats) {
         this.stats = stats;
     }
+
+    public Currencies getCurrencies() {
+        return currencies;
+    }
+
+    public void setCurrencies(Currencies currencies) {
+        this.currencies = currencies;
+    }
+    
+    
 }

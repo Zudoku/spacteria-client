@@ -2,8 +2,9 @@ package fingerprint.gameplay.objects.interact;
 
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.player.GCharacter;
-import org.newdawn.slick.Color;
+import fingerprint.rendering.manager.UIRenderingUtil;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.*;
 
 public class Portal extends CollidingObject implements Interactable{
@@ -24,10 +25,8 @@ public class Portal extends CollidingObject implements Interactable{
 
         double[] coordinates = getDrawingCoordinates();
         //Draw the collision rectangle
-        graphics.setColor(Color.orange);
-        graphics.fillRect((float)coordinates[0] ,(float)coordinates[1] + 2, 48, 48);
-        graphics.setColor(Color.black);
-        graphics.fillRect((float)coordinates[0] + 4,(float)coordinates[1] + 6, 48 - 8, 48 -8);
+        Image sprite = UIRenderingUtil.getSpriteImage(19);
+        sprite.drawCentered((float) coordinates[0] + (48 / 2), (float) coordinates[1] + (48 / 2));
     }
 
     @Override

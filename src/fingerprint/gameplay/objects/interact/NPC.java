@@ -9,6 +9,7 @@ package fingerprint.gameplay.objects.interact;
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.rendering.manager.UIRenderingUtil;
+import java.util.Random;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -24,6 +25,7 @@ public class NPC extends CollidingObject implements Interactable{
     private int width;
     private int height;
     private String name;
+    private Lines lines;
 
     public NPC() {
         super(0, 0, new Rectangle(0, 0, 2, 2));
@@ -52,8 +54,15 @@ public class NPC extends CollidingObject implements Interactable{
             eventBus.post(new InteractableCollisionEvent(this));
         }
     }
-    
 
+    public Lines getLines() {
+        return lines;
+    }
+
+    public void setLines(Lines lines) {
+        this.lines = lines;
+    }
+    
     /**
      * @return the type
      */
@@ -114,11 +123,26 @@ public class NPC extends CollidingObject implements Interactable{
     public String getInteractionText() {
         return "Talk to " + name;
     }
+    
+    public String getInteractChatLine(){
+        Random r = new Random();
+        return "[" + name + "]: " + lines.getInteract().get(r.nextInt(lines.getInteract().size()));
+    }
 
     @Override
     public int getInteractionLevel() {
         return 4;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    
     
     
 

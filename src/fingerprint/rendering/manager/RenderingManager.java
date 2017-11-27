@@ -20,9 +20,11 @@ import com.google.inject.Singleton;
 import fingerprint.controls.InputManager;
 
 import fingerprint.core.GameLauncher;
+import fingerprint.gameplay.map.gameworld.UIMode;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.GCharacter;
+import fingerprint.inout.Chatline;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.MapDescription;
@@ -136,8 +138,8 @@ public class RenderingManager {
         //PLAYER
         GCharacter player = null;
         for(GCharacter drawableObject : entityManager.get(GCharacter.class)){
-            drawableObject.draw(graphics);
             graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, 360f -(float)gri.getCameraRotation());
+            drawableObject.draw(graphics);
             player = drawableObject;
         }
         
@@ -172,7 +174,7 @@ public class RenderingManager {
         int ITEM_PADDING = 56;
         int TS = TilemapRenderer.tileSize;
 
-        graphics.setBackground(Color.cyan);
+        //graphics.setBackground(Color.cyan);
         
         //TODO: MAGIC NUMBERS!
         if(drawDebugInfo){
@@ -194,18 +196,35 @@ public class RenderingManager {
             graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 170);
         }
         
-        
-        //Draw the console
-        
-        //drawTextEffect(uiManager.getNextConsoleText(), Color.black, Color.yellow, 30, virtualResolutionHeight - 60, 1, graphics, largeVerdanaFont);
-        
         //Draw the background for real UI
         graphics.setColor(Color.darkGray);
         graphics.fillRect(unScaledGamePlayWidth, 0, 4 * TS, unScaledScreenHeight);
         
         //Draw minimap
-        graphics.setColor(Color.blue);
+        Color bgMinimapColor = new Color(0, 40, 0);
+        Color walkableMinimapColor = new Color(200, 255, 200);
+        graphics.setColor(walkableMinimapColor);
         graphics.fillRect(unScaledGamePlayWidth, 0, 4 * TS, 4 * TS);
+        graphics.setColor(bgMinimapColor);
+        if (gri.getMinimap() != null) {
+            for (int y = 0; y < gri.getMinimap().length; y++) {
+                for (int x = 0; x < gri.getMinimap()[0].length; x++) {
+                    if (gri.getMinimap()[y][x] == 2) {
+                        graphics.setColor(Color.red);
+                        graphics.fillRect(unScaledGamePlayWidth + (x * 2), y * 2, 2, 2);
+                        graphics.setColor(bgMinimapColor);
+                    }
+                    if (gri.getMinimap()[y][x] == 3) {
+                        graphics.setColor(Color.blue);
+                        graphics.fillRect(unScaledGamePlayWidth + (x * 2), y * 2, 2, 2);
+                        graphics.setColor(bgMinimapColor);
+                    }
+                    if (gri.getMinimap()[y][x] == 0) {
+                        graphics.fillRect(unScaledGamePlayWidth + (x * 2), y * 2, 2, 2);
+                    }
+                }
+            }
+        }
         graphics.setColor(Color.gray);
         graphics.setLineWidth(2);
         graphics.drawRect(unScaledGamePlayWidth, 0, 4 * TS, 4 * TS);
@@ -254,9 +273,9 @@ public class RenderingManager {
         graphics.drawString("Health: " + gri.getMyStats().getHealth()+ " / " + gri.getMyStats().getMaxhealth() + "", unScaledGamePlayWidth + 14, 6 * TS + 27);
         
         graphics.setColor(Color.gray);
-        graphics.fillRect(unScaledGamePlayWidth +10, 7 * TS, 4 * TS -20, 100);
+        graphics.fillRect(unScaledGamePlayWidth +10, 7 * TS, 4 * TS -20, 124);
         graphics.setColor(Color.black);
-        graphics.drawRect(unScaledGamePlayWidth +10, 7 * TS, 4 * TS -21, 100);
+        graphics.drawRect(unScaledGamePlayWidth +10, 7 * TS, 4 * TS -21, 124);
         
         graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.black);
@@ -274,6 +293,15 @@ public class RenderingManager {
         graphics.drawString("", unScaledGamePlayWidth +128, 7 * TS + MINI_PADDING + (2 * 16));
         graphics.drawString("", unScaledGamePlayWidth +210, 7 * TS + MINI_PADDING + (2 * 16));
         
+        //CURRENCIES
+        graphics.drawString("Coins: ", unScaledGamePlayWidth +14, 7 * TS + MINI_PADDING + (4 * 16));
+        graphics.drawString("" + gri.getCurrencies().getCoin(), unScaledGamePlayWidth +88, 7 * TS + MINI_PADDING + (4 * 16));
+        graphics.drawString("Bugbounty: ", unScaledGamePlayWidth +128, 7 * TS + 4 + (4 * 16));
+        graphics.drawString("" + gri.getCurrencies().getBugbounty(), unScaledGamePlayWidth +210, 7 * TS + MINI_PADDING + (4 * 16));
+        graphics.drawString("Rollticket: ", unScaledGamePlayWidth +14, 7 * TS + MINI_PADDING + (5 * 16));
+        graphics.drawString("" + gri.getCurrencies().getRollticket(), unScaledGamePlayWidth +88, 7 * TS + MINI_PADDING + (5 * 16));
+        graphics.drawString("", unScaledGamePlayWidth +128, 7 * TS + 4 + (5 * 16));
+        graphics.drawString("", unScaledGamePlayWidth +210, 7 * TS + MINI_PADDING + (5 * 16));
         //INVENTORY + EQUIP
         
         graphics.setColor(Color.gray);
@@ -303,6 +331,9 @@ public class RenderingManager {
         }
         
         graphics.setColor(Color.gray);
+        if(gri.getUiMode() == UIMode.SHOP){
+            graphics.setColor(Color.orange);
+        }
         graphics.fillRect(unScaledGamePlayWidth +10, 11 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -20, 300);
         graphics.setColor(Color.black);
         graphics.drawRect(unScaledGamePlayWidth +10, 11 * TilemapRenderer.tileSize, 4 * TilemapRenderer.tileSize -21, 300);
@@ -311,12 +342,14 @@ public class RenderingManager {
         graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         for (int u = 0; u < 5; u++) {
             for (int o = 0; o < 4; o++) {
+                int index = o + 1 + u * 4;
+                GameItemWrapper itemData = gri.getInventoryToRender().getItem(index);
                 int ix = unScaledGamePlayWidth + 19 + (ITEM_PADDING * o);
                 int iy = 11 * TS + 9 + (u * ITEM_PADDING);
                 graphics.setColor(Color.black);
                 graphics.drawRect(ix, iy, 48, 48);
-                int index = o + 1 + u * 4;
-                GameItemWrapper itemData = gri.getInventoryToRender().getItem(index);
+                
+                
                 if (itemData != null) {
                     if (itemData.getUniqueid() == -1) {
                         UIRenderingUtil.drawItem(1, ix, iy);
@@ -403,6 +436,11 @@ public class RenderingManager {
             graphics.setColor(Color.lightGray);
             graphics.drawString(i.getDescription(), mx + 6, my + 246);
 
+        }
+        
+        for(int i = 0; i < gri.getChat().size(); i++){
+            Chatline current = gri.getChat().get(i);
+            UIRenderingUtil.drawTextEffect(current.getLine(), Color.black, current.getColor(), 10, virtualResolutionHeight - 50 - i * 20, 1, graphics, UIRenderingUtil.smallVerdanaFont);
         }
 
     }

@@ -125,14 +125,14 @@ public class Projectile extends CollidingObject{
     @Override
     protected void onCollision(CollidingObject collidedWith) {
         
-        if(collidedWith instanceof Enemy && this.team == 1){
+        if(collidedWith instanceof Enemy && this.team == 1 && !destroyed){
             Enemy enemy = (Enemy) collidedWith;
             eventBus.post(new PlaySoundEvent(SoundEffect.valueOf(enemy.getHitsound())));
             destroyed = true;
             eventBus.post(new DeleteEntityEvent(guid));
         }
         
-        if(collidedWith instanceof GCharacter && this.team == 2){
+        if(collidedWith instanceof GCharacter && this.team == 2 && !destroyed){
             eventBus.post(new PlaySoundEvent(SoundEffect.CHARHIT));
             destroyed = true;
             eventBus.post(new DeleteEntityEvent(guid));

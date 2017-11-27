@@ -180,6 +180,7 @@ public class CharacterContainer {
     public void setCurrentPlayer(GCharacter currentPlayer) {
         this.currentPlayer = currentPlayer;
         this.currentPlayer.init();
+        attackManager.setDexterity(currentPlayer.getStatManager().getStats().getDexterity());
     }
 
     public double getAngle() {
@@ -243,7 +244,7 @@ public class CharacterContainer {
             currentPlayer.setExperience(newStatus.getExperience());
             currentPlayer.setInventory(newStatus.getInventory());
             currentPlayer.setLevel(newStatus.getLevel());
-
+            currentPlayer.setCurrencies(newStatus.getCurrencies());
 
             if(event.getStats() != null) {
                 if(currentPlayer.getStatManager().getStats().getHealth() > event.getStats().getHealth()){
@@ -251,6 +252,7 @@ public class CharacterContainer {
                     eventBus.post(new PlaySoundEvent(SoundEffect.CHARHIT));
                 }
                 currentPlayer.getStatManager().setStats(event.getStats());
+                attackManager.setDexterity(event.getStats().getDexterity());
             }
         }
     }

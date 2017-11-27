@@ -1,5 +1,6 @@
 package fingerprint.gameplay.objects.player;
 
+import fingerprint.gameplay.items.Currencies;
 import java.util.logging.Logger;
 
 import fingerprint.gameplay.items.Equipments;
@@ -10,7 +11,8 @@ import org.newdawn.slick.geom.Rectangle;
 import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.CollisionManager;
-import fingerprint.states.menu.enums.CharacterClass;
+import fingerprint.rendering.manager.UIRenderingUtil;
+import org.newdawn.slick.Image;
 
 
 public class GCharacter extends CollidingObject{
@@ -26,6 +28,7 @@ public class GCharacter extends CollidingObject{
     private Inventory inventory;
     private Equipments equipment;
     private transient StatManager statManager;
+    private Currencies currencies;
     
     
     
@@ -37,6 +40,7 @@ public class GCharacter extends CollidingObject{
     
     public void init(){
         collideToTerrain = true;
+        
     }
     
     public GCharacter(double initX, double initY) {
@@ -48,7 +52,11 @@ public class GCharacter extends CollidingObject{
     
     @Override
     public void draw(Graphics graphics) {
-        drawDebug(graphics);
+        //drawDebug(graphics);
+        //graphics.rotate(level, level, level);
+        double[] coordinates = getDrawingCoordinates();
+        Image sprite = UIRenderingUtil.getSpriteImage(20);
+        sprite.draw((float) coordinates[0] - 8, (float) coordinates[1] - 8);
     }
     
     @Override
@@ -143,6 +151,12 @@ public class GCharacter extends CollidingObject{
     public void setStatManager(StatManager statManager) {
         this.statManager = statManager;
     }
-    
-    
+
+    public Currencies getCurrencies() {
+        return currencies;
+    }
+
+    public void setCurrencies(Currencies currencies) {
+        this.currencies = currencies;
+    }
 }

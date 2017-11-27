@@ -4,6 +4,8 @@ package fingerprint.rendering.manager;
 
 import fingerprint.inout.FileUtil;
 import java.awt.Font;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.newdawn.slick.Color;
@@ -22,6 +24,8 @@ public class UIRenderingUtil {
     public static TrueTypeFont mediumVerdanaFont;
     public static TrueTypeFont largeVerdanaFont;
     public static TrueTypeFont giganticVerdanaFont;
+    
+    public static Map<Integer,Image> sprites = new HashMap();
 
     public static final Image getItemImage(int imageid) {
 
@@ -39,11 +43,18 @@ public class UIRenderingUtil {
         return items.getSprite(x, y);
     }
     public static final Image getSpriteImage(int imageid) {
-        try {
-            return new Image(FileUtil.SPRITE_FILES_PATH + "/" + imageid + ".png");
-        } catch (SlickException ex) {
-            Logger.getLogger(UIRenderingUtil.class.getName()).log(Level.SEVERE, null, ex);
+        if(sprites.containsKey(imageid)){
+            return sprites.get(imageid);
+        } else {
+            try {
+                Image img = new Image(FileUtil.SPRITE_FILES_PATH + "/" + imageid + ".png");
+                sprites.put(imageid, img);
+                return img;
+            } catch (SlickException ex) {
+                Logger.getLogger(UIRenderingUtil.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
+        
         return null;
     }
     
