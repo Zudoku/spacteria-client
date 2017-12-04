@@ -1,6 +1,5 @@
 package fingerprint.gameplay.objects;
 
-import fingerprint.gameplay.objects.player.CharacterContainer;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.rendering.manager.RenderingManager;
 import java.math.BigDecimal;
@@ -106,10 +105,9 @@ public class CollidingObject extends GameObject{
         setDeltaX(0);
         setDeltaY(0);
     }
-    protected void onCollision(CollidingObject collidedWith){
+    public void onCollision(CollidingObject collidedWith){
         
     }
-    
     protected void onTerrainCollision(){
         
     }

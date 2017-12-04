@@ -70,6 +70,7 @@ public class GamePlayState extends BasicGameState{
     private Socket mySocket;
 
     private boolean initialized = false;
+    private boolean canRessurect = false;
 
     private GameItem itemToRenderHover = null;
     
@@ -82,6 +83,7 @@ public class GamePlayState extends BasicGameState{
         chatManager.clear();
         eventBus.register(chatManager);
         
+        
     }
 
     @Override
@@ -90,6 +92,7 @@ public class GamePlayState extends BasicGameState{
         if(!initialized){
             return;
         }
+        
         GamePlayRenderingInformation gri = new GamePlayRenderingInformation();
         
         gri.setCameraRotation(worldContainer.getCameraAngle());
@@ -107,6 +110,8 @@ public class GamePlayState extends BasicGameState{
         gri.setUiMode(worldContainer.getUiMode());
         gri.setCurrencies(worldContainer.getCharacterCurrencies());
         gri.setMinimap(worldContainer.getMinimap());
+        gri.setDead(worldContainer.getCharacterStatus().equals("DEAD"));
+        gri.setCanRessurect(canRessurect);
         //worldContainer.
         renderingManager.drawGamePlay(graphics, gc, debugInfo, gri);
         //renderingManager.drawDebugGamePlay(graphics);
@@ -122,7 +127,7 @@ public class GamePlayState extends BasicGameState{
         worldContainer.cycleIM();
         inputManager.setInput(gc.getInput());
         inputManager.update();
-        worldContainer.updateWorld(inputManager,delta);
+        worldContainer.updateWorld(inputManager,delta, canRessurect);
         
     }
     
@@ -162,10 +167,12 @@ public class GamePlayState extends BasicGameState{
                 
             }
         }
-        
+        canRessurect = false;
         description.getPlayers().remove(ourOwn);
         eventBus.post(new PlaySoundEvent(SoundEffect.TELEPORT));
+        //worldContainer.s
         worldContainer.setCurrentRoom(description, myID);
+        worldContainer.setCharacterStatus("ALIVE");
         worldContainer.setPlayerCoords(description.getMapDescription().getStartX(), description.getMapDescription().getStartY());
         try{
             renderingManager.setMap(description.getMapDescription());
@@ -186,7 +193,9 @@ public class GamePlayState extends BasicGameState{
         }).on(NetworkEvents.SERVER_PLAYERLEFTMYGAME, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), PlayerLeftEvent.class));
         }).on(NetworkEvents.SERVER_CORRECTNPCPOSITION, args -> {
-            eventBus.post(gson.fromJson(args[0].toString(), CorrectNPCPositionEvent.class));
+            CorrectNPCPositionEvent event = gson.fromJson(args[0].toString(), CorrectNPCPositionEvent.class);
+            event.setCollisionManager(worldContainer.getCollisionManager());
+            eventBus.post(event);
         }).on(NetworkEvents.SERVER_PROJECTILE_SPAWNED, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), NewProjectileSpawnedEvent.class));
         }).on(NetworkEvents.SERVER_GAMEOBJECT_DESPAWNED, args -> {
@@ -205,6 +214,8 @@ public class GamePlayState extends BasicGameState{
             LoadNewMapEvent event = gson.fromJson(args[0].toString(), LoadNewMapEvent.class);
             gameFileHandler.saveTilemapFile(event);
             mySocket.emit(NetworkEvents.CLIENT_MAP_LOADED, new JSONObject());
+        }).on(NetworkEvents.SERVER_CHARACTERS_ALL_DEAD, args -> {
+            canRessurect = true;
         });
         
     }
@@ -262,6 +273,11 @@ public class GamePlayState extends BasicGameState{
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+    
+    @Subscribe
+    public void listenTeleportCampEvent(TeleportCampEvent event) {
+        mySocket.emit(NetworkEvents.CLIENT_TELEPORT_TO_CAMP, new JSONObject());
     }
     
     @Subscribe

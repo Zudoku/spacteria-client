@@ -55,7 +55,7 @@ public class LootBag extends CollidingObject implements Interactable {
     }
 
     @Override
-    protected void onCollision(CollidingObject collidedWith) {
+    public void onCollision(CollidingObject collidedWith) {
         if(collidedWith instanceof GCharacter) {
             eventBus.post(new InteractableCollisionEvent(this));
         }

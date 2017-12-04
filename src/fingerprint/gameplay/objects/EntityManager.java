@@ -123,7 +123,12 @@ public class EntityManager {
         if(handled instanceof DummyCharacter || handled instanceof Enemy){
             handled.setX(event.getX());
             handled.setY(event.getY());
+            if(handled instanceof Enemy){
+                Enemy ehandled = (Enemy) handled;
+                ehandled.updateZone(event.getCollisionManager());
+            }
         }
+        
     }
     @Subscribe
     public void listenNewProjectileSpawnedEvent(NewProjectileSpawnedEvent event){

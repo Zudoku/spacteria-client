@@ -5,6 +5,8 @@
  */
 package fingerprint.networking.events;
 
+import fingerprint.gameplay.objects.CollisionManager;
+
 /**
  *
  * @author arska
@@ -13,6 +15,7 @@ public class CorrectNPCPositionEvent {
     private String id;
     private double x;
     private double y;
+    private transient CollisionManager collisionManager;
 
     public CorrectNPCPositionEvent() {
         
@@ -34,6 +37,14 @@ public class CorrectNPCPositionEvent {
 
     public double getY() {
         return y;
+    }
+
+    public CollisionManager getCollisionManager() {
+        return collisionManager;
+    }
+
+    public void setCollisionManager(CollisionManager collisionManager) {
+        this.collisionManager = collisionManager;
     }
 
     

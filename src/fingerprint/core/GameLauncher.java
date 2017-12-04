@@ -70,7 +70,7 @@ public class GameLauncher extends StateBasedGame {
             applyGameSettings(application, gameSettings);
             MAINMENU_MUSIC = new Sound(FileUtil.MUSIC_PATH + "/" + "theoldarcade.ogg");
             MAINMENU_MUSIC.loop(1, gameSettings.soundVolume);
-            application.start();  //Start the application
+            application.start();
         } catch (SlickException e) {
             e.printStackTrace();
         }
@@ -91,7 +91,6 @@ public class GameLauncher extends StateBasedGame {
         app.setAlwaysRender(true);
         app.setTargetFrameRate(appliedSettings.frameCap);
         app.setVSync(appliedSettings.vSync);
-        
     }
     
     @Override

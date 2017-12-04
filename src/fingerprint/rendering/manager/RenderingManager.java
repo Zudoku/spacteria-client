@@ -415,7 +415,7 @@ public class RenderingManager {
             graphics.setColor(Color.white);
             graphics.drawString(ItemType.values()[i.getItemtypeid()].getText(), mx + 6, my + 42);
 
-            Color usableColor = i.getLevelreq() >= gri.getLevel() ? Color.white : Color.red;
+            Color usableColor = i.getLevelreq() <= gri.getLevel() ? Color.white : Color.red;
             graphics.setColor(usableColor);
             graphics.drawString("Level requirement: " + i.getLevelreq(), mx + 6, my + 56);
 
@@ -441,6 +441,30 @@ public class RenderingManager {
         for(int i = 0; i < gri.getChat().size(); i++){
             Chatline current = gri.getChat().get(i);
             UIRenderingUtil.drawTextEffect(current.getLine(), Color.black, current.getColor(), 10, virtualResolutionHeight - 50 - i * 20, 1, graphics, UIRenderingUtil.smallVerdanaFont);
+        }
+        
+        if(gri.isDead()){
+            graphics.setColor(new Color(70, 70, 70));
+            graphics.fillRect(200, 200, unScaledGamePlayWidth - 400, 380);
+            graphics.setColor(Color.black);
+            graphics.drawRect(200, 200, unScaledGamePlayWidth - 400, 380);
+            UIRenderingUtil.getSpriteImage(22).draw(180, 200);
+            graphics.setFont(UIRenderingUtil.giganticVerdanaFont);
+            graphics.setColor(Color.red);
+            graphics.drawString("YOU ARE DEAD", 500, 220);
+            graphics.setColor(Color.orange);
+            
+            graphics.setFont(UIRenderingUtil.mediumVerdanaFont);
+            graphics.drawString("Oops. You died to ___", 480, 280);
+            graphics.drawString("You have to wait for your teammates ", 480, 310);
+            graphics.drawString("to advance into the next level.", 480, 340);
+            graphics.drawString("If you all die, you will be able to", 480, 370);
+            graphics.drawString("teleport to home camp.", 480, 400);
+            
+            if(gri.isCanRessurect()){
+                graphics.setColor(Color.red);
+                graphics.drawString("[INTERACT] to teleport to camp", 480, 450);
+            }
         }
 
     }

@@ -36,6 +36,8 @@ public class GamePlayRenderingInformation {
     private UIMode uiMode;
     private Currencies currencies;
     private byte[][] minimap;
+    private boolean dead;
+    private boolean canRessurect;
     
     public GamePlayRenderingInformation() {
     }
@@ -158,4 +160,22 @@ public class GamePlayRenderingInformation {
     public void setMinimap(byte[][] minimap) {
         this.minimap = minimap;
     }
+
+    public void setCanRessurect(boolean canRessurect) {
+        this.canRessurect = canRessurect;
+    }
+
+    public void setDead(boolean dead) {
+        this.dead = dead;
+    }
+
+    public boolean isCanRessurect() {
+        return canRessurect;
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+    
+    
 }

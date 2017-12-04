@@ -23,6 +23,7 @@ public class GCharacter extends CollidingObject{
     private int userid;
     private int uniqueid;
     private String created;
+    private String status;
 
     private String name = "";
     private Inventory inventory;
@@ -40,7 +41,9 @@ public class GCharacter extends CollidingObject{
     
     public void init(){
         collideToTerrain = true;
-        
+        if(status == null){
+            status = "ALIVE";
+        }
     }
     
     public GCharacter(double initX, double initY) {
@@ -159,4 +162,13 @@ public class GCharacter extends CollidingObject{
     public void setCurrencies(Currencies currencies) {
         this.currencies = currencies;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+    
 }

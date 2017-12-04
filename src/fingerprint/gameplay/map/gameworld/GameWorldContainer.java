@@ -16,6 +16,7 @@ import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.objects.*;
 import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
 import fingerprint.gameplay.objects.events.gui.EnterPortalEvent;
+import fingerprint.gameplay.objects.events.gui.TeleportCampEvent;
 import fingerprint.gameplay.objects.interact.Interactable;
 import fingerprint.gameplay.objects.interact.InteractableManager;
 import fingerprint.gameplay.objects.interact.LootBag;
@@ -47,26 +48,29 @@ public class GameWorldContainer {
         playerContainer = new CharacterContainer();
         interactableManager = new InteractableManager();
         uiMode = UIMode.NORMAL;
-        //eventBus.register(this);
         
     }
-    public void updateWorld(InputManager inputManager,int delta){
-        if(collisionManager.getMap() == null){
-            collisionManager.collideWithTerrain(null);
+    public void updateWorld(InputManager inputManager,int delta, boolean canResurrect){
+        collisionManager.checkIfNeedInit();
+        if(playerContainer.getPlayerStatus().equals("ALIVE")){
+            playerContainer.updatePlayer(inputManager,delta);
+            interactUpdate(inputManager);
         }
-        playerContainer.updatePlayer(inputManager,delta);
+        if(canResurrect){
+            if(inputManager.isKeyBindPressed(KeyBindAction.D, true )) {
+                eventBus.post(new TeleportCampEvent());
+            }
+        }
         playerContainer.updateCamera();
         entityManager.updateProjectileDelta(delta);
         entityManager.updateEntities(delta,collisionManager);
-        interactUpdate(inputManager);
-        
         checkNotInShop();
 
     }
 
     private void interactUpdate(InputManager inputManager) {
         if(inputManager.isKeyBindPressed(KeyBindAction.D, true )) {
-            Interactable currentInteractable = interactableManager.getCurrentInteractable();
+            Interactable currentInteractable = interactableManager.getLastInteractable();
             if(currentInteractable instanceof Portal){
                 Portal portalInteractable = (Portal) currentInteractable;
                 eventBus.post(new EnterPortalEvent(portalInteractable.getHash(), portalInteractable.getTo()));
@@ -80,9 +84,17 @@ public class GameWorldContainer {
             }
         }
         
-        
+        if(inputManager.isKeyBindPressed(KeyBindAction.C, true )) {
+            eventBus.post(new TeleportCampEvent());
+        }
     }
-
+    
+    public void setCharacterStatus(String status){
+        if(playerContainer != null){
+            playerContainer.setStatus(status);
+        }
+    }
+    
     public void setMyCharacter(GCharacter player, String id) {
         playerContainer.setCurrentPlayer(player);
         entityManager.addNewObject(id,player);
@@ -138,6 +150,14 @@ public class GameWorldContainer {
     
     public int getMyExp(){
         return playerContainer.getCurrentPlayer().getExperience();
+    }
+
+    public CollisionManager getCollisionManager() {
+        return collisionManager;
+    }
+    
+    public String getCharacterStatus(){
+        return playerContainer.getPlayerStatus();
     }
     
     public String getMapName(){

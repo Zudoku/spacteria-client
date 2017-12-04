@@ -3,17 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fingerprint.gameplay.map.gameworld;
 
-import org.newdawn.slick.tiled.TiledMapPlus;
+package fingerprint.gameplay.objects.events.gui;
 
 /**
- *
+ * Created Dec 3, 2017
  * @author arska
  */
-public class GameWorld {
-    private TiledMapPlus tileMap;
-    
-    
-    
+public class TeleportCampEvent {
+
 }

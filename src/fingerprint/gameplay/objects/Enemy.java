@@ -19,6 +19,8 @@ import org.newdawn.slick.geom.Rectangle;
  */
 public class Enemy extends CollidingObject{
     
+    private transient String zone = "0-0";
+    
     private int image;
     private String type;
     private StatContainer stats;
@@ -34,6 +36,7 @@ public class Enemy extends CollidingObject{
         this.collideShape = new Rectangle((float)shape.getPos().getX(), (float)shape.getPos().getX(), shape.getW(), shape.getH());
         setX(shape.getPos().getX());
         setY(shape.getPos().getY());
+        this.zone = "0-0";
     }
 
     @Override
@@ -57,7 +60,11 @@ public class Enemy extends CollidingObject{
         setX(shape.getPos().getX());
         setY(shape.getPos().getY());
     }
-
+    
+    protected void updateZone(CollisionManager collisionManager){
+        //zone = collisionManager.updateEnemyLocation(getX(), getY(), this);
+    }
+    
     public String getHash() {
         return hash;
     }
@@ -68,6 +75,10 @@ public class Enemy extends CollidingObject{
 
     public String getDeathsound() {
         return deathsound;
+    }
+
+    public String getZone() {
+        return zone;
     }
     
     

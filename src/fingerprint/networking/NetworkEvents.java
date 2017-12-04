@@ -29,6 +29,7 @@ public class NetworkEvents {
     public static final String CLIENT_MAP_LOADED = "maploaded";
     public static final String CLIENT_ENTER_PORTAL = "enterportal";
     public static final String CLIENT_SELL_ITEM = "sellitem";
+    public static final String CLIENT_TELEPORT_TO_CAMP = "teleportcamp";
     
     public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
     public static final String SERVER_CHARACTERLIST = "displaycharacterlist";
@@ -48,6 +49,7 @@ public class NetworkEvents {
     public static final String SERVER_LOAD_NEW_MAP = "loadnewmap";
     public static final String SERVER_BAD_CHARACTERNAME = "badcharactername";
     public static final String SERVER_CHARACTER_CREATED = "charactercreated";
+    public static final String SERVER_CHARACTERS_ALL_DEAD = "charactersalldead";
     
     
     //public static final String SERVER_UPDATE_NPC_POSITION= "updatenpcposition";

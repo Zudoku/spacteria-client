@@ -11,12 +11,10 @@ import fingerprint.gameplay.objects.Enemy;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
 import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.inout.FileUtil;
-import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.sound.PlaySoundEvent;
 import fingerprint.sound.SoundEffect;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
@@ -27,6 +25,9 @@ import org.newdawn.slick.geom.Rectangle;
  * @author arska
  */
 public class Projectile extends CollidingObject{
+    
+    public transient static final byte PLAYER_PROJECTILE_SIDE = 1; 
+    public transient static final byte ENEMY_PROJECTILE_SIDE = 2;
     
     private ProjectileImage image = ProjectileImage.BASIC;
     private double angle;
@@ -99,7 +100,7 @@ public class Projectile extends CollidingObject{
             
             imageRef.setRotation(360 - (int)getAngle());
             imageRef.draw((float)drawingCoords[0] - offsetX, (float)drawingCoords[1] - offsetY);
-            graphics.drawRect((float)drawingCoords[0], (float)drawingCoords[1], width, height);
+            //graphics.drawRect((float)drawingCoords[0], (float)drawingCoords[1], width, height);
             
         } catch (SlickException ex) {
            Logger.getLogger(Projectile.class.getName()).log(Level.SEVERE, null, ex);
@@ -123,7 +124,7 @@ public class Projectile extends CollidingObject{
     }
 
     @Override
-    protected void onCollision(CollidingObject collidedWith) {
+    public void onCollision(CollidingObject collidedWith) {
         
         if(collidedWith instanceof Enemy && this.team == 1 && !destroyed){
             Enemy enemy = (Enemy) collidedWith;

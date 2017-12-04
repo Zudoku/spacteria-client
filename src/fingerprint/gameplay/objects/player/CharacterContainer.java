@@ -32,14 +32,14 @@ public class CharacterContainer {
     public transient static final int playerRenderWidth = 64;
     public transient static final int playerRenderHeight = 64;
     
-    
     private double angle = 0;
     
     private int lastPosOnServerX = 0;
     private int lastPosOnServerY = 0;
     private final int updateTreshhold = 2;
     
-    private transient AttackManager attackManager;
+    private final transient AttackManager attackManager;
+    
     
     private GCharacter currentPlayer;
     
@@ -69,6 +69,19 @@ public class CharacterContainer {
     
     int getAngleI(){
         return (int) angle;
+    }
+
+    public String getPlayerStatus() {
+        if(currentPlayer == null){
+            return "";
+        }
+        return currentPlayer.getStatus();
+    }
+    
+    public void setStatus(String status){
+        if(currentPlayer != null){
+            currentPlayer.setStatus(status);
+        }
     }
     
     private void updateInput(InputManager inputManager,int delta) {
@@ -214,7 +227,7 @@ public class CharacterContainer {
         String guid = java.util.UUID.randomUUID().toString();
         Projectile createdProjectile = new Projectile(projectileAngle,projectileSpeed,projectileMaxDistance, projectileStartX,projectileStartY);
         createdProjectile.setGuid(guid);
-        createdProjectile.setTeam((byte) 1);
+        createdProjectile.setTeam(Projectile.PLAYER_PROJECTILE_SIDE);
         entityManager.addNewObject(guid, createdProjectile);
         //Launch event to server
         eventBus.post(new SpawnProjectileEvent(createdProjectile));
@@ -254,8 +267,14 @@ public class CharacterContainer {
                 currentPlayer.getStatManager().setStats(event.getStats());
                 attackManager.setDexterity(event.getStats().getDexterity());
             }
+            
+            if(!event.getCharacter().getStatus().equals(currentPlayer.getStatus())){
+                currentPlayer.setStatus(event.getCharacter().getStatus());
+            }
         }
     }
+    
+    
     
     
 }
