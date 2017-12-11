@@ -92,7 +92,7 @@ public class MainMenuState extends BasicGameState{
             
             break;
             
-        case INFORMATION:
+        case LEADERBOARD:
             
             break;
             
@@ -100,9 +100,6 @@ public class MainMenuState extends BasicGameState{
             
             break;
             
-        case CHARACTER_CREATION:
-            
-            break;
             
         case EXIT:
             eventBus.post(new CloseProgramEvent(false, true));

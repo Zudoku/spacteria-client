@@ -63,6 +63,9 @@ public class LoginState  extends BasicGameState {
     
     private String lastMessageFromServer = "";
     public static String SOCKETSTATUS;
+    
+    private String versionString  = "";
+    private String versionChangelog = "";
 
     public LoginState() {
         controller = new GenericGridController(Arrays.asList(0,0), Arrays.asList(0,1));
@@ -116,29 +119,27 @@ public class LoginState  extends BasicGameState {
                 SOCKETSTATUS = "NO CONNECTION (RE)";
             }).on(Socket.EVENT_RECONNECT_FAILED, (Object... args) -> {
                 SOCKETSTATUS = "NO CONNECTION (RF)";
-            }).on(NetworkEvents.SERVER_LOGIN_SUCCESS, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.MAIN_MENU_ID));
-                    eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
-                    cleanUpSocket();
+            }).on(NetworkEvents.SERVER_LOGIN_SUCCESS, (Object... args) -> {
+                eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.MAIN_MENU_ID));
+                eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
+                cleanUpSocket();
+            }).on(NetworkEvents.SERVER_LOGIN_FAIL, (Object... args) -> {
+                try {
+                    JSONObject payload = (JSONObject) args[0];
+                    String reason = payload.getString("reason");
+                    lastMessageFromServer = reason;
+                    logger.log(Level.SEVERE, Arrays.toString(args));
+                } catch (JSONException ex) {
+                    Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
-            }).on(NetworkEvents.SERVER_LOGIN_FAIL, new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    try {
-                        JSONObject payload = (JSONObject) args[0];
-                        String reason = payload.getString("reason");
-                        lastMessageFromServer = reason;
-                        logger.log(Level.SEVERE, Arrays.toString(args));
-                    } catch (JSONException ex) {
-                        Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+            }).on(NetworkEvents.SERVER_VERSION_DATA, (Object... args) -> {
+                try {
+                    JSONObject payload = (JSONObject) args[0];
+                    versionString = payload.getString("version");
+                    versionChangelog = payload.getString("changelog");
+                } catch (JSONException ex) {
+                    Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
             });
             
             socket.connect();
@@ -151,6 +152,8 @@ public class LoginState  extends BasicGameState {
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics grphcs) throws SlickException {
         ConnectionRenderingInformation info = new ConnectionRenderingInformation(socket, serveraddrs, lastMessageFromServer, SOCKETSTATUS);
+        info.setVersion(versionString);
+        info.setChangelog(versionChangelog);
         renderingManager.drawLogin(grphcs, gc, usernameTextField, passwordTextField, controller, info);
     }
 

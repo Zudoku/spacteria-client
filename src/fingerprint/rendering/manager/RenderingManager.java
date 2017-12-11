@@ -399,43 +399,61 @@ public class RenderingManager {
             GameItem i = gri.getHoverGameItem();
             int mx = inputManager.getInput().getMouseX() - 300;
             int my = inputManager.getInput().getMouseY() - 150;
+            
+            int rows = UIRenderingUtil.getHoverRows(i);
 
             graphics.setColor(Color.darkGray);
-            graphics.fillRect(mx, my, 200, 260);
+            graphics.fillRect(mx, my, 200, rows * 14);
             graphics.setColor(Color.black);
-            graphics.drawRect(mx, my, 200, 260);
+            graphics.drawRect(mx, my, 200, rows * 14);
 
-            ItemRarity rarity = ItemRarity.values()[i.getRarity() - 1];
+            ItemRarity rarity = ItemRarity.values()[i.getRarity()];
 
             graphics.setColor(rarity.getColor());
-            graphics.drawString(i.getDisplayname(), mx + 6, my + 14);
-            graphics.drawString(i.getDisplayname(), mx + 7, my + 14);
-            graphics.drawString(rarity.getName(), mx + 6, my + 28);
-
+            
+            int tx = mx + 6;
+            int ty = my + 6;
+            
+            graphics.drawString(i.getDisplayname(), tx, ty);
+            graphics.drawString(i.getDisplayname(), tx +1, ty);
+            
+            ty += 14;
             graphics.setColor(Color.white);
-            graphics.drawString(ItemType.values()[i.getItemtypeid()].getText(), mx + 6, my + 42);
+            graphics.drawString(ItemType.values()[i.getItemtypeid()].getText(),tx, ty);
 
-            Color usableColor = i.getLevelreq() <= gri.getLevel() ? Color.white : Color.red;
-            graphics.setColor(usableColor);
-            graphics.drawString("Level requirement: " + i.getLevelreq(), mx + 6, my + 56);
-
+            if(i.getItemtypeid() >= 0 && i.getItemtypeid() < 8){
+                ty += 14;
+                Color usableColor = i.getLevelreq() <= gri.getLevel() ? Color.white : Color.red;
+                graphics.setColor(usableColor);
+                graphics.drawString("Level requirement: " + i.getLevelreq(), tx, ty);
+            }
+            
+            ty += 14;
             graphics.setColor(Color.yellow);
-            graphics.drawString(i.getSellvalue() + " gold", mx + 6, my + 70);
+            graphics.drawString(i.getSellvalue() + " gold", tx, ty);
 
+            ty += 14;
             graphics.setColor(Color.white);
-            graphics.drawString(i.isStackable() ? "Stackable" : "Single", mx + 6, my + 84);
-            graphics.drawString(i.isTradeable() ? "Tradeable" : "Untradeable", mx + 6, my + 98);
+            graphics.drawString(i.isStackable() ? "Stackable" : "Single", tx, ty);
+            ty += 14;
+            graphics.drawString(i.isTradeable() ? "Tradeable" : "Untradeable", tx, ty);
 
-            graphics.setColor(Color.green);
-            int index = 0;
+            
             for(GameItemAttribute attr : i.getAttributes()) {
-                graphics.drawString(attr.toString(), mx + 6, my + 112 + (index * 14));
-                index++;
+                ty += 14;
+                if(attr.getAttributevalue() >= 0){
+                    graphics.setColor(Color.green);
+                } else {
+                    graphics.setColor(Color.red);
+                }
+                graphics.drawString(attr.toString(), tx, ty);
             }
 
             graphics.setColor(Color.lightGray);
-            graphics.drawString(i.getDescription(), mx + 6, my + 246);
-
+            for(String descLine : i.getDescription().split("\n")){
+                ty += 14;
+                graphics.drawString(descLine, tx, ty);
+            }
         }
         
         for(int i = 0; i < gri.getChat().size(); i++){

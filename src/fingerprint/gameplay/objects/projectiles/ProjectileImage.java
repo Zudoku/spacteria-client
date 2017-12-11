@@ -15,7 +15,10 @@ public enum ProjectileImage {
     BLOBGUARDIANSLOW("blobguardianslow.png"),
     CHARGER("charger.png"),
     SLIMEGUARDIANSLOW("slimeguardianslow.png"),
-    MINIBLOB("miniblob.png");
+    MINIBLOB("miniblob.png"),
+    GUN("gun.png"),
+    ELECTRICITY("electricity.png"),
+    SPRAY("spray.png");
     
     private String filename;
 

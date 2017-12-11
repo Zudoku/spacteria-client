@@ -2,6 +2,7 @@ package fingerprint.rendering.manager;
 
 
 
+import fingerprint.gameplay.items.GameItem;
 import fingerprint.inout.FileUtil;
 import java.awt.Font;
 import java.util.HashMap;
@@ -126,6 +127,18 @@ public class UIRenderingUtil {
         font = new Font("Verdana", Font.PLAIN, 35);
         giganticVerdanaFont = new TrueTypeFont(font, true);
         
+    }
+    
+    public static final int getHoverRows(GameItem item){
+        int rows = 6;
+        if(item.getItemtypeid() >= 0 && item.getItemtypeid() < 8){
+            rows++;
+        }
+        
+        rows += item.getAttributes().length;
+        rows += item.getDescription().split("\n").length;
+        
+        return rows;
     }
 
 }

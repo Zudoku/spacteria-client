@@ -50,6 +50,7 @@ public class NetworkEvents {
     public static final String SERVER_BAD_CHARACTERNAME = "badcharactername";
     public static final String SERVER_CHARACTER_CREATED = "charactercreated";
     public static final String SERVER_CHARACTERS_ALL_DEAD = "charactersalldead";
+    public static final String SERVER_VERSION_DATA = "versiondata";
     
     
     //public static final String SERVER_UPDATE_NPC_POSITION= "updatenpcposition";

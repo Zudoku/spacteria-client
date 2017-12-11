@@ -143,7 +143,7 @@ public class MainMenuRenderer {
         //Draw changelog
         
         graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 180);
-        graphics.drawString("CHANGELOG (VERSION 0000 - 00.00.2017):", RenderingManager.unScaledScreenWidth - 280, 504);
+        graphics.drawString("CHANGELOG (VERSION " + connectionInformation.getVersion() + "):", RenderingManager.unScaledScreenWidth - 280, 504);
         graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22);
         
         graphics.drawString("- Changed X Y and Z to be F and in the", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 1);

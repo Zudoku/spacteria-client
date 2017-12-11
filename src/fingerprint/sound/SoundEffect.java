@@ -4,7 +4,8 @@ public enum SoundEffect {
     
     BLOB("blob.ogg"),
     CHARHIT("playerhit.ogg"),
-    TELEPORT("teleport.ogg");
+    TELEPORT("teleport.ogg"),
+    SHOOT("shoot.ogg");
     
     private String filename;
     

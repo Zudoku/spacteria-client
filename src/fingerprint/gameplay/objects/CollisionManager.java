@@ -34,7 +34,7 @@ public class CollisionManager {
     private final EntityManager entityManager;
     
     private final List<Integer> blockingTiles = new ArrayList<>(Arrays.asList(new Integer[]{
-        1,2,4,6,7,8,10,11,15,16,18
+        1,2,4,6,7,8,10,11,15,16,18,22,23,24
     }));
     
     

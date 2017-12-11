@@ -7,10 +7,14 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
+import fingerprint.gameplay.items.GameItem;
+import fingerprint.gameplay.items.GameItemAttribute;
+import fingerprint.gameplay.items.ItemType;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
+import fingerprint.gameplay.objects.projectiles.ProjectileImage;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.networking.events.UpdatePositionEvent;
 import fingerprint.rendering.manager.RenderingManager;
@@ -18,6 +22,7 @@ import fingerprint.rendering.gui.event.SetScreenStartCoordinatesEvent;
 import fingerprint.sound.PlaySoundEvent;
 import fingerprint.sound.SoundEffect;
 import fingerprint.states.events.SaveAndExitWorldEvent;
+import java.util.Arrays;
 import org.newdawn.slick.geom.Point;
 
 public class CharacterContainer {
@@ -222,15 +227,36 @@ public class CharacterContainer {
         
         double projectileStartX = this.currentPlayer.getX() + (playerCollisionWidth / 2);
         double projectileStartY = this.currentPlayer.getY() + (playerCollisionHeight / 2);
+        
         double projectileSpeed = 130d;
         double projectileMaxDistance = 500d;
+        
+        ProjectileImage image = ProjectileImage.BASIC; 
+        
+        if(currentPlayer.getEquipment().getItem(ItemType.WEAPON.ordinal()) != null){
+            GameItem weapon = currentPlayer.getEquipment().getItem(ItemType.WEAPON.ordinal());
+            for(GameItemAttribute attribute : Arrays.asList(weapon.getAttributes())){
+                if(attribute.getAttributeid() == 10){
+                    image = ProjectileImage.values()[attribute.getAttributevalue()];
+                }
+                if(attribute.getAttributeid() == 11){
+                    projectileSpeed = attribute.getAttributevalue();
+                }
+                if(attribute.getAttributeid() == 12){
+                    projectileMaxDistance = attribute.getAttributevalue();
+                }
+            }
+        }
+
         String guid = java.util.UUID.randomUUID().toString();
         Projectile createdProjectile = new Projectile(projectileAngle,projectileSpeed,projectileMaxDistance, projectileStartX,projectileStartY);
         createdProjectile.setGuid(guid);
         createdProjectile.setTeam(Projectile.PLAYER_PROJECTILE_SIDE);
+        createdProjectile.setImage(image);
         entityManager.addNewObject(guid, createdProjectile);
         //Launch event to server
         eventBus.post(new SpawnProjectileEvent(createdProjectile));
+        eventBus.post(new PlaySoundEvent(SoundEffect.SHOOT));
         
         
         

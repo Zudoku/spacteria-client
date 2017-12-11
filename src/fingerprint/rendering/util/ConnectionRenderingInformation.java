@@ -17,6 +17,9 @@ public class ConnectionRenderingInformation {
     private String host;
     private String lastMessage;
     private String status;
+    
+    private String version;
+    private String changelog;
 
     public ConnectionRenderingInformation(Socket socket, String host, String lastMessage, String status) {
         this.socket = socket;
@@ -40,6 +43,20 @@ public class ConnectionRenderingInformation {
     public String getStatus() {
         return status;
     }
-    
-    
+
+    public String getChangelog() {
+        return changelog;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setChangelog(String changelog) {
+        this.changelog = changelog;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }
