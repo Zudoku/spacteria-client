@@ -101,7 +101,7 @@ public class GameObject {
     public void setDeltaY(double deltaY) {
         this.deltaY = deltaY;
     }
-    protected double[] getDrawingCoordinates(){
+    public double[] getDrawingCoordinates(){
         
         return new double[]{getX() - RenderingManager.getScreenStartX(), getY() - RenderingManager.getScreenStartY() };
     }

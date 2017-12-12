@@ -32,6 +32,7 @@ import fingerprint.states.ServerListState;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 import org.newdawn.slick.Sound;
+import org.newdawn.slick.opengl.renderer.Renderer;
 
 public class GameLauncher extends StateBasedGame {
     private static final Logger logger = Logger.getLogger(GameLauncher.class.getName());
@@ -91,6 +92,7 @@ public class GameLauncher extends StateBasedGame {
         app.setAlwaysRender(true);
         app.setTargetFrameRate(appliedSettings.frameCap);
         app.setVSync(appliedSettings.vSync);
+        
     }
     
     @Override

@@ -2,7 +2,7 @@
   "fullScreen": false,
   "borderless": false,
   "resolution": "RES_1280_1024",
-  "frameCap": 60,
+  "frameCap": 65,
   "vSync": true,
   "keyboardKeyBinds": {
     "B": 18,

@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.google.inject.Singleton;
 import fingerprint.gameplay.objects.events.DeleteEntityEvent;
 import fingerprint.gameplay.objects.events.ModifyLootBagEvent;
+import fingerprint.gameplay.objects.events.NewEnemySpawnedEvent;
 import fingerprint.gameplay.objects.events.NewLootBagSpawnedEvent;
 import fingerprint.gameplay.objects.interact.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
@@ -151,6 +152,13 @@ public class EntityManager {
         event.getLootbag().flushShape();
         event.getLootbag().setGuid(event.getGuid());
         addNewObject(event.getGuid(), event.getLootbag());
+    }
+    
+    @Subscribe
+    public void listenNewEnemySpawnedEvent(NewEnemySpawnedEvent event){
+        event.getEnemy().initialize();
+        event.getEnemy().setHash(event.getHash());
+        addNewObject(event.getHash(), event.getEnemy());
     }
     
     @Subscribe

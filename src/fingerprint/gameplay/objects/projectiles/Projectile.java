@@ -53,12 +53,12 @@ public class Projectile extends CollidingObject{
         this.maxTravelDistance = maxTravelDistance;
         this.currentTravelDistance = 0;
         this.damage = 0;
-        super.setCollideToTerrain(true);
+        super.setCollideToTerrain(false);
     }
 
     public Projectile() {
         super(0, 0, new Rectangle(0,0,2,2));
-        super.setCollideToTerrain(true);
+        super.setCollideToTerrain(false);
         this.currentTravelDistance = 0;
         this.damage = 0;
     }
@@ -87,24 +87,7 @@ public class Projectile extends CollidingObject{
 
     @Override
     public void draw(Graphics graphics) {
-        try {
-            double[] drawingCoords = getDrawingCoordinates();
-            
-            if(imageRef == null) {
-                imageRef = new Image(FileUtil.PROJECTILES_PATH + "/" + image.getFilename());
-                imageRef.setCenterOfRotation(imageRef.getWidth() / 2, imageRef.getHeight() / 2);
-            }
-            
-            float offsetX = (imageRef.getWidth() - width) / 2;
-            float offsetY = (imageRef.getHeight() - height) / 2;
-            
-            imageRef.setRotation(360 - (int)getAngle());
-            imageRef.draw((float)drawingCoords[0] - offsetX, (float)drawingCoords[1] - offsetY);
-            //graphics.drawRect((float)drawingCoords[0], (float)drawingCoords[1], width, height);
-            
-        } catch (SlickException ex) {
-           Logger.getLogger(Projectile.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
 
     @Override
@@ -213,6 +196,24 @@ public class Projectile extends CollidingObject{
     public void setTeam(byte team) {
         this.team = team;
     }
+
+    public Image getImageRef() throws SlickException {
+        if(imageRef == null){
+            imageRef = new Image(FileUtil.PROJECTILES_PATH + "/" + image.getFilename());
+            imageRef.setCenterOfRotation(imageRef.getWidth() / 2, imageRef.getHeight() / 2);
+        }
+        return imageRef;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+    
+    
 
     
     

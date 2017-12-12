@@ -39,6 +39,9 @@ public class Enemy extends CollidingObject{
         this.zone = "0-0";
     }
 
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
     @Override
     public void draw(Graphics graphics) {
         double[] drawinCords = getDrawingCoordinates();

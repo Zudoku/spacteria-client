@@ -1,5 +1,7 @@
 package fingerprint.gameplay.objects;
 
+import com.google.common.collect.Lists;
+import com.google.common.math.IntMath;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,7 +22,9 @@ import fingerprint.gameplay.objects.projectiles.Projectile;
 
 
 import fingerprint.rendering.map.TilemapRenderer;
+import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.newdawn.slick.SlickException;
@@ -75,25 +79,18 @@ public class CollisionManager {
         return map;
     }
     public void checkCollision() {
-        executor.execute(() -> {
-            for (Projectile projectile : entityManager.get(Projectile.class)) {
-                if (projectile.getTeam() == Projectile.PLAYER_PROJECTILE_SIDE) {
-                    for (Enemy enemy : entityManager.get(Enemy.class)) {
-                        if (enemy.isColliding(projectile)) {
-                            enemy.onCollision(projectile);
-                            projectile.onCollision(enemy);
-                        }
-                    };
-                } else if (projectile.getTeam() == Projectile.ENEMY_PROJECTILE_SIDE) {
-                    for (GCharacter me : entityManager.get(GCharacter.class)) {
-                        if (projectile.isColliding(me) && me.getStatus().equals("ALIVE")) {
-                            projectile.onCollision(me);
-                            me.onCollision(projectile);
-                        }
-                    };
-                }
-            };
-        });
+        List<Projectile> projectiles = new ArrayList<>(entityManager.get(Projectile.class));
+        
+        if(projectiles.size() < 2){
+            executeCollisionDetectionInDifferentThread(projectiles);
+        } else {
+            int partitionSize = IntMath.divide(projectiles.size(), 2, RoundingMode.UP);
+            List<List<Projectile>> partitions = Lists.partition(projectiles, partitionSize);
+        
+            executeCollisionDetectionInDifferentThread(partitions.get(0));
+            executeCollisionDetectionInDifferentThread(partitions.get(1));
+        }
+        
 
         entityManager.get(GCharacter.class).stream().forEach(me -> {
             entityManager.get(NPC.class).stream().forEach(npc -> {
@@ -117,6 +114,28 @@ public class CollisionManager {
                 }
             });
         });
+    }
+    
+    private void executeCollisionDetectionInDifferentThread(List<Projectile> projectiles){
+        executor.execute(() -> {
+            for (Projectile projectile : projectiles) {
+                if (projectile.getTeam() == Projectile.PLAYER_PROJECTILE_SIDE) {
+                    for (Enemy enemy : entityManager.get(Enemy.class)) {
+                        if (enemy.isColliding(projectile)) {
+                            enemy.onCollision(projectile);
+                            projectile.onCollision(enemy);
+                        }
+                    };
+                } else if (projectile.getTeam() == Projectile.ENEMY_PROJECTILE_SIDE) {
+                    for (GCharacter me : entityManager.get(GCharacter.class)) {
+                        if (projectile.isColliding(me) && me.getStatus().equals("ALIVE")) {
+                            projectile.onCollision(me);
+                            me.onCollision(projectile);
+                        }
+                    };
+                }
+            };
+        }); 
     }
     
     public void checkIfNeedInit() {

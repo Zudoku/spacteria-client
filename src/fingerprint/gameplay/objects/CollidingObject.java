@@ -128,7 +128,7 @@ public class CollidingObject extends GameObject{
         this.collideToTerrain = collideToTerrain;
     }
     @Override
-    protected double[] getDrawingCoordinates(){
+    public double[] getDrawingCoordinates(){
         
         return new double[]{getX() - RenderingManager.getScreenStartX(), getY()  - RenderingManager.getScreenStartY() };
     }

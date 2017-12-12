@@ -1,5 +1,6 @@
 package fingerprint.rendering.manager;
 
+import com.google.common.collect.Sets;
 import fingerprint.rendering.gui.event.SetScreenStartCoordinatesEvent;
 import fingerprint.rendering.util.RenderingResolutions;
 import fingerprint.rendering.util.GamePlayRenderingInformation;
@@ -24,6 +25,8 @@ import fingerprint.gameplay.map.gameworld.UIMode;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.GameObject;
 import fingerprint.gameplay.objects.player.GCharacter;
+import fingerprint.gameplay.objects.projectiles.Projectile;
+import fingerprint.gameplay.objects.projectiles.ProjectileImage;
 import fingerprint.inout.Chatline;
 import fingerprint.mainmenus.CharacterInfoContainer;
 import fingerprint.mainmenus.GenericGridController;
@@ -34,9 +37,13 @@ import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.gui.GUIContext;
 
@@ -125,9 +132,24 @@ public class RenderingManager {
         //MAP
         graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, (float)gri.getCameraRotation());
         tileMapRenderer.draw(screenStartX, screenStartY);
-        Set<GameObject> asd = entityManager.get(GameObject.class);
+        
+        
+        Set<GameObject> allDrawableGameObjects = entityManager.get(GameObject.class);
+        Map<ProjectileImage, Set<Projectile>> projectiles = new HashMap<>();
         //OBJECTS
-        for(GameObject drawableObject : asd){
+        for(GameObject drawableObject : allDrawableGameObjects){
+            if(drawableObject instanceof Projectile){
+                ProjectileImage image = ((Projectile) drawableObject).getImage();
+                if(projectiles.containsKey(image)){
+                    Set<Projectile> set = projectiles.get(image);
+                    set.add((Projectile) drawableObject);
+                    projectiles.put(image, set);
+                } else {
+                    projectiles.put(image, new HashSet<>(Sets.newHashSet((Projectile) drawableObject)));
+                }
+                
+                continue;
+            }
             if(drawableObject instanceof GCharacter){
                 continue;
             }
@@ -135,6 +157,26 @@ public class RenderingManager {
                 drawableObject.draw(graphics);
             }
         }
+        projectiles.keySet().forEach(imageKey -> {
+            try {
+                Set<Projectile> batch = projectiles.get(imageKey);
+                Image imageRef = batch.iterator().next().getImageRef();
+                imageRef.startUse();
+                batch.stream().forEach((projectile) -> {
+                    float offsetX = (imageRef.getWidth() - projectile.getWidth()) / 2;
+                    float offsetY = (imageRef.getHeight() - projectile.getHeight()) / 2;
+                    float rotation = 360 - (int) projectile.getAngle();
+                    imageRef.drawEmbedded((float)projectile.getDrawingCoordinates()[0] - offsetX, 
+                            (float)projectile.getDrawingCoordinates()[1] - offsetY,
+                            imageRef.getWidth(),
+                            imageRef.getHeight(),
+                            rotation);
+                });
+                imageRef.endUse();
+            } catch (SlickException ex) {
+                Logger.getLogger(RenderingManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
         //PLAYER
         GCharacter player = null;
         for(GCharacter drawableObject : entityManager.get(GCharacter.class)){
@@ -145,9 +187,7 @@ public class RenderingManager {
         
         //EFFECTS
         //UI
-        //graphics.setColor(FONT_BASE_COLOR);
-        //graphics.scale(unScaledScreenWidth, unScaledScreenWidth);
-        //graphics.rotate(unScaledGamePlayWidth / 2 , unScaledGamePlayHeight / 2, (float)gri.getCameraRotation());
+        
         drawGamePlayUI(graphics, context, drawDebugInfo, gri);
     }
     private boolean needToDraw(GameObject object){
@@ -179,21 +219,17 @@ public class RenderingManager {
         //TODO: MAGIC NUMBERS!
         if(drawDebugInfo){
             graphics.setColor(Color.black);
-            graphics.fillRect(0, 0, 300, 200);
+            graphics.fillRect(0, 0, 200, 100);
             
             
             graphics.setFont(UIRenderingUtil.smallVerdanaFont);
             graphics.setColor(Color.white);
-            graphics.drawString("Memory used: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
-            graphics.drawString("Screen coordinates: " + screenStartX + "," + screenStartY, 10, 50);
+            graphics.drawString("Memory: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
             for(GCharacter drawableObject : entityManager.get(GCharacter.class)){
-                graphics.drawString("Player coordinates: " + drawableObject.getX() + "," + drawableObject.getY() + " (" + (int)Math.floor(drawableObject.getX()/64) + "," + (int)Math.floor(drawableObject.getY()/64) + ")", 10, 70);
-                graphics.drawString("Player speed (x,y): " + (int)drawableObject.displaySpeedX + "," + (int)drawableObject.displaySpeedY , 10, 90);
-                graphics.drawString("Player rectangle (x,y): " +(int)drawableObject.getCollideShape().getX()+"," +(int)drawableObject.getCollideShape().getY() , 10, 110);
-                graphics.drawString("Player rotation: " + (int)Math.floor(gri.getCameraRotation()) , 10, 130);
+                graphics.drawString("Coord: " + drawableObject.getX() + "," + drawableObject.getY() + " (" + (int)Math.floor(drawableObject.getX()/64) + "," + (int)Math.floor(drawableObject.getY()/64) + ")", 10, 45);
+                graphics.drawString("Rotation: " + (int)Math.floor(gri.getCameraRotation()) , 10, 60);
             }
-            graphics.drawString("Mouse coordinates (x,y): " + (int)Math.floor(inputManager.getInput().getAbsoluteMouseX()) + "," + (int)Math.floor(inputManager.getInput().getAbsoluteMouseY()) , 10, 150);
-            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 170);
+            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 75);
         }
         
         //Draw the background for real UI

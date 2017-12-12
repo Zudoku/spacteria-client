@@ -203,6 +203,8 @@ public class GamePlayState extends BasicGameState{
         }).on(NetworkEvents.SERVER_REFRESH_ROOM_DESC, args -> {
                 RefreshRoomDescEvent event = gson.fromJson(args[0].toString(), RefreshRoomDescEvent.class);
                 changeRoom(event.getDesc());
+        }).on(NetworkEvents.SERVER_ENEMY_SPAWNED, args -> {
+            eventBus.post(gson.fromJson(args[0].toString(), NewEnemySpawnedEvent.class));
         }).on(NetworkEvents.SERVER_LOOTBAG_SPAWNED, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), NewLootBagSpawnedEvent.class));
         }).on(NetworkEvents.SERVER_UPDATE_LOOTBAG_STATUS, args -> {
