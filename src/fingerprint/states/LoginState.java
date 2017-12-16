@@ -58,8 +58,9 @@ public class LoginState  extends BasicGameState {
     
     private TextField usernameTextField;
     private TextField passwordTextField;
-    private static final String serveraddrs = "http://192.168.1.141:3590";
-    //private static final String serveraddrs = "http://127.0.0.1:3590";
+    //private static final String serveraddrs = "http://192.168.1.141:3590";
+    // private static final String serveraddrs = "http://127.0.0.1:3590";
+    private static final String serveraddrs = "http://www.spacteria.com:3590";
     
     private String lastMessageFromServer = "";
     public static String SOCKETSTATUS;
