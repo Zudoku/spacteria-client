@@ -27,7 +27,11 @@ public class SoundManager {
     public void listenPlaySoundEvent(PlaySoundEvent event){
         try {
             Sound playedSound = new Sound(FileUtil.SOUNDS_PATH + "/" + event.getSoundToPlay().getFilename());
-            playedSound.play(1, settings.soundVolume);
+            if (event.lowVolume) {
+                playedSound.play(1, 0.1f);
+            } else {
+                playedSound.play(1, settings.soundVolume);
+            }
         } catch (SlickException ex) {
             Logger.getLogger(SoundManager.class.getName()).log(Level.SEVERE, null, ex);
         }

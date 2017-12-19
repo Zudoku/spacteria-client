@@ -30,6 +30,7 @@ public class NetworkEvents {
     public static final String CLIENT_ENTER_PORTAL = "enterportal";
     public static final String CLIENT_SELL_ITEM = "sellitem";
     public static final String CLIENT_TELEPORT_TO_CAMP = "teleportcamp";
+    public static final String CLIENT_EMIT_CHAT_MESSAGE = "emitchatmsg";
     
     public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
     public static final String SERVER_CHARACTERLIST = "displaycharacterlist";
@@ -52,7 +53,6 @@ public class NetworkEvents {
     public static final String SERVER_CHARACTER_CREATED = "charactercreated";
     public static final String SERVER_CHARACTERS_ALL_DEAD = "charactersalldead";
     public static final String SERVER_VERSION_DATA = "versiondata";
+    public static final String SERVER_CHAT_MESSAGE = "chatmsg";
     
-    
-    //public static final String SERVER_UPDATE_NPC_POSITION= "updatenpcposition";
 }

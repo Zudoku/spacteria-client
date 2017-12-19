@@ -13,16 +13,15 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.mainmenus.GenericGridController;
+import fingerprint.networking.NetworkEnvironment;
 import fingerprint.networking.NetworkEvents;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
-import fingerprint.states.menu.enums.CharacterClass;
 import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import java.awt.Font;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -58,8 +57,7 @@ public class LoginState  extends BasicGameState {
     
     private TextField usernameTextField;
     private TextField passwordTextField;
-    private static final String serveraddrs = "http://192.168.1.141:3590";
-    //private static final String serveraddrs = "http://127.0.0.1:3590";
+    private static NetworkEnvironment environment;
     
     private String lastMessageFromServer = "";
     public static String SOCKETSTATUS;
@@ -69,6 +67,7 @@ public class LoginState  extends BasicGameState {
 
     public LoginState() {
         controller = new GenericGridController(Arrays.asList(0,0), Arrays.asList(0,1));
+        environment = NetworkEnvironment.PRODUCTION;
     }
 
     @Override
@@ -96,7 +95,7 @@ public class LoginState  extends BasicGameState {
         try {
             IO.Options options = new IO.Options();
 
-            socket = IO.socket(serveraddrs, options);
+            socket = IO.socket(environment.getServerlURL(), options);
 
             socket.on(Socket.EVENT_CONNECT, (Object... args) -> {
                 SOCKETSTATUS = "CONNECTED";
@@ -151,7 +150,7 @@ public class LoginState  extends BasicGameState {
 
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics grphcs) throws SlickException {
-        ConnectionRenderingInformation info = new ConnectionRenderingInformation(socket, serveraddrs, lastMessageFromServer, SOCKETSTATUS);
+        ConnectionRenderingInformation info = new ConnectionRenderingInformation(socket, environment.getServerlURL(), lastMessageFromServer, SOCKETSTATUS);
         info.setVersion(versionString);
         info.setChangelog(versionChangelog);
         renderingManager.drawLogin(grphcs, gc, usernameTextField, passwordTextField, controller, info);
@@ -177,12 +176,22 @@ public class LoginState  extends BasicGameState {
             controller.down();
         }
         
+        if(inputManager.isKeyBindPressed(KeyBindAction.C,true)){
+            int next = environment.ordinal() + 1;
+            int amount = NetworkEnvironment.values().length;
+            int index = next % amount;
+            environment = NetworkEnvironment.values()[index];
+            socket.disconnect();
+            socket.close();
+            initializeSocketToLoginMode();
+        }
+        
         if(inputManager.isKeyBindPressed(KeyBindAction.DEBUG_TOGGLE, true)) {
             socket.disconnect();
             socket.close();
             initializeSocketToLoginMode();
-            System.out.println("Refreshing socket!!!");
-            usernameTextField.setTextColor(Color.magenta);
+            System.out.println("Refreshed socket!!!");
+            lastMessageFromServer = "Refreshed socket";
         }
         
         checkIfFileInputClose();

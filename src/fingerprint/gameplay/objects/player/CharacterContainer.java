@@ -256,7 +256,7 @@ public class CharacterContainer {
         entityManager.addNewObject(guid, createdProjectile);
         //Launch event to server
         eventBus.post(new SpawnProjectileEvent(createdProjectile));
-        eventBus.post(new PlaySoundEvent(SoundEffect.SHOOT));
+        eventBus.post(new PlaySoundEvent(SoundEffect.SHOOT, true));
         
         
         
@@ -288,7 +288,7 @@ public class CharacterContainer {
             if(event.getStats() != null) {
                 if(currentPlayer.getStatManager().getStats().getHealth() > event.getStats().getHealth()){
                     //Play sound
-                    eventBus.post(new PlaySoundEvent(SoundEffect.CHARHIT));
+                    eventBus.post(new PlaySoundEvent(SoundEffect.CHARHIT, true));
                 }
                 currentPlayer.getStatManager().setStats(event.getStats());
                 attackManager.setDexterity(event.getStats().getDexterity());

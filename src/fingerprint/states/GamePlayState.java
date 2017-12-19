@@ -33,6 +33,7 @@ import fingerprint.inout.ChatManager;
 import fingerprint.inout.GameFileHandler;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.networking.NetworkEvents;
+import fingerprint.rendering.gui.event.DisplayConsoleMessageEvent;
 import fingerprint.rendering.util.GamePlayRenderingInformation;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.rendering.gui.event.EquipmentClickEvent;
@@ -48,6 +49,7 @@ import io.socket.client.Socket;
 import java.util.logging.Level;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.newdawn.slick.Color;
 
 
 public class GamePlayState extends BasicGameState{
@@ -112,9 +114,7 @@ public class GamePlayState extends BasicGameState{
         gri.setMinimap(worldContainer.getMinimap());
         gri.setDead(worldContainer.getCharacterStatus().equals("DEAD"));
         gri.setCanRessurect(canRessurect);
-        //worldContainer.
         renderingManager.drawGamePlay(graphics, gc, debugInfo, gri);
-        //renderingManager.drawDebugGamePlay(graphics);
         itemToRenderHover = null;
     }
 
@@ -169,7 +169,7 @@ public class GamePlayState extends BasicGameState{
         }
         canRessurect = false;
         description.getPlayers().remove(ourOwn);
-        eventBus.post(new PlaySoundEvent(SoundEffect.TELEPORT));
+        eventBus.post(new PlaySoundEvent(SoundEffect.TELEPORT, false));
         //worldContainer.s
         worldContainer.setCurrentRoom(description, myID);
         worldContainer.setCharacterStatus("ALIVE");
@@ -218,6 +218,20 @@ public class GamePlayState extends BasicGameState{
             mySocket.emit(NetworkEvents.CLIENT_MAP_LOADED, new JSONObject());
         }).on(NetworkEvents.SERVER_CHARACTERS_ALL_DEAD, args -> {
             canRessurect = true;
+        }).on(NetworkEvents.SERVER_CHAT_MESSAGE, args -> {
+            try {
+                JSONObject payload = (JSONObject) args[0];
+                String message = payload.getString("m");
+                int style = payload.getInt("style");
+                if(style == 2){
+                    eventBus.post(new DisplayConsoleMessageEvent(message, Color.magenta));
+                } else {
+                    eventBus.post(new DisplayConsoleMessageEvent(message, Color.yellow));
+                }
+                
+            } catch (JSONException ex) {
+                Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         
     }

@@ -66,7 +66,7 @@ public class EntityManager {
             idMap.remove(ID);
             logger.log(Level.FINEST,"Removed object with ID {0} from MAP",new Object[]{ID});
             if(removed instanceof Enemy) {
-                eventBus.post(new PlaySoundEvent(SoundEffect.valueOf(((Enemy)removed).getDeathsound())));
+                eventBus.post(new PlaySoundEvent(SoundEffect.valueOf(((Enemy)removed).getDeathsound()), true));
             }
             return;
         }

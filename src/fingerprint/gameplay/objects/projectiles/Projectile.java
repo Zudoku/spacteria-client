@@ -111,13 +111,13 @@ public class Projectile extends CollidingObject{
         
         if(collidedWith instanceof Enemy && this.team == 1 && !destroyed){
             Enemy enemy = (Enemy) collidedWith;
-            eventBus.post(new PlaySoundEvent(SoundEffect.valueOf(enemy.getHitsound())));
+            eventBus.post(new PlaySoundEvent(SoundEffect.valueOf(enemy.getHitsound()), true));
             destroyed = true;
             eventBus.post(new DeleteEntityEvent(guid));
         }
         
         if(collidedWith instanceof GCharacter && this.team == 2 && !destroyed){
-            eventBus.post(new PlaySoundEvent(SoundEffect.CHARHIT));
+            eventBus.post(new PlaySoundEvent(SoundEffect.CHARHIT, true));
             destroyed = true;
             eventBus.post(new DeleteEntityEvent(guid));
         }
