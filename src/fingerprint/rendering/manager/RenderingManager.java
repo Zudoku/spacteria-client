@@ -108,10 +108,10 @@ public class RenderingManager {
     }
     
     public void drawLogin(Graphics graphics, GameContainer gameContainer, 
-            TextField username, TextField password, GenericGridController controller,
+            TextField username, TextField password,
             ConnectionRenderingInformation connectionInformation) {
         initDraw(graphics);
-        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password, controller, connectionInformation);
+        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password, connectionInformation);
     }
     
     public void drawCharacterCreation(Graphics graphics,GameContainer container,int phase,TextField characternameTextField, String naggingText){

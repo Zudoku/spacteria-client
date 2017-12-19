@@ -159,6 +159,10 @@ public class InputManager {
     public boolean isUseGUIInputHandler() {
         return useGUIInputHandler;
     }
+
+    public boolean isCtrlVPressed() {
+        return input.isControlPressed(Keyboard.KEY_LCONTROL) && input.isControlPressed(Keyboard.KEY_V);
+    }
     
     
 }

@@ -65,11 +65,11 @@ public class ClickMOA {
         }
 
     }
-        private boolean inside(int mx, int my){
-            if( mx < x || mx > x + width || my < y || my > y + height) {
-                return false;
-            }
-            return true;
+    private boolean inside(int mx, int my) {
+        if (mx < x || mx > x + width || my < y || my > y + height) {
+            return false;
         }
+        return true;
+    }
 
 }

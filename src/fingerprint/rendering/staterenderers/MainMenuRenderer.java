@@ -10,7 +10,6 @@ import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.manager.UIRenderingUtil;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
-import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
 import java.util.Arrays;
 import java.util.List;
@@ -90,10 +89,12 @@ public class MainMenuRenderer {
             graphics.setColor(RenderingManager.FONT_BASE_COLOR);
         }
         
+        //write cool emitter here
+        
     }
     
     public void drawLoginToGame(Graphics graphics,GameContainer container, TextField usernameField,
-            TextField passwordField, GenericGridController controller, ConnectionRenderingInformation connectionInformation){
+            TextField passwordField, ConnectionRenderingInformation connectionInformation){
         try {
             Image logo = new Image("resources/UI/spacterialogo.png");
             logo.drawCentered(RenderingManager.unScaledScreenWidth / 2, 250);
@@ -103,17 +104,17 @@ public class MainMenuRenderer {
 
         Color usernameTextColor = null;
         String usernamelabelText = "Username";
-        if(controller.getSelectedRow() == 0) {
+        if(usernameField.hasFocus()) {
             usernameTextColor = Color.lightGray;   
         } else {
             usernameTextColor = Color.darkGray;
         }
-        //graphics.drawString(usernamelabelText, 200, 500);
+
         UIRenderingUtil.drawTextEffect(usernamelabelText, Color.lightGray, Color.black, 200, 496, 2, graphics, UIRenderingUtil.mediumVerdanaFont);
         
         Color passwordTextColor = null;
         String passwordlabelText = "Password";
-        if(controller.getSelectedRow() == 1) {
+        if(passwordField.hasFocus()) {
             passwordTextColor = Color.lightGray;
         } else {
             passwordTextColor = Color.darkGray;
@@ -129,11 +130,12 @@ public class MainMenuRenderer {
         graphics.setFont(UIRenderingUtil.mediumVerdanaFont);
         graphics.setColor(Color.white);
         
-        graphics.drawString(connectionInformation.getLastMessage(), 600, 580);
+        graphics.drawString(connectionInformation.getLastMessage(), 200, 700);
         
         graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.white);
         
+        graphics.drawString("Environtment: " + connectionInformation.getEnvironment().toString(), 5, RenderingManager.unScaledScreenHeight - 80);
         graphics.drawString("Socket ID: " + connectionInformation.getSocket().id(), 5, RenderingManager.unScaledScreenHeight - 60);
         graphics.drawString("Server status: " + connectionInformation.getStatus(), 5, RenderingManager.unScaledScreenHeight - 40);
         graphics.drawString("Server: " + connectionInformation.getHost(), 5, RenderingManager.unScaledScreenHeight - 20);
@@ -141,27 +143,20 @@ public class MainMenuRenderer {
         graphics.drawString("Version: " + GameLauncher.GAME_VERSION, RenderingManager.unScaledScreenWidth - 80, 5);
         
         //Draw changelog
-        
-        graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 180);
+        String[] lines = connectionInformation.getChangelog().split(";");
+        graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22 + (lines.length * 20));
         graphics.drawString("CHANGELOG (VERSION " + connectionInformation.getVersion() + "):", RenderingManager.unScaledScreenWidth - 280, 504);
+        
+        
         graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22);
         
-        graphics.drawString("- Changed X Y and Z to be F and in the", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 1);
-        graphics.drawString("process B changed.", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 2);
-        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 3);
-        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 4);
-        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 5);
-        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 6);
-        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 7);
-        graphics.drawString("-", RenderingManager.unScaledScreenWidth - 280, 504 + 20 * 8);
         
-        
+        for(int index = 0; index < lines.length; index++){
+            graphics.drawString(lines[index], RenderingManager.unScaledScreenWidth - 280, 524 + 20 * index);
+        }
         
         graphics.drawString("Community Discord: discord.gg/zcYCrcY", RenderingManager.unScaledScreenWidth - 280, RenderingManager.unScaledScreenHeight - 34);
         graphics.drawString("BitBucket: bitbucket.org/Arap/project-fingerprint", RenderingManager.unScaledScreenWidth - 280, RenderingManager.unScaledScreenHeight - 20);
-        
-        
-        
     }
     
     public void drawCharacterCreation(Graphics graphics,GameContainer container,int phase,TextField nameField, String naggingText){

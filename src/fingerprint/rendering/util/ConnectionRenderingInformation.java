@@ -6,6 +6,7 @@
 
 package fingerprint.rendering.util;
 
+import fingerprint.networking.NetworkEnvironment;
 import io.socket.client.Socket;
 
 /**
@@ -13,13 +14,14 @@ import io.socket.client.Socket;
  * @author arska
  */
 public class ConnectionRenderingInformation {
-    private Socket socket;
-    private String host;
-    private String lastMessage;
-    private String status;
+    private final Socket socket;
+    private final String host;
+    private final String lastMessage;
+    private final String status;
     
     private String version;
     private String changelog;
+    private NetworkEnvironment environment;
 
     public ConnectionRenderingInformation(Socket socket, String host, String lastMessage, String status) {
         this.socket = socket;
@@ -38,6 +40,14 @@ public class ConnectionRenderingInformation {
 
     public Socket getSocket() {
         return socket;
+    }
+
+    public void setEnvironment(NetworkEnvironment environment) {
+        this.environment = environment;
+    }
+
+    public NetworkEnvironment getEnvironment() {
+        return environment;
     }
 
     public String getStatus() {

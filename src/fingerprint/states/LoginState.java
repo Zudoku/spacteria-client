@@ -15,6 +15,7 @@ import fingerprint.controls.KeyBindAction;
 import fingerprint.mainmenus.GenericGridController;
 import fingerprint.networking.NetworkEnvironment;
 import fingerprint.networking.NetworkEvents;
+import fingerprint.rendering.gui.FocusableTextField;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.events.ChangeStateEvent;
@@ -23,6 +24,10 @@ import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -53,10 +58,9 @@ public class LoginState  extends BasicGameState {
     
     private Socket socket;
     
-    private GenericGridController controller;
     
-    private TextField usernameTextField;
-    private TextField passwordTextField;
+    private FocusableTextField usernameTextField;
+    private FocusableTextField passwordTextField;
     private static NetworkEnvironment environment;
     
     private String lastMessageFromServer = "";
@@ -66,7 +70,6 @@ public class LoginState  extends BasicGameState {
     private String versionChangelog = "";
 
     public LoginState() {
-        controller = new GenericGridController(Arrays.asList(0,0), Arrays.asList(0,1));
         environment = NetworkEnvironment.PRODUCTION;
     }
 
@@ -77,26 +80,17 @@ public class LoginState  extends BasicGameState {
 
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-        Font font = new Font("Arial Bold", Font.BOLD, 32);
-        TrueTypeFont ttf = new TrueTypeFont(font, true);
-        usernameTextField = new TextField(gc, ttf, 200, 520, 300, 34);
-        usernameTextField.setBackgroundColor(Color.gray);
-        usernameTextField.setBorderColor(Color.darkGray);
-        usernameTextField.setText("testuser");
-        passwordTextField = new TextField(gc, ttf, 200, 620, 300, 34);
-        passwordTextField.setBackgroundColor(Color.gray);
-        passwordTextField.setBorderColor(Color.darkGray);
-        passwordTextField.setText("1234567");
         
+        reCreateTextFields(gc);
+
         initializeSocketToLoginMode();
     }
     
-    private void initializeSocketToLoginMode(){
+    private void initializeSocketToLoginMode() {
         try {
             IO.Options options = new IO.Options();
 
             socket = IO.socket(environment.getServerlURL(), options);
-
             socket.on(Socket.EVENT_CONNECT, (Object... args) -> {
                 SOCKETSTATUS = "CONNECTED";
             }).on(Socket.EVENT_DISCONNECT, (Object... args) -> {
@@ -140,12 +134,31 @@ public class LoginState  extends BasicGameState {
                     Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
                 }
             });
-            
+
             socket.connect();
         } catch (URISyntaxException ex) {
             Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void reCreateTextFields(GameContainer gc){
+        Font font = new Font("Arial Bold", Font.BOLD, 32);
+        TrueTypeFont ttf = new TrueTypeFont(font, true);
+        String oldUserText = usernameTextField == null ? "testuser" : usernameTextField.getText();
+        String oldPassText = passwordTextField == null ? "1234567" : usernameTextField.getText();
         
+        usernameTextField = new FocusableTextField(gc, ttf, 200, 520, 500, 34);
+        usernameTextField.setBackgroundColor(Color.gray);
+        usernameTextField.setBorderColor(Color.darkGray);
+        usernameTextField.setText(oldUserText);
+        usernameTextField.setCursorVisible(true);
+        usernameTextField.setAcceptingInput(true);
+        passwordTextField = new FocusableTextField(gc, ttf, 200, 620, 500, 34);
+        passwordTextField.setBackgroundColor(Color.gray);
+        passwordTextField.setBorderColor(Color.darkGray);
+        passwordTextField.setText(oldPassText);
+        passwordTextField.setCursorVisible(true);
+        passwordTextField.setAcceptingInput(true);
     }
 
     @Override
@@ -153,70 +166,73 @@ public class LoginState  extends BasicGameState {
         ConnectionRenderingInformation info = new ConnectionRenderingInformation(socket, environment.getServerlURL(), lastMessageFromServer, SOCKETSTATUS);
         info.setVersion(versionString);
         info.setChangelog(versionChangelog);
-        renderingManager.drawLogin(grphcs, gc, usernameTextField, passwordTextField, controller, info);
+        info.setEnvironment(environment);
+        if(socket != null){
+            renderingManager.drawLogin(grphcs, gc, usernameTextField, passwordTextField, info);
+        }
+        
     }
 
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
         inputManager.setInput(gc.getInput());
         inputManager.update();
+        usernameTextField.setInput(gc.getInput());
+        passwordTextField.setInput(gc.getInput());
         
         if(inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
             //Try to login to the game
             identifyToServer();
         }
-        if(inputManager.isKeyBindPressed(KeyBindAction.UP,true)){
-            controller.up();
-        }
-        if(inputManager.isKeyBindPressed(KeyBindAction.DOWN,true)){
-            controller.down();
-        }
         if(inputManager.isKeyBindPressed(KeyBindAction.SKIP,true)){
-            controller.unlock();
-            controller.down();
+            if (!usernameTextField.hasFocus() && !passwordTextField.hasFocus()){
+                usernameTextField.doFocus();
+            } else if(usernameTextField.hasFocus()){
+                passwordTextField.doFocus();
+            } else {
+                usernameTextField.doFocus();
+            }
         }
         
-        if(inputManager.isKeyBindPressed(KeyBindAction.C,true)){
+        if(inputManager.isCtrlVPressed()) {
+            try {
+                String data = (String) Toolkit.getDefaultToolkit()
+                        .getSystemClipboard().getData(DataFlavor.stringFlavor);
+                if(usernameTextField.hasFocus()){
+                    usernameTextField.dopaste(data);
+                }
+                if(passwordTextField.hasFocus()){
+                    passwordTextField.dopaste(data);
+                }
+            } catch (UnsupportedFlavorException | IOException ex) {
+                Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        if(inputManager.isKeyBindPressed(KeyBindAction.C,true) && (!usernameTextField.hasFocus() || !passwordTextField.hasFocus())){
             int next = environment.ordinal() + 1;
             int amount = NetworkEnvironment.values().length;
             int index = next % amount;
             environment = NetworkEnvironment.values()[index];
-            socket.disconnect();
-            socket.close();
-            initializeSocketToLoginMode();
+            
+            refreshSocket();
         }
         
         if(inputManager.isKeyBindPressed(KeyBindAction.DEBUG_TOGGLE, true)) {
-            socket.disconnect();
-            socket.close();
-            initializeSocketToLoginMode();
-            System.out.println("Refreshed socket!!!");
+            refreshSocket();
             lastMessageFromServer = "Refreshed socket";
         }
         
-        checkIfFileInputClose();
     }
     
-    private void checkIfFileInputClose(){
-        if(controller.getSelectedRow() != 0){
-            usernameTextField.setAcceptingInput(false);
-            usernameTextField.setFocus(false);
-            passwordTextField.setConsumeEvents(true);
-        }else{
-            usernameTextField.setFocus(true);
-            usernameTextField.setConsumeEvents(false);
-            usernameTextField.setAcceptingInput(true);
-        }
-        if(controller.getSelectedRow() != 1){
-            passwordTextField.setAcceptingInput(false);
-            passwordTextField.setFocus(false);
-            passwordTextField.setConsumeEvents(true);
-        }else{
-            passwordTextField.setFocus(true);
-            passwordTextField.setConsumeEvents(false);
-            passwordTextField.setAcceptingInput(true);
-        }
+    private void refreshSocket() {
+        socket.disconnect();
+        socket.off();
+        socket.close();
+        initializeSocketToLoginMode();
+        System.out.println("Refreshed socket!!!");
     }
+    
     
     public void identifyToServer(){
         JSONObject identifyObject = new JSONObject();
