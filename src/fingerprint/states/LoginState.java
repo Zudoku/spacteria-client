@@ -59,9 +59,11 @@ public class LoginState  extends BasicGameState {
     private Socket socket;
     
     
+
     private FocusableTextField usernameTextField;
     private FocusableTextField passwordTextField;
     private static NetworkEnvironment environment;
+
     
     private String lastMessageFromServer = "";
     public static String SOCKETSTATUS;
