@@ -27,12 +27,14 @@ import fingerprint.states.GamePlayState;
 import fingerprint.states.MainMenuState;
 import fingerprint.states.CharacterCreationState;
 import fingerprint.states.CharacterSelectionState;
+import fingerprint.states.LeaderboardsState;
 import fingerprint.states.LoginState;
+import fingerprint.states.OptionsState;
 import fingerprint.states.ServerListState;
+import fingerprint.states.ThrophiesState;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 import org.newdawn.slick.Sound;
-import org.newdawn.slick.opengl.renderer.Renderer;
 
 public class GameLauncher extends StateBasedGame {
     private static final Logger logger = Logger.getLogger(GameLauncher.class.getName());
@@ -70,7 +72,7 @@ public class GameLauncher extends StateBasedGame {
             AppGameContainer application = new AppGameContainer(new GameLauncher(PROGRAM_NAME));
             applyGameSettings(application, gameSettings);
             MAINMENU_MUSIC = new Sound(FileUtil.MUSIC_PATH + "/" + "theoldarcade.ogg");
-            MAINMENU_MUSIC.loop(1, gameSettings.soundVolume);
+            MAINMENU_MUSIC.loop(0.5f, ((float) gameSettings.musicVolume) / 100f);
             application.start();
         } catch (SlickException e) {
             e.printStackTrace();
@@ -115,7 +117,14 @@ public class GameLauncher extends StateBasedGame {
         CharacterCreationState worldCreation = new CharacterCreationState();
         initState(worldCreation);
         
+        OptionsState options = new OptionsState();
+        initState(options);
         
+        LeaderboardsState leaderboards = new LeaderboardsState();
+        initState(leaderboards);
+        
+        ThrophiesState throphies = new ThrophiesState();
+        initState(throphies);
     }
     private void initState(BasicGameState state){
         injector.injectMembers(state);

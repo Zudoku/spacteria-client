@@ -11,13 +11,21 @@ import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.manager.UIRenderingUtil;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.menu.enums.MainMenuSelection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import javafx.util.Pair;
 
 public class MainMenuRenderer {
     
     private static int MAINMENU_MENUITEM_PADDING = 50;
     private static int MAINMENU_MENUITEM_STARTDRAWING_Y = 300;
+    
+    private long lastMainMenuItemEmitterRefresh = 0;
+    private long lastMainMenuSpriteEmitterRefresh = 0;
+    private List<Pair<Image, Integer>> lastMainMenuItemImages = new ArrayList<>();
+    private Image lastMainMenuSpriteImage;
     
     
     public MainMenuRenderer() {
@@ -88,8 +96,29 @@ public class MainMenuRenderer {
             }
             graphics.setColor(RenderingManager.FONT_BASE_COLOR);
         }
+        graphics.setColor(Color.black);
         
-        //write cool emitter here
+        if(lastMainMenuItemEmitterRefresh + 1000 < System.currentTimeMillis()){
+            Random r = new Random();
+            lastMainMenuItemEmitterRefresh = System.currentTimeMillis();
+            if(lastMainMenuItemImages.size() > 10){
+                lastMainMenuItemImages.remove(lastMainMenuItemImages.size() - 1);
+            }
+            lastMainMenuItemImages.add(0, new Pair<>(UIRenderingUtil.getItemImage(r.nextInt(50) + 1),r.nextInt(3) - 1));
+        }
+        
+        if(lastMainMenuSpriteEmitterRefresh + 2500 < System.currentTimeMillis()){
+            Random r = new Random();
+            lastMainMenuSpriteEmitterRefresh = System.currentTimeMillis();
+            lastMainMenuSpriteImage = UIRenderingUtil.getSpriteImage(r.nextInt(23) + 1);
+        }
+        
+        List<Pair<Image,Integer>> drawed = lastMainMenuItemImages;
+        for(int i = 0; i < drawed.size(); i++){
+            Image currentImage = drawed.get(i).getKey();
+            currentImage.draw(600 - (drawed.get(i).getValue() * 80), - 100 + ((System.currentTimeMillis() - lastMainMenuItemEmitterRefresh) / 10) + (i * 100));
+        }
+        lastMainMenuSpriteImage.getScaledCopy(256, 256).drawCentered(1040, 400);
         
     }
     

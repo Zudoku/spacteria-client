@@ -18,20 +18,13 @@ import com.google.inject.Inject;
 
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.gameplay.objects.player.GCharacter;
 import fingerprint.inout.GameFileHandler;
-import fingerprint.mainmenus.CharacterInfoContainer;
-import fingerprint.mainmenus.GenericGridController;
 import fingerprint.networking.NetworkEvents;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
-import fingerprint.states.menu.enums.CharacterClass;
 import io.socket.client.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

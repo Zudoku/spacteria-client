@@ -89,17 +89,19 @@ public class MainMenuState extends BasicGameState{
             break;
             
         case OPTIONS:
-            
+            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.OPTIONS_ID));
+            eventBus.post(new ChangeStateEvent(getID(), State_IDs.OPTIONS_ID));
             break;
             
         case LEADERBOARD:
-            
+            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.LEADERBOARDS_ID));
+            eventBus.post(new ChangeStateEvent(getID(), State_IDs.LEADERBOARDS_ID));
             break;
             
         case TROPHIES:
-            
+            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.THROPHIES_ID));
+            eventBus.post(new ChangeStateEvent(getID(), State_IDs.THROPHIES_ID));
             break;
-            
             
         case EXIT:
             eventBus.post(new CloseProgramEvent(false, true));

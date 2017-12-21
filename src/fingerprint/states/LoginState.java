@@ -19,6 +19,7 @@ import fingerprint.rendering.gui.FocusableTextField;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
 import fingerprint.states.events.ChangeStateEvent;
+import fingerprint.states.events.CloseProgramEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
 import io.socket.client.Ack;
 import io.socket.client.IO;
@@ -223,6 +224,16 @@ public class LoginState  extends BasicGameState {
         if(inputManager.isKeyBindPressed(KeyBindAction.DEBUG_TOGGLE, true)) {
             refreshSocket();
             lastMessageFromServer = "Refreshed socket";
+        }
+        
+        if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
+             if(usernameTextField.hasFocus()){
+                usernameTextField.setFocus(false);
+            } else if(passwordTextField.hasFocus()) {
+                passwordTextField.setFocus(false);
+            } else {
+                eventBus.post(new CloseProgramEvent(false, true));
+            }
         }
         
     }

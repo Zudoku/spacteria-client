@@ -34,6 +34,12 @@ public enum RenderingResolutions {
     public String toString() {
         Integer widthI = new Integer(width);
         Integer heightI = new Integer(height);
+        if(this == IDENTIFY_SCREEN) {
+            return "IDENTIFY";
+        }
+        if(this == RES_1280_1024) {
+            return widthI.toString() + "x" + heightI.toString() + " (BEST)";
+        }
         return widthI.toString() + "x" + heightI.toString();
     }
     

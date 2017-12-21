@@ -30,7 +30,7 @@ public class SoundManager {
             if (event.lowVolume) {
                 playedSound.play(1, 0.1f);
             } else {
-                playedSound.play(1, settings.soundVolume);
+                playedSound.play(1, ((float) settings.soundVolume) / 100f);
             }
         } catch (SlickException ex) {
             Logger.getLogger(SoundManager.class.getName()).log(Level.SEVERE, null, ex);

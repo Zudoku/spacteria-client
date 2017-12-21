@@ -14,6 +14,7 @@ public class NetworkEvents {
     public static final String CLIENT_ASKTOJOINGAME = "joingame";
     public static final String CLIENT_MAKENEWROOM = "makeroom";
     public static final String CLIENT_REFRESHROOMLIST = "roomlist";
+    public static final String CLIENT_REFRESHLEADERBOARDS = "listleaderboards";
     public static final String CLIENT_IDENTIFY = "identify";
     public static final String CLIENT_UPDATE_POSITION = "updateposition";
     public static final String CLIENT_SPAWN_PROJECTILE = "spawnprojectile";
@@ -33,6 +34,7 @@ public class NetworkEvents {
     public static final String CLIENT_EMIT_CHAT_MESSAGE = "emitchatmsg";
     
     public static final String SERVER_DISPLAYROOMLIST = "displayroomlist";
+    public static final String SERVER_DISPLAYLEADERBOARDS = "displayleaderboards";
     public static final String SERVER_CHARACTERLIST = "displaycharacterlist";
     public static final String SERVER_CHARACTERLOAD_SUCCESS = "charloadsuccess";
     public static final String SERVER_JOINROOM = "joinroom";
