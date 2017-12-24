@@ -10,9 +10,9 @@ package fingerprint.networking;
  * @author arska
  */
 public enum NetworkEnvironment {
-    PRODUCTION("http://www.spacteria.com:3590"), 
-    DEBUG1("http://192.168.1.141:3590"), 
-    DEBUG2("http://127.0.0.1:3590");
+    PRODUCTION("https://www.spacteria.com/"), 
+    DEBUG1("https://192.168.1.141:5556"), 
+    DEBUG2("https://127.0.0.1:3590");
     
     private String serverlURL;
 

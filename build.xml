@@ -70,4 +70,14 @@
     nbproject/build-impl.xml file. 
 
     -->
+	
+	<target name="-post-compile">
+        <copydir src="dependencies"
+           dest="dist"
+           includes="**/*.dll **/*.so"
+		/>
+		<copydir src="resources"
+           dest="dist/resources"
+		/>
+    </target>
 </project>

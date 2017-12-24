@@ -12,7 +12,6 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
-import fingerprint.mainmenus.GenericGridController;
 import fingerprint.networking.NetworkEnvironment;
 import fingerprint.networking.NetworkEvents;
 import fingerprint.rendering.gui.FocusableTextField;
@@ -24,15 +23,30 @@ import fingerprint.states.events.GiveSocketInfoEvent;
 import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
+
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509ExtendedTrustManager;
+import javax.net.ssl.X509TrustManager;
+import okhttp3.OkHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.newdawn.slick.Color;
@@ -40,7 +54,6 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -58,7 +71,7 @@ public class LoginState  extends BasicGameState {
     @Inject private EventBus eventBus;
     
     private Socket socket;
-    
+    private OkHttpClient okHttpClient;
     
 
     private FocusableTextField usernameTextField;
@@ -84,18 +97,58 @@ public class LoginState  extends BasicGameState {
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
         
-        reCreateTextFields(gc);
-
-        initializeSocketToLoginMode();
+        try {
+            reCreateTextFields(gc);
+            
+            initializeSocketToLoginMode();
+        } catch (Exception ex) {
+            Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex.getMessage());
+        }
     }
     
-    private void initializeSocketToLoginMode() {
-        try {
-            IO.Options options = new IO.Options();
+    private final X509TrustManager trustAllCerts = new X509TrustManager() {
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return new java.security.cert.X509Certificate[]{};
+        }
 
+        public void checkClientTrusted(X509Certificate[] chain,
+                String authType) throws CertificateException {
+        }
+
+        public void checkServerTrusted(X509Certificate[] chain,
+                String authType) throws CertificateException {
+        }
+    };
+    
+    private void initializeSocketToLoginMode() throws NoSuchAlgorithmException, KeyManagementException {
+        try {
+            //TODO: Do not trust all certificates.
+            
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(null, new TrustManager[] { trustAllCerts }, null);
+            
+            okHttpClient = new OkHttpClient.Builder()
+            .hostnameVerifier((String hostname, SSLSession session) -> true)
+            .sslSocketFactory(sslContext.getSocketFactory(), trustAllCerts)
+            .build();
+            
+            IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
+            IO.setDefaultOkHttpCallFactory(okHttpClient);
+            
+            
+            IO.Options options = new IO.Options();
+            options.webSocketFactory = okHttpClient;
+            options.callFactory = okHttpClient;
+            options.port = 443;
+            options.secure = true;
+            options.upgrade = true;
+            
+            
             socket = IO.socket(environment.getServerlURL(), options);
             socket.on(Socket.EVENT_CONNECT, (Object... args) -> {
                 SOCKETSTATUS = "CONNECTED";
+            }).on(Socket.EVENT_ERROR, (Object... args) -> {
+                Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, args);
             }).on(Socket.EVENT_DISCONNECT, (Object... args) -> {
                 eventBus.post(new ChangeStateEvent(getID(), State_IDs.LOGIN_SCREEN_ID));
                 SOCKETSTATUS = "NO CONNECTION (S)";
@@ -242,7 +295,11 @@ public class LoginState  extends BasicGameState {
         socket.disconnect();
         socket.off();
         socket.close();
-        initializeSocketToLoginMode();
+        try {
+            initializeSocketToLoginMode();
+        } catch (Exception ex) {
+            Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
+        }
         System.out.println("Refreshed socket!!!");
     }
     
@@ -277,6 +334,47 @@ public class LoginState  extends BasicGameState {
         super.leave(container, game);
         passwordTextField.setAcceptingInput(false);
         usernameTextField.setAcceptingInput(false);
+    }
+    
+    private X509TrustManager getX509() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        TrustManagerFactory tmf = TrustManagerFactory
+                .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        // Using null here initialises the TMF with the default trust store.
+        tmf.init((KeyStore) null);
+
+        // Get hold of the default trust manager
+        X509TrustManager x509Tm = null;
+        for (TrustManager tm : tmf.getTrustManagers()) {
+            if (tm instanceof X509TrustManager) {
+                x509Tm = (X509TrustManager) tm;
+                break;
+            }
+        }
+
+        // Wrap it in your own class.
+        final X509TrustManager finalTm = x509Tm;
+        X509TrustManager customTm = new X509TrustManager() {
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return finalTm.getAcceptedIssuers();
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] chain,
+                    String authType) throws CertificateException {
+                finalTm.checkServerTrusted(chain, authType);
+            }
+
+            @Override
+            public void checkClientTrusted(X509Certificate[] chain,
+                    String authType) throws CertificateException {
+                finalTm.checkClientTrusted(chain, authType);
+            }
+        };
+
+        
+
+        return customTm;
     }
 
 }
