@@ -35,6 +35,7 @@ import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.staterenderers.MainMenuRenderer;
 import fingerprint.rendering.map.TilemapRenderer;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
+import fingerprint.rendering.util.LoginRenderingInformation;
 import fingerprint.states.menu.enums.CharacterClass;
 import fingerprint.states.menu.enums.MainMenuSelection;
 import java.util.HashMap;
@@ -108,19 +109,18 @@ public class RenderingManager {
     }
     
     public void drawLogin(Graphics graphics, GameContainer gameContainer, 
-            TextField username, TextField password,
-            ConnectionRenderingInformation connectionInformation) {
+            LoginRenderingInformation loginRenderingInformation, ConnectionRenderingInformation connectionInformation) {
         initDraw(graphics);
-        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, username, password, connectionInformation);
+        mainMenuRenderer.drawLoginToGame(graphics, gameContainer, loginRenderingInformation, connectionInformation);
     }
     
     public void drawCharacterCreation(Graphics graphics,GameContainer container,int phase,TextField characternameTextField, String naggingText){
         initDraw(graphics);
         mainMenuRenderer.drawCharacterCreation(graphics,container,phase,characternameTextField, naggingText);
     }
-    public void drawMainMenu(Graphics graphics,MainMenuSelection selection){
+    public void drawMainMenu(Graphics graphics,MainMenuSelection selection, ConnectionRenderingInformation info){
         initDraw(graphics);
-        mainMenuRenderer.drawMainMenu(graphics, selection);
+        mainMenuRenderer.drawMainMenu(graphics, selection, info);
     }
     public void drawCharacterSelection(Graphics graphics,CharacterInfoContainer gwic, List<CharacterInfoContainer> availableChars, int deleteCounter){
         initDraw(graphics);
@@ -564,6 +564,7 @@ public class RenderingManager {
         screenStartX = event.newX;
         screenStartY = event.newY;
     }
+
 
     
 }

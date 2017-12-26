@@ -16,6 +16,12 @@ import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
 import fingerprint.rendering.manager.RenderingManager;
+import fingerprint.rendering.util.ConnectionRenderingInformation;
+import static fingerprint.states.LoginState.SOCKETSTATUS;
+import static fingerprint.states.LoginState.environment;
+import static fingerprint.states.LoginState.lastMessageFromServer;
+import static fingerprint.states.LoginState.versionChangelog;
+import static fingerprint.states.LoginState.versionString;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
@@ -50,7 +56,11 @@ public class MainMenuState extends BasicGameState{
     @Override
     public void render(GameContainer arg0, StateBasedGame arg1, Graphics graphics)
             throws SlickException {
-        renderingManager.drawMainMenu(graphics,selection);
+        ConnectionRenderingInformation info = new ConnectionRenderingInformation(socket, environment.getServerlURL(), lastMessageFromServer, SOCKETSTATUS);
+        info.setVersion(versionString);
+        info.setChangelog(versionChangelog);
+        info.setEnvironment(environment);
+        renderingManager.drawMainMenu(graphics,selection, info);
         
     }
 

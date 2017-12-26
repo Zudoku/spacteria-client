@@ -7,16 +7,17 @@
 package fingerprint.states;
 
 import com.google.common.eventbus.EventBus;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
+import fingerprint.inout.GameSettingsProvider;
 import fingerprint.networking.NetworkEnvironment;
 import fingerprint.networking.NetworkEvents;
+import fingerprint.rendering.gui.ClickableMouseOverArea;
 import fingerprint.rendering.gui.FocusableTextField;
 import fingerprint.rendering.manager.RenderingManager;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
+import fingerprint.rendering.util.LoginRenderingInformation;
 import fingerprint.states.events.ChangeStateEvent;
 import fingerprint.states.events.CloseProgramEvent;
 import fingerprint.states.events.GiveSocketInfoEvent;
@@ -24,9 +25,14 @@ import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 
+import java.awt.Desktop;
+import java.net.URI;
+
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -40,11 +46,9 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509ExtendedTrustManager;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.OkHttpClient;
 import org.json.JSONException;
@@ -52,6 +56,7 @@ import org.json.JSONObject;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.BasicGameState;
@@ -67,23 +72,29 @@ public class LoginState  extends BasicGameState {
     
     @Inject private RenderingManager renderingManager;
     @Inject private InputManager inputManager;
-
+    
     @Inject private EventBus eventBus;
+    
+    private GameSettingsProvider gameSettingsProvider = new GameSettingsProvider();
     
     private Socket socket;
     private OkHttpClient okHttpClient;
     
-
-    private FocusableTextField usernameTextField;
-    private FocusableTextField passwordTextField;
-    private static NetworkEnvironment environment;
+    private FocusableTextField logintokenTextField;
+    private ClickableMouseOverArea registerButton;
+    private ClickableMouseOverArea clearButton;
+    private ClickableMouseOverArea loginButton;
+    public static NetworkEnvironment environment;
 
     
-    private String lastMessageFromServer = "";
+    public static String lastMessageFromServer = "";
     public static String SOCKETSTATUS;
     
-    private String versionString  = "";
-    private String versionChangelog = "";
+    public static String versionString  = "";
+    public static String versionChangelog = "";
+    
+    private String registerToken = "";
+    private boolean registering = false;
 
     public LoginState() {
         environment = NetworkEnvironment.PRODUCTION;
@@ -99,9 +110,12 @@ public class LoginState  extends BasicGameState {
         
         try {
             reCreateTextFields(gc);
-            
+            logintokenTextField.setText(gameSettingsProvider.loadLoginToken());
             initializeSocketToLoginMode();
-        } catch (Exception ex) {
+            if (!logintokenTextField.getText().isEmpty()) {
+                identifyToServer();
+            }
+        } catch (SlickException | NoSuchAlgorithmException | KeyManagementException ex) {
             Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex.getMessage());
         }
     }
@@ -169,6 +183,7 @@ public class LoginState  extends BasicGameState {
             }).on(Socket.EVENT_RECONNECT_FAILED, (Object... args) -> {
                 SOCKETSTATUS = "NO CONNECTION (RF)";
             }).on(NetworkEvents.SERVER_LOGIN_SUCCESS, (Object... args) -> {
+                gameSettingsProvider.saveLoginToken(logintokenTextField.getText());
                 eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.MAIN_MENU_ID));
                 eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
                 cleanUpSocket();
@@ -189,6 +204,31 @@ public class LoginState  extends BasicGameState {
                 } catch (JSONException ex) {
                     Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }).on(NetworkEvents.SERVER_GIVE_REGISTER_TOKEN, (Object... args) -> {
+                try {
+                    JSONObject payload = (JSONObject) args[0];
+                    registerToken = payload.getString("token");
+                    registering = true;
+                    if (Desktop.isDesktopSupported()) {
+                        Desktop.getDesktop().browse(new URI("https://spacteria.com/register?token=" + registerToken));
+                    }
+                    StringSelection selection = new StringSelection("https://spacteria.com/register?token=" + registerToken);
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(selection, selection);
+                } catch (JSONException | IOException | URISyntaxException ex) {
+                    Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }).on(NetworkEvents.SERVER_GIVE_LOGIN_TOKEN, (Object... args) -> {
+                try {
+                    JSONObject payload = (JSONObject) args[0];
+                    String loginToken = payload.getString("token");
+                    logintokenTextField.setText(loginToken);
+                    identifyToServer();
+                    
+                    
+                } catch (JSONException ex) {
+                    Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
+                }
             });
 
             socket.connect();
@@ -197,24 +237,31 @@ public class LoginState  extends BasicGameState {
         }
     }
     
-    private void reCreateTextFields(GameContainer gc){
+    private void reCreateTextFields(GameContainer gc) throws SlickException{
         Font font = new Font("Arial Bold", Font.BOLD, 32);
         TrueTypeFont ttf = new TrueTypeFont(font, true);
-        String oldUserText = usernameTextField == null ? "testuser" : usernameTextField.getText();
-        String oldPassText = passwordTextField == null ? "1234567" : usernameTextField.getText();
+        String loginToken = logintokenTextField == null ? "" : logintokenTextField.getText();
+       
         
-        usernameTextField = new FocusableTextField(gc, ttf, 200, 520, 500, 34);
-        usernameTextField.setBackgroundColor(Color.gray);
-        usernameTextField.setBorderColor(Color.darkGray);
-        usernameTextField.setText(oldUserText);
-        usernameTextField.setCursorVisible(true);
-        usernameTextField.setAcceptingInput(true);
-        passwordTextField = new FocusableTextField(gc, ttf, 200, 620, 500, 34);
-        passwordTextField.setBackgroundColor(Color.gray);
-        passwordTextField.setBorderColor(Color.darkGray);
-        passwordTextField.setText(oldPassText);
-        passwordTextField.setCursorVisible(true);
-        passwordTextField.setAcceptingInput(true);
+        logintokenTextField = new FocusableTextField(gc, ttf, 200, 540, 500, 34);
+        logintokenTextField.setBackgroundColor(Color.gray);
+        logintokenTextField.setText(loginToken);
+        logintokenTextField.setAcceptingInput(true);
+        
+        clearButton = new ClickableMouseOverArea(gc, new Image(1,1), 200, 600, 100, 34, "Clear", () -> {
+            logintokenTextField.setText("");
+            return true;
+        });
+        
+        loginButton = new ClickableMouseOverArea(gc, new Image(1,1), 340, 600, 100, 34, "Login", () -> {
+            identifyToServer();
+            return true;
+        });
+        
+        registerButton = new ClickableMouseOverArea(gc, new Image(1,1), 200, 684, 500, 34, "Sign in with Google / I forgot my password", () -> {
+            askToRegister();
+            return true;
+        });
     }
 
     @Override
@@ -223,8 +270,12 @@ public class LoginState  extends BasicGameState {
         info.setVersion(versionString);
         info.setChangelog(versionChangelog);
         info.setEnvironment(environment);
+        
+        LoginRenderingInformation loginRenderingInformation = new LoginRenderingInformation(logintokenTextField, registerButton, clearButton, loginButton);
+        loginRenderingInformation.setRegisterToken(registerToken);
+        loginRenderingInformation.setRegistering(registering);
         if(socket != null){
-            renderingManager.drawLogin(grphcs, gc, usernameTextField, passwordTextField, info);
+            renderingManager.drawLogin(grphcs, gc, loginRenderingInformation, info);
         }
         
     }
@@ -233,39 +284,21 @@ public class LoginState  extends BasicGameState {
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
         inputManager.setInput(gc.getInput());
         inputManager.update();
-        usernameTextField.setInput(gc.getInput());
-        passwordTextField.setInput(gc.getInput());
-        
-        if(inputManager.isKeyBindPressed(KeyBindAction.MENU,true)){
-            //Try to login to the game
-            identifyToServer();
-        }
-        if(inputManager.isKeyBindPressed(KeyBindAction.SKIP,true)){
-            if (!usernameTextField.hasFocus() && !passwordTextField.hasFocus()){
-                usernameTextField.doFocus();
-            } else if(usernameTextField.hasFocus()){
-                passwordTextField.doFocus();
-            } else {
-                usernameTextField.doFocus();
-            }
-        }
+        logintokenTextField.setInput(gc.getInput());
         
         if(inputManager.isCtrlVPressed()) {
             try {
                 String data = (String) Toolkit.getDefaultToolkit()
                         .getSystemClipboard().getData(DataFlavor.stringFlavor);
-                if(usernameTextField.hasFocus()){
-                    usernameTextField.dopaste(data);
-                }
-                if(passwordTextField.hasFocus()){
-                    passwordTextField.dopaste(data);
+                if(logintokenTextField.hasFocus()){
+                    logintokenTextField.dopaste(data);
                 }
             } catch (UnsupportedFlavorException | IOException ex) {
                 Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
-        if(inputManager.isKeyBindPressed(KeyBindAction.C,true) && (!usernameTextField.hasFocus() || !passwordTextField.hasFocus())){
+        if(inputManager.isKeyBindPressed(KeyBindAction.C,true) && (!logintokenTextField.hasFocus())){
             int next = environment.ordinal() + 1;
             int amount = NetworkEnvironment.values().length;
             int index = next % amount;
@@ -280,10 +313,8 @@ public class LoginState  extends BasicGameState {
         }
         
         if(inputManager.isKeyBindPressed(KeyBindAction.EXIT,true)){
-             if(usernameTextField.hasFocus()){
-                usernameTextField.setFocus(false);
-            } else if(passwordTextField.hasFocus()) {
-                passwordTextField.setFocus(false);
+             if(logintokenTextField.hasFocus()){
+                logintokenTextField.setFocus(false);
             } else {
                 eventBus.post(new CloseProgramEvent(false, true));
             }
@@ -295,12 +326,13 @@ public class LoginState  extends BasicGameState {
         socket.disconnect();
         socket.off();
         socket.close();
+        registering = false;
+        registerToken = "";
         try {
             initializeSocketToLoginMode();
         } catch (Exception ex) {
             Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Refreshed socket!!!");
     }
     
     
@@ -308,10 +340,7 @@ public class LoginState  extends BasicGameState {
         JSONObject identifyObject = new JSONObject();
         try {
             identifyObject.put("type", "game-client");
-            GsonBuilder ga=new GsonBuilder();
-            Gson gson = ga.create();
-            identifyObject.put("username", usernameTextField.getText());
-            identifyObject.put("password", passwordTextField.getText());
+            identifyObject.put("token", logintokenTextField.getText());
         } catch (JSONException ex) {
             Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -324,16 +353,31 @@ public class LoginState  extends BasicGameState {
         });
     }
     
+    public void askToRegister(){
+        JSONObject registerObject = new JSONObject();
+        System.out.println("Register sent");
+
+        socket.emit(NetworkEvents.CLIENT_ASK_REGISTER, registerObject, new Ack() {
+            @Override
+            public void call(Object... args) {
+               
+            }
+        });
+    }
+    
     private void cleanUpSocket() {
         socket.off(NetworkEvents.SERVER_LOGIN_FAIL);
         socket.off(NetworkEvents.SERVER_LOGIN_SUCCESS);
+        socket.off(NetworkEvents.SERVER_GIVE_LOGIN_TOKEN);
+        socket.off(NetworkEvents.SERVER_GIVE_REGISTER_TOKEN);
     }
     
     @Override
     public void leave(GameContainer container, StateBasedGame game) throws SlickException {
         super.leave(container, game);
-        passwordTextField.setAcceptingInput(false);
-        usernameTextField.setAcceptingInput(false);
+        logintokenTextField.setAcceptingInput(false);
+        registering = false;
+        registerToken = "";
     }
     
     private X509TrustManager getX509() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {

@@ -39,6 +39,8 @@ public class FocusableTextField extends TextField {
         return true;
     }
     
+    
+    
     public void doFocus(){
         setFocus(true);
         setConsumeEvents(true);

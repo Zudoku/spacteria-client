@@ -6,10 +6,10 @@ import org.newdawn.slick.gui.TextField;
 
 import fingerprint.core.GameLauncher;
 import fingerprint.mainmenus.CharacterInfoContainer;
-import fingerprint.mainmenus.GenericGridController;
 import fingerprint.mainmenus.serverlist.RoomDescription;
 import fingerprint.rendering.manager.UIRenderingUtil;
 import fingerprint.rendering.util.ConnectionRenderingInformation;
+import fingerprint.rendering.util.LoginRenderingInformation;
 import fingerprint.states.menu.enums.MainMenuSelection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +73,7 @@ public class MainMenuRenderer {
     }
     
 
-    public void drawMainMenu(Graphics graphics, MainMenuSelection selection) {
+    public void drawMainMenu(Graphics graphics, MainMenuSelection selection, ConnectionRenderingInformation info) {
         //PLACEHOLDER MENU
         graphics.setColor(RenderingManager.FONT_BASE_COLOR);
         
@@ -118,12 +118,37 @@ public class MainMenuRenderer {
             Image currentImage = drawed.get(i).getKey();
             currentImage.draw(600 - (drawed.get(i).getValue() * 80), - 100 + ((System.currentTimeMillis() - lastMainMenuItemEmitterRefresh) / 10) + (i * 100));
         }
-        lastMainMenuSpriteImage.getScaledCopy(256, 256).drawCentered(1040, 400);
+        lastMainMenuSpriteImage.getScaledCopy(256, 256).drawCentered(1040, 200);
+        
+        graphics.setColor(Color.white);
+        graphics.setFont(UIRenderingUtil.smallVerdanaFont);
+        
+        graphics.drawString("Environtment: " + info.getEnvironment().toString(), 5, RenderingManager.unScaledScreenHeight - 80);
+        graphics.drawString("Socket ID: " + info.getSocket().id(), 5, RenderingManager.unScaledScreenHeight - 60);
+        graphics.drawString("Server status: " + info.getStatus(), 5, RenderingManager.unScaledScreenHeight - 40);
+        graphics.drawString("Server: " + info.getHost(), 5, RenderingManager.unScaledScreenHeight - 20);
+        
+        graphics.drawString("Client version: " + GameLauncher.GAME_VERSION, RenderingManager.unScaledScreenWidth - 80, 5);
+        
+        //Draw changelog
+        String[] lines = info.getChangelog().split(";");
+        graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22 + (lines.length * 20));
+        graphics.drawString("CHANGELOG (VERSION " + info.getVersion() + "):", RenderingManager.unScaledScreenWidth - 280, 504);
+        
+        
+        graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22);
+        
+        
+        for(int index = 0; index < lines.length; index++){
+            graphics.drawString(lines[index], RenderingManager.unScaledScreenWidth - 280, 524 + 20 * index);
+        }
+        
+        graphics.drawString("Community Discord: discord.gg/zcYCrcY", RenderingManager.unScaledScreenWidth - 280, RenderingManager.unScaledScreenHeight - 34);
+        graphics.drawString("BitBucket: bitbucket.org/Arap/project-fingerprint", RenderingManager.unScaledScreenWidth - 280, RenderingManager.unScaledScreenHeight - 20);
         
     }
     
-    public void drawLoginToGame(Graphics graphics,GameContainer container, TextField usernameField,
-            TextField passwordField, ConnectionRenderingInformation connectionInformation){
+    public void drawLoginToGame(Graphics graphics,GameContainer container, LoginRenderingInformation loginInfo, ConnectionRenderingInformation connectionInformation){
         try {
             Image logo = new Image("resources/UI/spacterialogo.png");
             logo.drawCentered(RenderingManager.unScaledScreenWidth / 2, 250);
@@ -131,36 +156,54 @@ public class MainMenuRenderer {
             e.printStackTrace();
         }
 
-        Color usernameTextColor = null;
-        String usernamelabelText = "Username";
-        if(usernameField.hasFocus()) {
-            usernameTextColor = Color.lightGray;   
+        if (loginInfo.isRegistering()) {
+            graphics.setFont(UIRenderingUtil.smallVerdanaFont);
+            graphics.setColor(Color.white);
+            
+            graphics.drawString("Your browser will open soon and it will be redirected to Google's login page.", 200, 500);
+            graphics.drawString("If your browser does not open, you can access it directly at: (copied to clipboard)", 200, 520);
+            graphics.setColor(Color.yellow);
+            graphics.drawString("https://spacteria.com/register?token=", 200, 540);
+            graphics.drawString(loginInfo.getRegisterToken(), 200, 560);
+            graphics.setColor(Color.red);
+            
+            graphics.drawString("!It is important that you will leave the game running!", 200, 580);
+            graphics.setColor(Color.white);
+            graphics.drawString("After completing your Google login, your password token will be automatically transferred to your game client.", 200, 620);
+            
         } else {
-            usernameTextColor = Color.darkGray;
-        }
+            String usernamelabelText = "I already have an account";
+            String registerlabelText = "I want to register an account";
+            UIRenderingUtil.drawTextEffect(usernamelabelText, Color.lightGray, Color.black, 200, 496, 2, graphics, UIRenderingUtil.mediumVerdanaFont);
+            UIRenderingUtil.drawTextEffect(registerlabelText, Color.lightGray, Color.black, 200, 640, 2, graphics, UIRenderingUtil.mediumVerdanaFont);
 
-        UIRenderingUtil.drawTextEffect(usernamelabelText, Color.lightGray, Color.black, 200, 496, 2, graphics, UIRenderingUtil.mediumVerdanaFont);
-        
-        Color passwordTextColor = null;
-        String passwordlabelText = "Password";
-        if(passwordField.hasFocus()) {
-            passwordTextColor = Color.lightGray;
-        } else {
-            passwordTextColor = Color.darkGray;
+            if (loginInfo.getLogintokenTextField().hasFocus()) {
+                graphics.setColor(Color.lightGray);
+            } else {
+                graphics.setColor(Color.darkGray);
+            }
+
+            loginInfo.getLogintokenTextField().render(container, graphics);
+            graphics.setColor(Color.lightGray);
+            loginInfo.getRegisterButton().render(container, graphics, 0, "");
+            loginInfo.getClearButton().render(container, graphics, 0, "");
+            loginInfo.getLoginButton().render(container, graphics, 0, "");
+
+            graphics.setFont(UIRenderingUtil.mediumVerdanaFont);
+            graphics.setColor(Color.white);
+
+            graphics.drawString(connectionInformation.getLastMessage(), 200, 750);
+
+            graphics.setFont(UIRenderingUtil.smallVerdanaFont);
+            graphics.setColor(Color.white);
+
+            graphics.drawString("I have already registered and know what i am doing. CTRL + V to paste token.", 200, 520);
+            graphics.drawString("I haven't registered yet. Registering to the game requires a Google account.", 200, 664);
+            //graphics.drawString("Spacteria uses Google OAuth 2.0 to retrieve your email. After clicking the Sign up button, you will be redirected ", 200, 684);
+            //graphics.drawString("to Google's login page to allow Spacteria to use your email. After retrieving your email from Google, ", 200, 704);
+            //graphics.drawString("Spacteria generates a 2048 byte token that acts as a password to your Spacteria account.", 200, 724);
+            //graphics.drawString("This way we only store your email and that orbitary 2048 byte token in our server and you do not have to worry about your password security.", 200, 744);
         }
-        //graphics.drawString(passwordlabelText, 200, 600);
-        UIRenderingUtil.drawTextEffect(passwordlabelText, Color.lightGray, Color.black, 200, 596, 2, graphics, UIRenderingUtil.mediumVerdanaFont);
-        
-        graphics.setColor(usernameTextColor);
-        usernameField.render(container, graphics);
-        graphics.setColor(passwordTextColor);
-        passwordField.render(container, graphics);
-        
-        graphics.setFont(UIRenderingUtil.mediumVerdanaFont);
-        graphics.setColor(Color.white);
-        
-        graphics.drawString(connectionInformation.getLastMessage(), 200, 700);
-        
         graphics.setFont(UIRenderingUtil.smallVerdanaFont);
         graphics.setColor(Color.white);
         
