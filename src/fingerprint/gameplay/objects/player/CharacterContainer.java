@@ -13,6 +13,8 @@ import fingerprint.gameplay.items.ItemType;
 import fingerprint.gameplay.objects.CollisionManager;
 import fingerprint.gameplay.objects.EntityManager;
 import fingerprint.gameplay.objects.events.ModifyCharacterEvent;
+import fingerprint.gameplay.objects.particles.ShootParticle;
+import fingerprint.gameplay.objects.projectiles.NewGameObjectSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.gameplay.objects.projectiles.ProjectileImage;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
@@ -251,12 +253,14 @@ public class CharacterContainer {
         String guid = java.util.UUID.randomUUID().toString();
         Projectile createdProjectile = new Projectile(projectileAngle,projectileSpeed,projectileMaxDistance, projectileStartX,projectileStartY);
         createdProjectile.setGuid(guid);
+        createdProjectile.setCollideToTerrain(true);
         createdProjectile.setTeam(Projectile.PLAYER_PROJECTILE_SIDE);
         createdProjectile.setImage(image);
         entityManager.addNewObject(guid, createdProjectile);
         //Launch event to server
         eventBus.post(new SpawnProjectileEvent(createdProjectile));
         eventBus.post(new PlaySoundEvent(SoundEffect.SHOOT, true));
+        //eventBus.post(new NewGameObjectSpawnedEvent(new ShootParticle(projectileStartX, projectileStartY,360 - projectileAngle), guid + "P"));
         
         
         

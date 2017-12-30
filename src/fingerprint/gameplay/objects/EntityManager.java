@@ -13,8 +13,9 @@ import fingerprint.gameplay.objects.events.ModifyLootBagEvent;
 import fingerprint.gameplay.objects.events.NewEnemySpawnedEvent;
 import fingerprint.gameplay.objects.events.NewLootBagSpawnedEvent;
 import fingerprint.gameplay.objects.interact.LootBag;
+import fingerprint.gameplay.objects.particles.ParticleObject;
 import fingerprint.gameplay.objects.player.DummyCharacter;
-import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
+import fingerprint.gameplay.objects.projectiles.NewGameObjectSpawnedEvent;
 import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.networking.events.CorrectNPCPositionEvent;
 import fingerprint.networking.events.PlayerJoinedEvent;
@@ -41,7 +42,9 @@ public class EntityManager {
      * @param value Object to assign.
      */
     public void addNewObject(String key, GameObject value){
-        idMap.put(key, value);
+        if(!(idMap.containsKey(key) && value instanceof Projectile)) {
+            idMap.put(key, value);
+        }
         logger.log(Level.FINEST,"Added {0} with ID {1} to MAP.",new Object[]{value.toString(),key,});
     }
     public Map<String, GameObject> getIdMap() {
@@ -132,8 +135,8 @@ public class EntityManager {
         
     }
     @Subscribe
-    public void listenNewProjectileSpawnedEvent(NewProjectileSpawnedEvent event){
-        addNewObject(event.getProjectile().getGuid(), event.getProjectile());/*
+    public void listenNewProjectileSpawnedEvent(NewGameObjectSpawnedEvent event){
+        addNewObject(event.getGuid(), event.getGameobject());/*
         Timer timer = new Timer(25, (java.awt.event.ActionEvent ae) -> {
             addNewObject(event.getProjectile().getGuid(), event.getProjectile());
         });
@@ -186,11 +189,27 @@ public class EntityManager {
     public void updateEntities(int delta, CollisionManager collisionManager){
         updateProjectiles(delta, collisionManager);
         collisionManager.checkCollision();
+        updateEmitters(delta, collisionManager);
     }
     
     private void updateProjectiles(int delta, CollisionManager collisionManager){
         for(Projectile projectile : get(Projectile.class)){
             projectile.move(delta, collisionManager);
+        }
+    }
+    private void updateEmitters(int delta, CollisionManager collisionManager){
+        List<ParticleObject> removedParticles = new ArrayList<>();
+        for(ParticleObject particle : get(ParticleObject.class)){
+            if(particle.getParticleSystem() != null) {
+                particle.getParticleSystem().update(delta);
+                if(particle.getParticleSystem().getEmitterCount() == 0){
+                    removedParticles.add(particle);
+                }
+            }
+        }
+        
+        for(ParticleObject particle : removedParticles){
+            removeObjectWithID(particle.getGuid());
         }
     }
     

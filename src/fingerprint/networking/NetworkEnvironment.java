@@ -11,7 +11,7 @@ package fingerprint.networking;
  */
 public enum NetworkEnvironment {
     PRODUCTION("https://spacteria.com/"), 
-    DEBUG1("https://192.168.1.141:5556"), 
+    DEBUG1("https://192.168.1.141:3590"), 
     DEBUG2("https://127.0.0.1:3590");
     
     private String serverlURL;

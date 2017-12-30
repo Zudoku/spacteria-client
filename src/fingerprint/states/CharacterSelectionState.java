@@ -1,6 +1,5 @@
 package fingerprint.states;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,7 +32,6 @@ import io.socket.client.Socket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.newdawn.slick.Color;
 
 public class CharacterSelectionState extends BasicGameState {
     private static final Logger logger = Logger.getLogger(CharacterSelectionState.class.getName());
@@ -59,11 +57,11 @@ public class CharacterSelectionState extends BasicGameState {
     @Override
     public void init(GameContainer gc, StateBasedGame caller)
             throws SlickException {
-        CharacterInfoContainer createNewWorld = new CharacterInfoContainer();
-        createNewWorld.setIsCreateNewCharDummy(true);
+        CharacterInfoContainer createNewCharacter = new CharacterInfoContainer();
+        createNewCharacter.setIsCreateNewCharDummy(true);
         availableChars.clear();
-        availableChars.add(createNewWorld);
-        currentSelectionChar = createNewWorld;
+        availableChars.add(createNewCharacter);
+        currentSelectionChar = createNewCharacter;
         
         controller.setFilesAmount(0);
     }
@@ -145,6 +143,15 @@ public class CharacterSelectionState extends BasicGameState {
         this.socket = event.getSocket();
         this.initializeSocketToCharacterSelectionMode();
         this.requestForCharacters();
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+                this.requestForCharacters();
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }).start();
+
     }
     
     
@@ -171,10 +178,10 @@ public class CharacterSelectionState extends BasicGameState {
                         Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                CharacterInfoContainer createNewWorld = new CharacterInfoContainer();
-                createNewWorld.setIsCreateNewCharDummy(true);
+                CharacterInfoContainer createNewCharacter = new CharacterInfoContainer();
+                createNewCharacter.setIsCreateNewCharDummy(true);
                 availableChars.clear();
-                availableChars.add(createNewWorld);
+                availableChars.add(createNewCharacter);
                 availableChars.addAll(charactersToAdd);
                 controller.setFilesAmount(availableChars.size() - 1);
                 if(controller.getSelection() == 0){

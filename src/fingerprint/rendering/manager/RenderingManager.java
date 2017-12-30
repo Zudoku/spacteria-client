@@ -219,7 +219,7 @@ public class RenderingManager {
         //TODO: MAGIC NUMBERS!
         if(drawDebugInfo){
             graphics.setColor(Color.black);
-            graphics.fillRect(0, 0, 200, 100);
+            graphics.fillRect(0, 0, 200, 80);
             
             
             graphics.setFont(UIRenderingUtil.smallVerdanaFont);
@@ -227,9 +227,8 @@ public class RenderingManager {
             graphics.drawString("Memory: " + (Runtime.getRuntime().totalMemory()/1000000) + "(" + ((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory())/1000000) + ") MB", 10, 30);
             for(GCharacter drawableObject : entityManager.get(GCharacter.class)){
                 graphics.drawString("Coord: " + drawableObject.getX() + "," + drawableObject.getY() + " (" + (int)Math.floor(drawableObject.getX()/64) + "," + (int)Math.floor(drawableObject.getY()/64) + ")", 10, 45);
-                graphics.drawString("Rotation: " + (int)Math.floor(gri.getCameraRotation()) , 10, 60);
             }
-            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 75);
+            graphics.drawString("Entities: " + (entityManager.getIdMap().size()), 10, 60);
         }
         
         //Draw the background for real UI

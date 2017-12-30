@@ -10,7 +10,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
+import fingerprint.core.GameLauncher;
 import fingerprint.inout.GameSettingsProvider;
+import fingerprint.inout.LoginToken;
 import fingerprint.networking.NetworkEnvironment;
 import fingerprint.networking.NetworkEvents;
 import fingerprint.rendering.gui.ClickableMouseOverArea;
@@ -42,7 +44,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.SSLContext;
@@ -51,6 +55,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 import okhttp3.OkHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.newdawn.slick.Color;
@@ -95,9 +100,10 @@ public class LoginState  extends BasicGameState {
     
     private String registerToken = "";
     private boolean registering = false;
+    
+    private long sentAutomaticLogin = 0;
 
     public LoginState() {
-        environment = NetworkEnvironment.PRODUCTION;
     }
 
     @Override
@@ -109,11 +115,14 @@ public class LoginState  extends BasicGameState {
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
         
         try {
+            LoginToken savedLoginToken = gameSettingsProvider.loadLoginToken();
             reCreateTextFields(gc);
-            logintokenTextField.setText(gameSettingsProvider.loadLoginToken());
+            logintokenTextField.setText( savedLoginToken == null ? "" : savedLoginToken.token);
+            environment = savedLoginToken == null ? NetworkEnvironment.PRODUCTION : savedLoginToken.environment;
             initializeSocketToLoginMode();
             if (!logintokenTextField.getText().isEmpty()) {
                 identifyToServer();
+                sentAutomaticLogin = System.currentTimeMillis();
             }
         } catch (SlickException | NoSuchAlgorithmException | KeyManagementException ex) {
             Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex.getMessage());
@@ -183,7 +192,10 @@ public class LoginState  extends BasicGameState {
             }).on(Socket.EVENT_RECONNECT_FAILED, (Object... args) -> {
                 SOCKETSTATUS = "NO CONNECTION (RF)";
             }).on(NetworkEvents.SERVER_LOGIN_SUCCESS, (Object... args) -> {
-                gameSettingsProvider.saveLoginToken(logintokenTextField.getText());
+                LoginToken loginToken = new LoginToken();
+                loginToken.token = logintokenTextField.getText();
+                loginToken.environment = environment;
+                gameSettingsProvider.saveLoginToken(loginToken);
                 eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.MAIN_MENU_ID));
                 eventBus.post(new ChangeStateEvent(getID(), State_IDs.MAIN_MENU_ID));
                 cleanUpSocket();
@@ -199,8 +211,7 @@ public class LoginState  extends BasicGameState {
             }).on(NetworkEvents.SERVER_VERSION_DATA, (Object... args) -> {
                 try {
                     JSONObject payload = (JSONObject) args[0];
-                    versionString = payload.getString("version");
-                    versionChangelog = payload.getString("changelog");
+                    parseChangelog(payload);
                 } catch (JSONException ex) {
                     Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -235,6 +246,46 @@ public class LoginState  extends BasicGameState {
         } catch (URISyntaxException ex) {
             Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void parseChangelog(JSONObject payload) throws JSONException {
+        versionString = (payload.getString("version") + " - " + payload.getString("date"));
+        String resultChangelogText = "Server:;";
+        JSONArray serverChanges = payload.getJSONArray("serverChanges");
+        for(int i = 0; i < serverChanges.length(); i++){
+            String change = serverChanges.getString(i);
+            List<String> changes = splitEqually(change, 40);
+            String[] rows = changes.toArray(new String[changes.size()]);
+            resultChangelogText += " - ";
+            for(String row : rows) {
+                resultChangelogText += row;
+                resultChangelogText += ";";
+            }
+        }
+        resultChangelogText += "Client:;";
+        JSONArray clientChanges = payload.getJSONArray("clientChanges");
+        for(int i = 0; i < clientChanges.length(); i++){
+            String change = clientChanges.getString(i);
+            List<String> changes = splitEqually(change, 40);
+            String[] rows = changes.toArray(new String[changes.size()]);
+            resultChangelogText += " - ";
+            for(String row : rows) {
+                resultChangelogText += row;
+                resultChangelogText += ";";
+            }
+        }
+        
+        
+        versionChangelog = resultChangelogText;
+    }
+    
+    public static List<String> splitEqually(String text, int size) {
+        List<String> ret = new ArrayList<>((text.length() + size - 1) / size);
+
+        for (int start = 0; start < text.length(); start += size) {
+            ret.add(text.substring(start, Math.min(text.length(), start + size)));
+        }
+        return ret;
     }
     
     private void reCreateTextFields(GameContainer gc) throws SlickException{
@@ -274,8 +325,11 @@ public class LoginState  extends BasicGameState {
         LoginRenderingInformation loginRenderingInformation = new LoginRenderingInformation(logintokenTextField, registerButton, clearButton, loginButton);
         loginRenderingInformation.setRegisterToken(registerToken);
         loginRenderingInformation.setRegistering(registering);
-        if(socket != null){
+        if(socket != null && (sentAutomaticLogin + 1000) < System.currentTimeMillis()){
             renderingManager.drawLogin(grphcs, gc, loginRenderingInformation, info);
+        } else {
+            grphcs.setColor(Color.white);
+            grphcs.drawString("Loading...", 100, 100);
         }
         
     }
@@ -340,6 +394,7 @@ public class LoginState  extends BasicGameState {
         JSONObject identifyObject = new JSONObject();
         try {
             identifyObject.put("type", "game-client");
+            identifyObject.put("version", GameLauncher.GAME_VERSION);
             identifyObject.put("token", logintokenTextField.getText());
         } catch (JSONException ex) {
             Logger.getLogger(ServerListState.class.getName()).log(Level.SEVERE, null, ex);

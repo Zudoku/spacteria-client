@@ -11,7 +11,11 @@ import org.newdawn.slick.geom.Rectangle;
 import fingerprint.gameplay.items.Inventory;
 import fingerprint.gameplay.objects.CollidingObject;
 import fingerprint.gameplay.objects.CollisionManager;
+import fingerprint.gameplay.objects.particles.ParticleObject;
+import fingerprint.gameplay.objects.particles.ShootParticle;
+import fingerprint.gameplay.objects.projectiles.NewGameObjectSpawnedEvent;
 import fingerprint.rendering.manager.UIRenderingUtil;
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.Image;
 
 
@@ -31,12 +35,15 @@ public class GCharacter extends CollidingObject{
     private transient StatManager statManager;
     private Currencies currencies;
     
+    private transient Animation animation;
+    
     
     
     public GCharacter() {
         super(0,0, new Rectangle(0,0, CharacterContainer.playerCollisionWidth,CharacterContainer.playerCollisionHeight));
         collideToTerrain = true;
         statManager = new StatManager();
+        
     }
     
     public void init(){
@@ -55,11 +62,18 @@ public class GCharacter extends CollidingObject{
     
     @Override
     public void draw(Graphics graphics) {
+        if(animation == null) {
+            animation = new Animation(new Image[]{
+                UIRenderingUtil.getSpriteImage(26), UIRenderingUtil.getSpriteImage(27), UIRenderingUtil.getSpriteImage(28)
+            }, 300);
+            
+        }
         //drawDebug(graphics);
         //graphics.rotate(level, level, level);
         double[] coordinates = getDrawingCoordinates();
-        Image sprite = UIRenderingUtil.getSpriteImage(20);
-        sprite.draw((float) coordinates[0] - 8, (float) coordinates[1] - 8);
+        //Image sprite = UIRenderingUtil.getSpriteImage(26);
+        animation.draw((float) coordinates[0] - 8, (float) coordinates[1] - 8);
+        //sprite.draw((float) coordinates[0] - 8, (float) coordinates[1] - 8);
     }
     
     @Override

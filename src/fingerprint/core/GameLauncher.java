@@ -38,9 +38,9 @@ import org.newdawn.slick.Sound;
 
 public class GameLauncher extends StateBasedGame {
     private static final Logger logger = Logger.getLogger(GameLauncher.class.getName());
-    public static final int GAME_VERSION = 3;
+    public static final int GAME_VERSION = 10;
     public static final String PROGRAM_STATE = "DEV";
-    public static final String PROGRAM_NAME = "Project Fingerprint Version "+GAME_VERSION + " " + PROGRAM_STATE;
+    public static final String PROGRAM_NAME = "Spacteria Version "+GAME_VERSION + " " + PROGRAM_STATE;
     
     public static GameSettings gameSettings;
     public static Injector injector;

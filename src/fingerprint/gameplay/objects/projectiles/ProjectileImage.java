@@ -18,7 +18,8 @@ public enum ProjectileImage {
     MINIBLOB("miniblob.png"),
     GUN("gun.png"),
     ELECTRICITY("electricity.png"),
-    SPRAY("spray.png");
+    SPRAY("spray.png"),
+    SPRAY2("spray2.png");
     
     private String filename;
 

@@ -61,7 +61,7 @@ public class GameSettingsProvider {
         return settings;
     }
     
-    public void saveLoginToken(String token){
+    public void saveLoginToken(LoginToken loginToken){
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         
         BufferedWriter writer = null;
@@ -70,8 +70,6 @@ public class GameSettingsProvider {
             writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(FileUtil.LOGINTOKEN_PATH), "utf-8"));
             //Write to file
-            LoginToken loginToken = new LoginToken();
-            loginToken.token = token;
             gson.toJson(loginToken,writer);
             //Close file
             writer.close();
@@ -84,18 +82,14 @@ public class GameSettingsProvider {
         }
     }
     
-    public String loadLoginToken(){
-        String loginToken = "";
+    public LoginToken loadLoginToken(){
         try{
             Gson gson = new GsonBuilder().create();
             LoginToken token = gson.fromJson(new FileReader(FileUtil.LOGINTOKEN_PATH), LoginToken.class);
-            if(token != null){
-                loginToken = token.token;
-                logger.log(Level.FINEST,"Found existing loginToken!");
-            }
+            logger.log(Level.FINEST,"Found existing loginToken!");
+            return token;
         }catch (FileNotFoundException ex){
-            loginToken = "";
+            return null;
         }
-        return loginToken;
     }
 }

@@ -6,11 +6,14 @@
 
 package fingerprint.inout;
 
+import fingerprint.networking.NetworkEnvironment;
+
 /**
  * Created Dec 26, 2017
  * @author arska
  */
 public class LoginToken {
     public String token;
+    public NetworkEnvironment environment;
 
 }

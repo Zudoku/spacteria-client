@@ -128,12 +128,12 @@ public class MainMenuRenderer {
         graphics.drawString("Server status: " + info.getStatus(), 5, RenderingManager.unScaledScreenHeight - 40);
         graphics.drawString("Server: " + info.getHost(), 5, RenderingManager.unScaledScreenHeight - 20);
         
-        graphics.drawString("Client version: " + GameLauncher.GAME_VERSION, RenderingManager.unScaledScreenWidth - 80, 5);
+        graphics.drawString("Client version: " + GameLauncher.GAME_VERSION, RenderingManager.unScaledScreenWidth - 110, 5);
         
         //Draw changelog
         String[] lines = info.getChangelog().split(";");
         graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22 + (lines.length * 20));
-        graphics.drawString("CHANGELOG (VERSION " + info.getVersion() + "):", RenderingManager.unScaledScreenWidth - 280, 504);
+        graphics.drawString("CHANGELOG (V" + info.getVersion() + "):", RenderingManager.unScaledScreenWidth - 280, 504);
         
         
         graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22);
@@ -217,7 +217,7 @@ public class MainMenuRenderer {
         //Draw changelog
         String[] lines = connectionInformation.getChangelog().split(";");
         graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22 + (lines.length * 20));
-        graphics.drawString("CHANGELOG (VERSION " + connectionInformation.getVersion() + "):", RenderingManager.unScaledScreenWidth - 280, 504);
+        graphics.drawString("CHANGELOG (V" + connectionInformation.getVersion() + "):", RenderingManager.unScaledScreenWidth - 280, 504);
         
         
         graphics.drawRect(RenderingManager.unScaledScreenWidth - 284, 500, 270, 22);

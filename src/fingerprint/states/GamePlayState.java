@@ -27,7 +27,8 @@ import fingerprint.gameplay.objects.interact.InteractableCollisionEvent;
 import fingerprint.gameplay.objects.interact.InteractableManager;
 import fingerprint.gameplay.objects.interact.LootBag;
 import fingerprint.gameplay.objects.player.DummyCharacter;
-import fingerprint.gameplay.objects.projectiles.NewProjectileSpawnedEvent;
+import fingerprint.gameplay.objects.projectiles.NewGameObjectSpawnedEvent;
+import fingerprint.gameplay.objects.projectiles.Projectile;
 import fingerprint.gameplay.objects.projectiles.SpawnProjectileEvent;
 import fingerprint.inout.ChatManager;
 import fingerprint.inout.GameFileHandler;
@@ -170,7 +171,6 @@ public class GamePlayState extends BasicGameState{
         canRessurect = false;
         description.getPlayers().remove(ourOwn);
         eventBus.post(new PlaySoundEvent(SoundEffect.TELEPORT, false));
-        //worldContainer.s
         worldContainer.setCurrentRoom(description, myID);
         worldContainer.setCharacterStatus("ALIVE");
         worldContainer.setPlayerCoords(description.getMapDescription().getStartX(), description.getMapDescription().getStartY());
@@ -197,7 +197,13 @@ public class GamePlayState extends BasicGameState{
             event.setCollisionManager(worldContainer.getCollisionManager());
             eventBus.post(event);
         }).on(NetworkEvents.SERVER_PROJECTILE_SPAWNED, args -> {
-            eventBus.post(gson.fromJson(args[0].toString(), NewProjectileSpawnedEvent.class));
+            try {
+                JSONObject payload = (JSONObject) args[0];
+                Projectile projectile = gson.fromJson(payload.getJSONObject("projectile").toString(), Projectile.class);
+                eventBus.post(new NewGameObjectSpawnedEvent(projectile));
+            } catch (JSONException ex) {
+                Logger.getLogger(GamePlayState.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }).on(NetworkEvents.SERVER_GAMEOBJECT_DESPAWNED, args -> {
             eventBus.post(gson.fromJson(args[0].toString(), DeleteEntityEvent.class));
         }).on(NetworkEvents.SERVER_REFRESH_ROOM_DESC, args -> {
