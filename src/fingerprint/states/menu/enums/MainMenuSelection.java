@@ -2,7 +2,7 @@ package fingerprint.states.menu.enums;
 
 
 public enum MainMenuSelection {
-    PLAY(0),OPTIONS(1),LEADERBOARD(2),TROPHIES(3),EXIT(4);
+    PLAY(0),OPTIONS(1),LEADERBOARD(2),TROPHIES(3), LOGINSCREEN(4), EXIT(5);
     
     int index;
     private MainMenuSelection(int index) {
@@ -20,6 +20,8 @@ public enum MainMenuSelection {
             return "Leaderboards";
         case TROPHIES:
             return "Throphies";
+        case LOGINSCREEN:
+            return "Back to login";
         case EXIT:
             return "Exit";
         }

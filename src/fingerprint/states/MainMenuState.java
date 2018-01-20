@@ -113,6 +113,12 @@ public class MainMenuState extends BasicGameState{
             eventBus.post(new ChangeStateEvent(getID(), State_IDs.THROPHIES_ID));
             break;
             
+        case LOGINSCREEN:
+            socket.close();
+            eventBus.post(new GiveSocketInfoEvent(socket.id(), socket, State_IDs.LOGIN_SCREEN_ID));
+            eventBus.post(new ChangeStateEvent(getID(), State_IDs.LOGIN_SCREEN_ID));
+            break;
+            
         case EXIT:
             eventBus.post(new CloseProgramEvent(false, true));
             break;

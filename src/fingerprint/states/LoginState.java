@@ -7,6 +7,7 @@
 package fingerprint.states;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import fingerprint.controls.InputManager;
 import fingerprint.controls.KeyBindAction;
@@ -433,6 +434,19 @@ public class LoginState  extends BasicGameState {
         logintokenTextField.setAcceptingInput(false);
         registering = false;
         registerToken = "";
+    }
+    
+    @Subscribe
+    public void listenInitGameInfoEvent(GiveSocketInfoEvent event){
+        try {
+            if(event.getState() != getID()) {
+                return;
+            }
+            initializeSocketToLoginMode();
+        } catch (NoSuchAlgorithmException | KeyManagementException ex) {
+            Logger.getLogger(LoginState.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     
     private X509TrustManager getX509() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
